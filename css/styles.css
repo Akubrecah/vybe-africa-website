@@ -46,6 +46,13 @@
     box-sizing: border-box;
 }
 
+/* Global Responsive Media */
+img, video, iframe {
+    max-width: 100%;
+    height: auto;
+    display: block; /* Removes bottom space */
+}
+
 body {
     font-family: var(--font-body);
     color: var(--text-color);
