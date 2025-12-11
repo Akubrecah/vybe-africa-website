@@ -39,7 +39,7 @@
 
 .nav-links {
     display: flex;
-    gap: 2.5rem; /* Balanced equal spacing */
+    gap: 4rem; /* Maximized spacing */
     align-items: center;
 }
 
