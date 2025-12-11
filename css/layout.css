@@ -130,7 +130,15 @@
 
 /* Mobile Menu */
 @media (max-width: 991px) {
-    .hamburger { display: block; }
+    .hamburger { 
+        display: block; 
+        color: var(--secondary-color) !important; /* Force dark color */
+        z-index: 1001; /* Above everything */
+        position: relative;
+        width: 44px; /* Touch target size */
+        height: 44px;
+        font-size: 1.8rem;
+    }
     
     .nav-links {
         position: fixed;
