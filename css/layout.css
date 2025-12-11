@@ -64,7 +64,7 @@
 
 .nav-links {
     display: flex;
-    gap: 3.2rem; /* Increased spacing as requested */
+    gap: 3.5rem; /* Further increased spacing */
     align-items: center;
     flex-wrap: nowrap;
 }
