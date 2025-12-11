@@ -58,13 +58,16 @@ h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 700;
     color: var(--secondary-color); /* Navy headings */
-    line-height: 1.2;
+    line-height: var(--heading-line-height);
     margin-bottom: 1rem;
 }
 
-h1 { font-size: 3.5rem; }
-h2 { font-size: 2.5rem; }
-h3 { font-size: 1.75rem; }
+h1 { font-size: 58px; }
+h2 { font-size: 38px; }
+h3 { font-size: 30px; }
+h4 { font-size: 24px; }
+h5 { font-size: 21px; }
+h6 { font-size: 17px; }
 
 a {
     text-decoration: none;
