@@ -39,7 +39,7 @@
 
 .nav-links {
     display: flex;
-    gap: 3rem; /* Increased spacing */
+    gap: 2.5rem; /* Balanced equal spacing */
     align-items: center;
 }
 
@@ -71,6 +71,10 @@
 
 .nav-link:hover::after, .nav-link.active::after {
     width: 100%;
+}
+
+.nav-cta {
+    margin-left: 0.5rem; /* Slight extra separation from links */
 }
 
 .nav-cta .btn {
