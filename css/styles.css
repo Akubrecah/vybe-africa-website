@@ -1,0 +1,170 @@
+/* Global Styles & Variables - ActionAid Reference Style */
+:root {
+    /* ActionAid-style Palette */
+    --ast-global-color-0: #cb4154; /* Primary Red */
+    --ast-global-color-1: #b43041; /* Darker Red */
+    --ast-global-color-2: #131d3b; /* Navy Blue (Headings/Text) */
+    --ast-global-color-3: #171717; /* Blackish */
+    --ast-global-color-4: #fafafa; /* Light BG */
+    --ast-global-color-5: #FFFFFF; /* White */
+    --ast-global-color-6: #F2F5F7;
+    --ast-global-color-7: #424242;
+    --ast-global-color-8: #000000;
+
+    /* Semantic Mapping */
+    --primary-color: var(--ast-global-color-0);
+    --primary-dark: var(--ast-global-color-1);
+    --secondary-color: var(--ast-global-color-2); /* Navy for text/headings */
+    --text-color: var(--ast-global-color-3);
+    --text-light: #555d66;
+    --background-color: var(--ast-global-color-4);
+    --white: var(--ast-global-color-5);
+    
+    /* Typography */
+    --font-heading: 'Rubik', sans-serif;
+    --font-body: 'Karla', sans-serif;
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 4rem;
+    --spacing-xxl: 6rem;
+
+    /* UI Elements */
+    --border-radius: 4px; /* Flatter, more serious look */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 5px 15px rgba(0,0,0,0.1);
+    
+    /* Transitions */
+    --transition: 0.3s ease;
+}
+
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Karla:wght@400;700&family=Rubik:wght@300;400;500;700&display=swap');
+
+/* Reset & Base */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--text-color);
+    line-height: 1.6;
+    background-color: var(--white);
+    -webkit-font-smoothing: antialiased;
+    font-size: 17px; /* Matches reference */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--secondary-color); /* Navy headings */
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+h1 { font-size: 3.5rem; }
+h2 { font-size: 2.5rem; }
+h3 { font-size: 1.75rem; }
+
+a {
+    text-decoration: none;
+    color: var(--secondary-color);
+    transition: var(--transition);
+}
+
+a:hover {
+    color: var(--primary-color);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Utilities */
+.container {
+    width: 100%;
+    max-width: 1240px; /* Specific width from reference */
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.text-center { text-align: center; }
+.text-primary { color: var(--primary-color) !important; }
+.text-white { color: white !important; }
+.bg-light { background-color: var(--ast-global-color-6); }
+.bg-primary { background-color: var(--primary-color); color: white; }
+
+.section-padding {
+    padding: var(--spacing-xl) 0;
+}
+
+/* Buttons (Matching Reference) */
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    border-radius: 30px; /* Rounded pill buttons from Ref */
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: white;
+}
+
+.btn-outline {
+    background: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-white {
+    background: white;
+    color: var(--primary-color);
+}
+
+.btn-white:hover {
+    background: var(--secondary-color);
+    color: white;
+}
+
+/* Card Styles */
+.card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    transition: var(--transition);
+    height: 100%;
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-5px);
+}

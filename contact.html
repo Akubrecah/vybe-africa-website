@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - VYBE Africa</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .page-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 160px 0 80px;
+            text-align: center;
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .contact-info-item {
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 1rem;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 400px;
+            background-color: #eee;
+            margin-top: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.png" alt="VYBE Africa Logo">
+                <span>VYBE Africa</span>
+            </a>
+            
+            <button class="hamburger"><i class="fas fa-bars"></i></button>
+            
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="work.html" class="nav-link">Our Work</a>
+                <a href="contact.html" class="nav-link active">Contact</a>
+                <div class="nav-cta">
+                    <a href="get-involved.html" class="btn btn-primary">Get Involved</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Contact Us</h1>
+            <p>Get in touch with us to learn more or support our work.</p>
+        </div>
+    </section>
+
+    <!-- Contact Content -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="contact-container">
+                <!-- Info -->
+                <div>
+                    <h2 class="text-primary" style="margin-bottom: 2rem;">Get In Touch</h2>
+                    
+                    <div class="contact-info-item">
+                        <i class="fas fa-map-marker-alt contact-icon"></i>
+                        <div>
+                            <h4>Visit Us</h4>
+                            <p>West Pokot County, Kenya</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <div>
+                            <h4>Email Us</h4>
+                            <p>info@vybeafrica.org</p>
+                            <p>support@vybeafrica.org</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <i class="fas fa-phone contact-icon"></i>
+                        <div>
+                            <h4>Call Us</h4>
+                            <p>+254 700 000 000</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 3rem;">
+                        <h4>Follow Us</h4>
+                        <div class="social-links" style="margin-top: 1rem;">
+                            <a href="#" class="social-icon" style="background:#ddd; color:var(--primary-color)"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-icon" style="background:#ddd; color:var(--primary-color)"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-icon" style="background:#ddd; color:var(--primary-color)"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <div>
+                    <h2 class="text-primary" style="margin-bottom: 2rem;">Send a Message</h2>
+                    <form action="#" method="POST">
+                        <div class="form-group">
+                            <label for="name" style="display:block; margin-bottom:0.5rem; font-weight:500;">Your Name</label>
+                            <input type="text" id="name" class="form-control" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" style="display:block; margin-bottom:0.5rem; font-weight:500;">Email Address</label>
+                            <input type="email" id="email" class="form-control" placeholder="john@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject" style="display:block; margin-bottom:0.5rem; font-weight:500;">Subject</label>
+                            <input type="text" id="subject" class="form-control" placeholder="How can we help?" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message" style="display:block; margin-bottom:0.5rem; font-weight:500;">Message</label>
+                            <textarea id="message" class="form-control" placeholder="Your message here..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Map Placeholder -->
+            <div class="map-container">
+                <p><i class="fas fa-map"></i> Google Maps Embed Placeholder (West Pokot County)</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>VYBE Africa</h4>
+                    <p style="color: #aaa; font-size: 0.9rem;">Empowering youth in West Pokot.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <a href="about.html">About Us</a>
+                    <a href="work.html">Our Work</a>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p style="color: #aaa;">West Pokot County, Kenya</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; <script>document.write(new Date().getFullYear())</script> VYBE Africa.
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

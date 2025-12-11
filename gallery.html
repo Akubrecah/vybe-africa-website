@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery & Media - VYBE Africa</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .page-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 180px 0 80px; /* Offset for fixed header */
+            text-align: center;
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 2rem;
+        }
+
+        .media-item {
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #eee;
+            aspect-ratio: 16/9;
+            cursor: pointer;
+        }
+
+        .media-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .media-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(203, 65, 84, 0.9); /* Primary Red */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            pointer-events: none;
+        }
+
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #999;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: var(--secondary-color);
+            border-bottom-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.png" alt="VYBE Africa Logo">
+                <span>VYBE Africa</span>
+            </a>
+            
+            <button class="hamburger"><i class="fas fa-bars"></i></button>
+            
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="work.html" class="nav-link">Our Work</a>
+                <a href="gallery.html" class="nav-link active">Gallery</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <div class="nav-cta">
+                    <a href="get-involved.html" class="btn btn-primary">Get Involved</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Gallery & Media</h1>
+            <p>Our stories in photos and videos from across West Pokot.</p>
+        </div>
+    </section>
+
+    <!-- Content -->
+    <section class="section-padding">
+        <div class="container">
+            
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="showTab('photos')">Photos</button>
+                <button class="tab-btn" onclick="showTab('videos')">Videos</button>
+            </div>
+
+            <!-- Photos Grid -->
+            <div id="photos" class="media-section">
+                <h3 class="text-center" style="margin-bottom: 2rem; display: none;">Photo Gallery</h3>
+                <div class="media-grid">
+                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=Youth+Dialogue" alt="Photo"></div>
+                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=Climate+Action" alt="Photo"></div>
+                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=Training+Session" alt="Photo"></div>
+                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=Community+Visit" alt="Photo"></div>
+                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=School+Outreach" alt="Photo"></div>
+                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=Team+Event" alt="Photo"></div>
+                </div>
+            </div>
+
+            <!-- Videos Grid -->
+            <div id="videos" class="media-section" style="display: none;">
+                <h3 class="text-center" style="margin-bottom: 2rem; display: none;">Video Gallery</h3>
+                <div class="media-grid">
+                    <!-- Video 1 -->
+                    <div class="media-item">
+                        <img src="https://via.placeholder.com/800x600?text=Video+Thumbnail+1" alt="Video 1">
+                        <div class="play-icon"><i class="fas fa-play"></i></div>
+                        <!-- Use href to lightbox or explicit video tag -->
+                    </div>
+                    <!-- Video 2 -->
+                    <div class="media-item">
+                        <img src="https://via.placeholder.com/800x600?text=Video+Thumbnail+2" alt="Video 2">
+                        <div class="play-icon"><i class="fas fa-play"></i></div>
+                    </div>
+                    <!-- Video 3 -->
+                    <div class="media-item">
+                        <img src="https://via.placeholder.com/800x600?text=Video+Thumbnail+3" alt="Video 3">
+                        <div class="play-icon"><i class="fas fa-play"></i></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>VYBE Africa</h4>
+                    <p style="color: #ccc;">West Pokot County, Kenya<br>info@vybeafrica.org</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Our Work</h4>
+                    <a href="srhr.html">SRHR & Maternal Health</a>
+                    <a href="climate.html">Climate Action</a>
+                    <a href="child-protection.html">Child Protection</a>
+                    <a href="inclusive-governance.html">Inclusive Governance</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <a href="about.html">About Us</a>
+                    <a href="gallery.html">Gallery</a>
+                    <a href="get-involved.html">Get Involved</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; <script>document.write(new Date().getFullYear())</script> VYBE Africa. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all sections
+            document.querySelectorAll('.media-section').forEach(el => el.style.display = 'none');
+            // Show target
+            document.getElementById(tabName).style.display = 'block';
+            
+            // Update nav buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            // This is a simple toggle, for production use event.target or cleaner mapping
+            const index = tabName === 'photos' ? 0 : 1;
+            document.querySelectorAll('.tab-btn')[index].classList.add('active');
+        }
+    </script>
+    <script src="js/main.js"></script>
+</body>
+</html>

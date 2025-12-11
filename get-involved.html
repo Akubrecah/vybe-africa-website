@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Involved - VYBE Africa</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .page-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 160px 0 80px;
+            text-align: center;
+        }
+
+        .involve-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .involve-card {
+            background: var(--background-light);
+            padding: 2rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            transition: var(--transition-medium);
+        }
+
+        .involve-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .involve-icon {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.png" alt="VYBE Africa Logo">
+                <span>VYBE Africa</span>
+            </a>
+            
+            <button class="hamburger"><i class="fas fa-bars"></i></button>
+            
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="work.html" class="nav-link">Our Work</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <div class="nav-cta">
+                    <a href="get-involved.html" class="btn btn-primary active">Get Involved</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Get Involved</h1>
+            <p>Join us in creating a sustainable future for West Pokot.</p>
+        </div>
+    </section>
+
+    <!-- Ways to Help -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="text-center" style="max-width:800px; margin:0 auto 3rem;">
+                <h2 class="text-primary">How You Can Help</h2>
+                <p>There are many ways to support our mission. Whether through partnerships, volunteering, or spreading the word, your contribution matters.</p>
+            </div>
+
+            <div class="involve-grid">
+                <!-- Donate -->
+                <div class="involve-card">
+                    <div class="involve-icon"><i class="fas fa-hand-holding-dollar"></i></div>
+                    <h3>Support Our Work</h3>
+                    <p style="margin-bottom: 1.5rem;">Your financial support helps us implement vital programs in SRHR, Climate Action, and Child Protection.</p>
+                    <a href="contact.html" class="btn btn-primary">Donate Now</a>
+                </div>
+
+                <!-- Volunteer -->
+                <div class="involve-card">
+                    <div class="involve-icon"><i class="fas fa-people-carry-box"></i></div>
+                    <h3>Volunteer</h3>
+                    <p style="margin-bottom: 1.5rem;">Lend your skills and time. We are always looking for passionate individuals to join our cause.</p>
+                    <a href="contact.html?subject=Volunteer" class="btn btn-secondary">Join Us</a>
+                </div>
+
+                <!-- Partner -->
+                <div class="involve-card">
+                    <div class="involve-icon"><i class="fas fa-handshake"></i></div>
+                    <h3>Partner With Us</h3>
+                    <p style="margin-bottom: 1.5rem;">We collaborate with organizations, governments, and businesses to amplify our impact.</p>
+                    <a href="contact.html?subject=Partnership" class="btn btn-outline" style="border-color:var(--primary-color); color:var(--primary-color);">Become a Partner</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partnership Opportunities -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 2rem;">Partnership Opportunities</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <div>
+                    <h3 class="text-primary"><i class="fas fa-coins"></i> Funding Partners</h3>
+                    <p>Support our projects through grants and funding to ensure sustainability and reach.</p>
+                </div>
+                <div>
+                    <h3 class="text-primary"><i class="fas fa-laptop-code"></i> Technical Partners</h3>
+                    <p>Provide expertise, training, and resources to build capacity within our organization and community.</p>
+                </div>
+                <div>
+                    <h3 class="text-primary"><i class="fas fa-users"></i> Community Partners</h3>
+                    <p>Work with us on the ground to mobilize communities and implement grassroots initiatives.</p>
+                </div>
+                 <div>
+                    <h3 class="text-primary"><i class="fas fa-building"></i> CSR Partners</h3>
+                    <p>Corporate partners looking to make a meaningful social impact in West Pokot.</p>
+                </div>
+            </div>
+            <div class="text-center" style="margin-top: 3rem;">
+                <a href="contact.html" class="btn btn-primary btn-lg">Contact Us to Partner</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>VYBE Africa</h4>
+                    <p style="color: #aaa; font-size: 0.9rem;">Empowering youth in West Pokot.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <a href="about.html">About Us</a>
+                    <a href="work.html">Our Work</a>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p style="color: #aaa;">West Pokot County, Kenya</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; <script>document.write(new Date().getFullYear())</script> VYBE Africa.
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

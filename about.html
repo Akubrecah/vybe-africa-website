@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - VYBE Africa</title>
+    <meta name="description" content="Learn about VYBE (Voices of Youth for Better Engagement) Africa, our mission, vision, and the team driving change in West Pokot.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .page-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 180px 0 80px;
+            text-align: center;
+        }
+
+        .about-content {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .value-card {
+            background: #fff;
+            padding: 30px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .value-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .value-card h4 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .vision-mission-row {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .vm-card {
+            flex: 1;
+            background: var(--background-light);
+            padding: 40px;
+            border-radius: var(--border-radius);
+        }
+        
+        .vm-card h3 {
+            color: var(--primary-color);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .team-member img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .team-member h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--secondary-color);
+        }
+
+        .team-member p {
+            font-size: 0.9rem;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 991px) {
+            .values-grid, .vision-mission-row, .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.png" alt="VYBE Africa Logo">
+                <span>VYBE Africa</span>
+            </a>
+            
+            <button class="hamburger"><i class="fas fa-bars"></i></button>
+            
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link active">About Us</a>
+                <a href="work.html" class="nav-link">Our Work</a>
+                <a href="gallery.html" class="nav-link">Gallery</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <div class="nav-cta">
+                    <a href="get-involved.html" class="btn btn-primary">Get Involved</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>About Us</h1>
+            <p>Voices of Youth for Better Engagement Africa</p>
+        </div>
+    </section>
+
+    <!-- Content -->
+    <section class="section-padding">
+        <div class="container">
+            
+            <!-- Intro -->
+            <div class="about-content" style="max-width: 900px; margin: 0 auto 60px; text-align: center;">
+                <h2 style="color: var(--secondary-color);">Our Story</h2>
+                <div style="width: 60px; height: 4px; background: var(--primary-color); margin: 0 auto 30px;"></div>
+                <p>
+                    VYBE Africa is a youth-led Community-Based Organization (CBO) located in West Pokot County, Kenya. Our name stands for <strong>Voices of Youth for Better Engagement</strong>. We were founded on the belief that young people are not just beneficiaries of development, but active architects of their own future.
+                </p>
+                <br>
+                <p>
+                    Driven by the tagline <em>"Dream. Dare. Do."</em>, we work tirelessly to address critical challenges facing our community, from Sexual and Reproductive Health rights to Climate Action and Inclusive Governance.
+                </p>
+            </div>
+
+            <!-- Vision & Mission -->
+            <div class="vision-mission-row">
+                <div class="vm-card">
+                    <h3>Our Vision</h3>
+                    <p>A society where youth are empowered, engaged, and leading sustainable development in West Pokot and beyond.</p>
+                </div>
+                <div class="vm-card">
+                    <h3>Our Mission</h3>
+                    <p>To amplify the voices of youth, promote health and well-being, protect children, and foster inclusive governance through advocacy, eduction, and community action.</p>
+                </div>
+            </div>
+
+            <!-- Values -->
+            <div style="margin-bottom: 80px;">
+                <h2 class="text-center">Our Core Values</h2>
+                <div class="values-grid">
+                    <div class="value-card">
+                        <i class="fas fa-hand-holding-heart fa-2x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <h4>Integrity</h4>
+                        <p>We operate with transparency and honesty in all our engagements.</p>
+                    </div>
+                    <div class="value-card">
+                        <i class="fas fa-users fa-2x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <h4>Inclusivity</h4>
+                        <p>We believe in leaving no one behind, amplifying marginalized voices.</p>
+                    </div>
+                    <div class="value-card">
+                        <i class="fas fa-lightbulb fa-2x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <h4>Innovation</h4>
+                        <p>We dare to dream and implement creative solutions to local problems.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Placeholder -->
+            <div>
+                <h2 class="text-center" style="margin-bottom: 40px;">Meet Our Team</h2>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/300x350?text=Team+Member" alt="Team">
+                        <h4>Jane Doe</h4>
+                        <p>Executive Director</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/300x350?text=Team+Member" alt="Team">
+                        <h4>John Smith</h4>
+                        <p>Program Officer</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/300x350?text=Team+Member" alt="Team">
+                        <h4>Alice Johnson</h4>
+                        <p>Communications Lead</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="https://via.placeholder.com/300x350?text=Team+Member" alt="Team">
+                        <h4>Michael Brown</h4>
+                        <p>Finance Officer</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>VYBE Africa</h4>
+                    <p style="color: #ccc;">West Pokot County, Kenya<br>info@vybeafrica.org</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Our Work</h4>
+                    <a href="srhr.html">SRHR & Maternal Health</a>
+                    <a href="climate.html">Climate Action</a>
+                    <a href="child-protection.html">Child Protection</a>
+                    <a href="inclusive-governance.html">Inclusive Governance</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <a href="about.html">About Us</a>
+                    <a href="gallery.html">Gallery</a>
+                    <a href="get-involved.html">Get Involved</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; <script>document.write(new Date().getFullYear())</script> VYBE Africa. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

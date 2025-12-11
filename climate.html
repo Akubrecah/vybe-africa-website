@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Action - VYBE Africa</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .page-header {
+            background: linear-gradient(rgba(40, 167, 69, 0.9), rgba(40, 167, 69, 0.9)), url('assets/images/climate-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 160px 0 80px;
+            text-align: center;
+        }
+
+        .content-block { margin-bottom: 3rem; }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width:768px) { .component-grid { grid-template-columns: 1fr; } }
+
+        .component-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+        
+        .component-icon {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .activity-list li {
+            margin-bottom: 0.5rem;
+            list-style: circle inside;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.png" alt="VYBE Africa Logo">
+                <span>VYBE Africa</span>
+            </a>
+            
+            <button class="hamburger"><i class="fas fa-bars"></i></button>
+            
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="work.html" class="nav-link active">Our Work</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <div class="nav-cta">
+                    <a href="get-involved.html" class="btn btn-primary">Get Involved</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Climate Action</h1>
+            <p>Building resilience and sustainable futures for West Pokot.</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="content-block">
+                <h2 class="text-secondary">Introduction</h2>
+                <p>
+                    Climate change is one of the most pressing challenges of our time. It requires a multi-faceted approach involving governments, 
+                    businesses, communities, and individuals to secure a sustainable future.
+                </p>
+            </div>
+
+            <div class="content-block">
+                <h2 class="text-secondary">Core Components</h2>
+                <div class="component-grid">
+                    <div class="component-card">
+                        <div class="component-icon"><i class="fas fa-seedling"></i></div>
+                        <h3>Climate Mitigation</h3>
+                        <p>Focusing on reducing greenhouse gas emissions and stabilizing atmospheric concentrations through renewable energy and sustainable land use.</p>
+                    </div>
+                    <div class="component-card">
+                        <div class="component-icon"><i class="fas fa-water"></i></div>
+                        <h3>Climate Adaptation</h3>
+                        <p>Adjusting to climate change impacts by reducing vulnerability and enhancing resilience (e.g., drought-resistant crops, early warning systems).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-block">
+                <h2 class="text-secondary">Key Activities</h2>
+                <ul class="activity-list">
+                    <li>Policy and governance advocacy for climate-smart laws.</li>
+                    <li>Sustainable land use, forestry, and ecosystem restoration.</li>
+                    <li>Circular economy and waste management initiatives.</li>
+                    <li>Climate finance tracking and innovation support.</li>
+                    <li>Public awareness and community education campaigns.</li>
+                </ul>
+            </div>
+
+            <div class="content-block">
+                <h2 class="text-secondary">Our Work in West Pokot</h2>
+                <p>
+                    We implement specific initiatives tailored to the local semi-arid context, employing community engagement strategies 
+                    to drive adoption of sustainable practices.
+                </p>
+            </div>
+
+            <div class="text-center" style="margin-top: 4rem; padding: 2rem; background: var(--background-light); border-radius: var(--radius-md);">
+                <h3>Join the Climate Movement</h3>
+                <p style="margin-bottom: 1.5rem;">Participate in our climate action activities.</p>
+                <a href="get-involved.html" class="btn btn-secondary">Get Involved</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>VYBE Africa</h4>
+                    <p style="color: #aaa;">Empowering youth in West Pokot.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <a href="about.html">About Us</a>
+                    <a href="work.html">Our Work</a>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p style="color: #aaa;">West Pokot County, Kenya</p>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; <script>document.write(new Date().getFullYear())</script> VYBE Africa.
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

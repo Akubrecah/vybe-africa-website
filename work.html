@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Work - VYBE Africa</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .page-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 160px 0 80px;
+            text-align: center;
+        }
+
+        .work-section {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .work-section:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .work-img {
+            flex: 1;
+            height: 300px;
+            background-color: #ddd;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .work-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-medium);
+        }
+        
+        .work-img:hover img {
+            transform: scale(1.05);
+        }
+
+        .work-content {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .work-section, .work-section:nth-child(even) {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            .work-img {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container navbar">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.png" alt="VYBE Africa Logo">
+                <span>VYBE Africa</span>
+            </a>
+            
+            <button class="hamburger"><i class="fas fa-bars"></i></button>
+            
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="work.html" class="nav-link active">Our Work</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <div class="nav-cta">
+                    <a href="get-involved.html" class="btn btn-primary">Get Involved</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Our Work</h1>
+            <p>Driving change through four key pillars of development.</p>
+        </div>
+    </section>
+
+    <!-- Work Content -->
+    <section class="section-padding">
+        <div class="container">
+            
+            <!-- SRHR -->
+            <div class="work-section">
+                <div class="work-img">
+                    <img src="https://via.placeholder.com/600x400?text=SRHR" alt="SRHR">
+                </div>
+                <div class="work-content">
+                    <div style="color:var(--secondary-color); font-weight:600; margin-bottom:0.5rem;">HEALTH & RIGHTS</div>
+                    <h3>SRHR & Maternal Health</h3>
+                    <p style="margin-bottom: 1.5rem;">
+                        We advocate for sexual and reproductive health rights and better maternal health services to ensure 
+                        young people and women have autonomy over their bodies and lives.
+                    </p>
+                    <a href="srhr.html" class="btn btn-outline" style="border-color:var(--primary-color); color:var(--primary-color);">Explore SRHR Work</a>
+                </div>
+            </div>
+
+            <!-- Climate -->
+            <div class="work-section">
+                <div class="work-img">
+                    <img src="https://via.placeholder.com/600x400?text=Climate" alt="Climate Action">
+                </div>
+                <div class="work-content">
+                    <div style="color:var(--secondary-color); font-weight:600; margin-bottom:0.5rem;">ENVIRONMENT</div>
+                    <h3>Climate Action</h3>
+                    <p style="margin-bottom: 1.5rem;">
+                        Addressing climate change through mitigation, adaptation, and sustainable land use practices 
+                        specifically tailored for the West Pokot context.
+                    </p>
+                    <a href="climate.html" class="btn btn-outline" style="border-color:var(--primary-color); color:var(--primary-color);">Explore Climate Work</a>
+                </div>
+            </div>
+
+            <!-- Child Protection -->
+            <div class="work-section">
+                <div class="work-img">
+                    <img src="https://via.placeholder.com/600x400?text=Child+Protection" alt="Child Protection">
+                </div>
+                <div class="work-content">
+                    <div style="color:var(--secondary-color); font-weight:600; margin-bottom:0.5rem;">SAFETY & RIGHTS</div>
+                    <h3>Child Protection</h3>
+                    <p style="margin-bottom: 1.5rem;">
+                        Protecting children from abuse, neglect, FGM, and early marriage through community awareness 
+                        and robust support systems.
+                    </p>
+                    <a href="child-protection.html" class="btn btn-outline" style="border-color:var(--primary-color); color:var(--primary-color);">Explore Child Protection</a>
+                </div>
+            </div>
+
+            <!-- Governance -->
+            <div class="work-section">
+                <div class="work-img">
+                    <img src="https://via.placeholder.com/600x400?text=Governance" alt="Inclusive Governance">
+                </div>
+                <div class="work-content">
+                    <div style="color:var(--secondary-color); font-weight:600; margin-bottom:0.5rem;">CIVIC ENGAGEMENT</div>
+                    <h3>Inclusive Governance</h3>
+                    <p style="margin-bottom: 1.5rem;">
+                        Ensuring all stakeholders, especially youth and women, have a voice in decision-making and policy formulation.
+                    </p>
+                    <a href="inclusive-governance.html" class="btn btn-outline" style="border-color:var(--primary-color); color:var(--primary-color);">Explore Governance</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>VYBE Africa</h4>
+                    <p style="color: #aaa; font-size: 0.9rem;">Empowering youth in West Pokot.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <a href="about.html">About Us</a>
+                    <a href="work.html">Our Work</a>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p style="color: #aaa;">West Pokot County, Kenya</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; <script>document.write(new Date().getFullYear())</script> VYBE Africa.
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
