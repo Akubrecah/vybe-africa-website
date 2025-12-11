@@ -144,6 +144,16 @@
         transform: translateY(-150%);
         transition: transform 0.3s ease;
         align-items: flex-start;
+        gap: 1.5rem; /* Reset gap for mobile */
+        z-index: 999;
+    }
+
+    /* Force dark text on mobile menu even if header is transparent */
+    .main-header.transparent-header .nav-links .nav-link,
+    .main-header.transparent-header .nav-links .logo span, 
+    .nav-links .nav-link { 
+        color: var(--secondary-color) !important;
+        text-shadow: none;
     }
 
     .nav-links.active {
