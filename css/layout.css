@@ -39,8 +39,9 @@
 
 .nav-links {
     display: flex;
-    gap: 4rem; /* Maximized spacing */
+    gap: 2.5rem; /* Balanced spacing to prevent wrap */
     align-items: center;
+    flex-wrap: nowrap;
 }
 
 .nav-link {
