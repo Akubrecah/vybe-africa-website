@@ -14,81 +14,104 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
     
     <style>
         .page-header {
             background-color: var(--secondary-color);
             color: white;
-            padding: 180px 0 80px; /* Offset for fixed header */
+            padding: 180px 0 80px;
             text-align: center;
         }
 
+        /* Modern Grid Layout */
         .media-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 24px; /* Increased gap for better distribution */
             margin-top: 2rem;
         }
 
         .media-item {
             position: relative;
-            border-radius: 4px;
+            border-radius: 8px; /* Softer, modern radius */
             overflow: hidden;
-            background: #eee;
-            aspect-ratio: 16/9;
+            background: #f0f0f0;
+            aspect-ratio: 4/3; /* Consistent aspect ratio */
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
+        }
+
+        .media-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
         }
 
         .media-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s;
+            transition: transform 0.5s ease;
         }
 
         .media-item:hover img {
             transform: scale(1.05);
         }
         
-        .play-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: rgba(203, 65, 84, 0.9); /* Primary Red */
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            pointer-events: none;
+        /* Video specific styles */
+        .video-item {
+            aspect-ratio: 16/9;
+        }
+        
+        .video-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
+        /* Tabs */
         .tab-nav {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
         }
 
         .tab-btn {
             background: transparent;
             border: none;
             font-family: var(--font-heading);
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #999;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #888;
             padding: 10px 20px;
             cursor: pointer;
-            border-bottom: 3px solid transparent;
+            position: relative;
+            transition: color 0.3s;
+        }
+        
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -17px; /* Align with border-bottom */
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transition: transform 0.3s;
         }
 
         .tab-btn.active {
             color: var(--secondary-color);
-            border-bottom-color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .tab-btn.active::after {
+            transform: scaleX(1);
         }
     </style>
 </head>
@@ -98,7 +121,7 @@
     <header class="main-header">
         <div class="container navbar">
             <a href="index.html" class="logo">
-                <img src="assets/images/logo.png" alt="VYBE Africa Logo">
+                <img src="assets/images/logo.png" alt="VYBE Africa">
                 <span>VYBE Africa</span>
             </a>
             
@@ -121,7 +144,7 @@
     <section class="page-header">
         <div class="container">
             <h1>Gallery & Media</h1>
-            <p>Our stories in photos and videos from across West Pokot.</p>
+            <p>Capturing the impact of our work in West Pokot.</p>
         </div>
     </section>
 
@@ -130,42 +153,69 @@
         <div class="container">
             
             <div class="tab-nav">
-                <button class="tab-btn active" onclick="showTab('photos')">Photos</button>
-                <button class="tab-btn" onclick="showTab('videos')">Videos</button>
+                <button class="tab-btn active" onclick="showTab('photos')">Photo Gallery</button>
+                <button class="tab-btn" onclick="showTab('videos')">Video Library</button>
             </div>
 
             <!-- Photos Grid -->
             <div id="photos" class="media-section">
-                <h3 class="text-center" style="margin-bottom: 2rem; display: none;">Photo Gallery</h3>
                 <div class="media-grid">
-                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=Youth+Dialogue" alt="Photo"></div>
-                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=Climate+Action" alt="Photo"></div>
-                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=Training+Session" alt="Photo"></div>
-                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=Community+Visit" alt="Photo"></div>
-                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=School+Outreach" alt="Photo"></div>
-                    <div class="media-item"><img src="https://via.placeholder.com/800x600?text=Team+Event" alt="Photo"></div>
+                    <!-- Images from user assets -->
+                    <div class="media-item">
+                        <a href="assets/images/gallery/IMG-20251127-WA0024.jpg" data-lightbox="gallery" data-title="Community Engagement"><img src="assets/images/gallery/IMG-20251127-WA0024.jpg" alt="Gallery Photo"></a>
+                    </div>
+                    <div class="media-item">
+                        <a href="assets/images/gallery/IMG-20251211-WA0025.jpg" data-lightbox="gallery"><img src="assets/images/gallery/IMG-20251211-WA0025.jpg" alt="Gallery Photo"></a>
+                    </div>
+                    <div class="media-item">
+                        <a href="assets/images/gallery/IMG-20251211-WA0027.jpg" data-lightbox="gallery"><img src="assets/images/gallery/IMG-20251211-WA0027.jpg" alt="Gallery Photo"></a>
+                    </div>
+                    <div class="media-item">
+                        <a href="assets/images/gallery/IMG-20251211-WA0028.jpg" data-lightbox="gallery"><img src="assets/images/gallery/IMG-20251211-WA0028.jpg" alt="Gallery Photo"></a>
+                    </div>
+                    <div class="media-item">
+                        <a href="assets/images/gallery/IMG-20251211-WA0029.jpg" data-lightbox="gallery"><img src="assets/images/gallery/IMG-20251211-WA0029.jpg" alt="Gallery Photo"></a>
+                    </div>
+                    <div class="media-item">
+                        <a href="assets/images/gallery/IMG-20251211-WA0030.jpg" data-lightbox="gallery"><img src="assets/images/gallery/IMG-20251211-WA0030.jpg" alt="Gallery Photo"></a>
+                    </div>
+                    <div class="media-item">
+                        <a href="assets/images/gallery/IMG-20251211-WA0038.jpg" data-lightbox="gallery"><img src="assets/images/gallery/IMG-20251211-WA0038.jpg" alt="Gallery Photo"></a>
+                    </div>
+                    <div class="media-item">
+                        <a href="assets/images/gallery/IMG-20251211-WA0039.jpg" data-lightbox="gallery"><img src="assets/images/gallery/IMG-20251211-WA0039.jpg" alt="Gallery Photo"></a>
+                    </div>
+                    <div class="media-item">
+                        <a href="assets/images/gallery/WhatsApp Image 2025-12-11 at 17.56.32_9c037dff.jpg" data-lightbox="gallery"><img src="assets/images/gallery/WhatsApp Image 2025-12-11 at 17.56.32_9c037dff.jpg" alt="Gallery Photo"></a>
+                    </div>
+                    <div class="media-item">
+                        <a href="assets/images/gallery/WhatsApp Image 2025-12-11 at 18.05.26_f509d755.jpg" data-lightbox="gallery"><img src="assets/images/gallery/WhatsApp Image 2025-12-11 at 18.05.26_f509d755.jpg" alt="Gallery Photo"></a>
+                    </div>
+                    <div class="media-item">
+                        <a href="assets/images/gallery/IMG-20251211-WA0051.jpg" data-lightbox="gallery"><img src="assets/images/gallery/IMG-20251211-WA0051.jpg" alt="Gallery Photo"></a>
+                    </div>
+                    <div class="media-item">
+                        <a href="assets/images/gallery/IMG-20251211-WA0052.jpg" data-lightbox="gallery"><img src="assets/images/gallery/IMG-20251211-WA0052.jpg" alt="Gallery Photo"></a>
+                    </div>
                 </div>
             </div>
 
             <!-- Videos Grid -->
             <div id="videos" class="media-section" style="display: none;">
-                <h3 class="text-center" style="margin-bottom: 2rem; display: none;">Video Gallery</h3>
                 <div class="media-grid">
                     <!-- Video 1 -->
-                    <div class="media-item">
-                        <img src="https://via.placeholder.com/800x600?text=Video+Thumbnail+1" alt="Video 1">
-                        <div class="play-icon"><i class="fas fa-play"></i></div>
-                        <!-- Use href to lightbox or explicit video tag -->
+                    <div class="media-item video-item" style="height: auto; aspect-ratio: 16/9; background: black;">
+                        <video controls style="width: 100%; height: 100%;">
+                            <source src="assets/images/gallery/WhatsApp Video 2025-12-11 at 18.06.33_5f57e6fc.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
                     </div>
                     <!-- Video 2 -->
-                    <div class="media-item">
-                        <img src="https://via.placeholder.com/800x600?text=Video+Thumbnail+2" alt="Video 2">
-                        <div class="play-icon"><i class="fas fa-play"></i></div>
-                    </div>
-                    <!-- Video 3 -->
-                    <div class="media-item">
-                        <img src="https://via.placeholder.com/800x600?text=Video+Thumbnail+3" alt="Video 3">
-                        <div class="play-icon"><i class="fas fa-play"></i></div>
+                    <div class="media-item video-item" style="height: auto; aspect-ratio: 16/9; background: black;">
+                        <video controls style="width: 100%; height: 100%;">
+                            <source src="assets/images/gallery/WhatsApp Video 2025-12-11 at 18.08.26_b250a91f.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
                     </div>
                 </div>
             </div>
@@ -189,9 +239,10 @@
                     <a href="inclusive-governance.html">Inclusive Governance</a>
                 </div>
                 <div class="footer-col">
-                    <h4>Quick Links</h4>
-                    <a href="about.html">About Us</a>
+                    <h4>About</h4>
+                    <a href="about.html">Who We Are</a>
                     <a href="gallery.html">Gallery</a>
+                    <a href="contact.html">Contact Us</a>
                     <a href="get-involved.html">Get Involved</a>
                 </div>
                 <div class="footer-col">
@@ -209,18 +260,17 @@
         </div>
     </footer>
 
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox-plus-jquery.min.js"></script>
     <script>
         function showTab(tabName) {
-            // Hide all sections
             document.querySelectorAll('.media-section').forEach(el => el.style.display = 'none');
-            // Show target
             document.getElementById(tabName).style.display = 'block';
             
-            // Update nav buttons
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            // This is a simple toggle, for production use event.target or cleaner mapping
-            const index = tabName === 'photos' ? 0 : 1;
-            document.querySelectorAll('.tab-btn')[index].classList.add('active');
+            // Use event.target logic in real app, simplistic approach here:
+            if(tabName === 'photos') document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+            else document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
         }
     </script>
     <script src="js/main.js"></script>
