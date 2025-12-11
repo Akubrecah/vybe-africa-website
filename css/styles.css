@@ -51,7 +51,9 @@ body {
     color: var(--text-color);
     background-color: var(--white);
     -webkit-font-smoothing: antialiased;
-    font-size: 17px; /* Matches reference */
+    font-size: 17px;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -87,10 +89,10 @@ img {
 
 /* Utilities */
 .container {
+    max-width: 1240px;
     width: 100%;
-    max-width: 1240px; /* Specific width from reference */
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 1.5rem; /* Ensure padding prevents edge touching */
 }
 
 .text-center { text-align: center; }
