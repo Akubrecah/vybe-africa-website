@@ -15,36 +15,56 @@
     
     <style>
         .page-header {
-            background-color: var(--secondary-color);
-            color: white;
+            background-color: var(--background-dark);
+            color: var(--text-primary);
             padding: 180px 0 80px;
             text-align: center;
+        }
+        
+        .page-header h1 {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            margin-bottom: 20px;
         }
 
         .involve-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 4rem; /* Increased spacing */
+            gap: 4rem;
             margin-top: 3rem;
         }
 
         .involve-card {
-            background: var(--background-light);
+            background: var(--surface-dark);
             padding: 2rem;
             border-radius: var(--radius-md);
             text-align: center;
-            transition: var(--transition-medium);
+            transition: all 0.3s ease;
+            border: 1px solid var(--surface-hover);
         }
 
         .involve-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
+            border-color: var(--secondary-brand);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .involve-card h3 {
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            margin-bottom: 15px;
+        }
+
+        .involve-card p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
         }
 
         .involve-icon {
             font-size: 2.5rem;
-            color: var(--accent-color);
+            color: var(--primary-brand);
             margin-bottom: 1.5rem;
+            text-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
         }
     </style>
 </head>
