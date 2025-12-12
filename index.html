@@ -319,38 +319,83 @@
         </div>
     </section>
 
-    <!-- Overlapping Focus Cards -->
-    <section class="focus-section">
+    <!-- Focus Areas (Dark Cards) -->
+    <section class="section-padding" style="background: var(--background-dark);">
         <div class="container">
+            <h2 class="section-heading text-center" style="margin-bottom: 4rem;">OUR <span style="color: var(--secondary-brand);">FOCUS</span></h2>
+            
             <div class="focus-grid">
+                <!-- Card 1 -->
                 <div class="focus-card">
-                    <i class="fas fa-heart-pulse focus-icon"></i>
-                    <h3>SRHR & Maternal</h3>
-                    <p>Advocating for health rights.</p>
+                    <div class="focus-icon"><i class="fas fa-heartbeat"></i></div>
+                    <h3>SRHR & Health</h3>
+                    <p>Advocating for reproductive rights and maternal health.</p>
                 </div>
+                <!-- Card 2 -->
                 <div class="focus-card">
-                    <i class="fas fa-leaf focus-icon"></i>
+                    <div class="focus-icon"><i class="fas fa-leaf"></i></div>
                     <h3>Climate Action</h3>
-                    <p>Building resilience together.</p>
+                    <p>Building resilience against climate change.</p>
                 </div>
+                <!-- Card 3 -->
                 <div class="focus-card">
-                    <i class="fas fa-child-reaching focus-icon"></i>
+                    <div class="focus-icon"><i class="fas fa-shield-alt"></i></div>
                     <h3>Child Protection</h3>
-                    <p>Safeguarding our future.</p>
+                    <p>Safe spaces and rights for every child.</p>
                 </div>
+                <!-- Card 4 -->
                 <div class="focus-card">
-                    <i class="fas fa-users-viewfinder focus-icon"></i>
+                    <div class="focus-icon"><i class="fas fa-users"></i></div>
                     <h3>Governance</h3>
-                    <p>Inclusive decision making.</p>
+                    <p>Inclusive decision making and civics.</p>
                 </div>
             </div>
-                <a href="about.html" style="display: inline-block; margin-top: 20px; font-weight: 700; color: var(--primary-color);">READ MORE ABOUT US <i class="fas fa-arrow-right"></i></a>
-            </div>
+
+            <!-- Styles for Focus Cards -->
+            <style>
+                .focus-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 30px;
+                }
+                .focus-card {
+                    background: var(--surface-dark);
+                    border: 1px solid var(--surface-hover);
+                    padding: 40px 30px;
+                    border-radius: var(--radius-lg);
+                    text-align: center;
+                    transition: all 0.4s ease;
+                    position: relative;
+                    overflow: hidden;
+                }
+                .focus-card:hover {
+                    transform: translateY(-10px);
+                    border-color: var(--secondary-brand);
+                    box-shadow: 0 10px 30px rgba(112, 0, 255, 0.2);
+                }
+                .focus-icon {
+                    font-size: 3rem;
+                    background: var(--gradient-brand);
+                    -webkit-background-clip: text;
+                    background-clip: text; /* Fix lint warning */
+                    -webkit-text-fill-color: transparent;
+                    margin-bottom: 20px;
+                }
+                .focus-card h3 {
+                    font-size: 1.5rem;
+                    margin-bottom: 15px;
+                    color: var(--text-primary);
+                }
+                .focus-card p {
+                    color: var(--text-secondary);
+                    font-size: 1rem;
+                }
+            </style>
         </div>
     </section>
 
-    <!-- Impact Stats (Navy Background) -->
-    <section class="impact-section">
+    <!-- Impact Stats (Neon/Dark) -->
+    <section class="section-padding" style="background: var(--surface-dark); border-top: 1px solid var(--surface-hover);">
         <div class="container">
             <div class="stats-grid">
                 <div>
@@ -370,27 +415,78 @@
                     <div class="stat-label">Partners</div>
                 </div>
             </div>
+            
+            <style>
+                .stats-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 30px;
+                    text-align: center;
+                }
+                .stat-number {
+                    font-size: 4rem;
+                    font-family: var(--font-display);
+                    font-weight: 800;
+                    color: white;
+                    text-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+                    margin-bottom: 10px;
+                }
+                .stat-label {
+                    color: var(--text-secondary);
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
+                    font-size: 0.9rem;
+                }
+                @media (max-width: 768px) {
+                    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+                }
+            </style>
         </div>
     </section>
 
-    <section class="section-padding" style="background: #f2f2f2;">
+    <!-- Join Mission (Dark) -->
+    <section class="section-padding" style="background: var(--background-dark);">
         <div class="container">
             <div class="join-mission-flex">
                 <div class="join-mission-item">
-                    <h2>Join Our Mission</h2>
-                    <p style="margin-bottom: 20px;">"When we protect our children today, we are investing in a healthier, safer, stronger, and more engaged West Pokot for tomorrow."</p>
-                    <a href="contact.html" class="btn btn-primary">Partner With Us</a>
+                    <h2 style="font-size: 3rem; margin-bottom: 2rem;">JOIN OUR <br><span style="color: var(--primary-brand)">MISSION</span></h2>
+                    <p style="margin-bottom: 30px; color: var(--text-secondary); font-size: 1.2rem;">"Investing in youth is investing in the future of West Pokot. Partner with us today."</p>
+                    <a href="contact.html" class="btn btn-primary">Establish Partnership</a>
                 </div>
                 <div class="join-mission-item">
-                     <!-- Placeholder for Partner Logos Grid -->
+                     <!-- Partner Logos (Monochrome/Dark) -->
                      <div class="partner-grid">
-                        <img src="https://via.placeholder.com/150x80" alt="Partner">
-                        <img src="https://via.placeholder.com/150x80" alt="Partner">
-                        <img src="https://via.placeholder.com/150x80" alt="Partner">
-                        <img src="https://via.placeholder.com/150x80" alt="Partner">
-                        <img src="https://via.placeholder.com/150x80" alt="Partner">
-                        <img src="https://via.placeholder.com/150x80" alt="Partner">
+                        <div class="partner-logo">LOGO</div>
+                        <div class="partner-logo">LOGO</div>
+                        <div class="partner-logo">LOGO</div>
+                        <div class="partner-logo">LOGO</div>
+                        <div class="partner-logo">LOGO</div>
+                        <div class="partner-logo">LOGO</div>
                      </div>
+                     
+                     <style>
+                        .partner-grid {
+                            display: grid;
+                            grid-template-columns: repeat(3, 1fr);
+                            gap: 20px;
+                        }
+                        .partner-logo {
+                            background: var(--surface-hover);
+                            height: 100px;
+                            border-radius: var(--radius-sm);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: var(--text-muted);
+                            font-weight: 700;
+                            transition: all 0.3s;
+                        }
+                        .partner-logo:hover {
+                            background: var(--surface-dark);
+                            color: white;
+                            border: 1px solid var(--primary-brand);
+                        }
+                     </style>
                 </div>
             </div>
         </div>
