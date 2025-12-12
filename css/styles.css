@@ -187,15 +187,17 @@ img {
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
+    background-color: var(--primary-brand);
     color: white;
-    border-color: var(--primary-color);
+    border-color: var(--primary-brand);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-dark);
-    border-color: var(--primary-dark);
+    background-color: var(--primary-brand);
+    border-color: var(--primary-brand);
     color: white;
+    box-shadow: 0 5px 15px rgba(255, 0, 85, 0.4);
+    transform: translateY(-2px);
 }
 
 .btn-outline {
