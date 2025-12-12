@@ -115,12 +115,18 @@ img {
     align-items: center; 
     justify-content: space-between; 
     flex-wrap: wrap; 
-    gap: 40px;
+/* Responsive Partner Grid */
+.partner-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    opacity: 0.6;
 }
 
-.join-mission-item {
-    flex: 1;
-    min-width: 280px; /* Safer for small screens */
+@media (max-width: 576px) {
+    .partner-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 cols on mobile */
+    }
 }
 
 @media (max-width: 991px) {
