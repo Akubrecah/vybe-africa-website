@@ -94,12 +94,49 @@ img {
     display: block;
 }
 
-/* Utilities */
+/* Container & Grid */
 .container {
     max-width: 1240px;
     width: 100%;
     margin: 0 auto;
     padding: 0 1.5rem; /* Ensure padding prevents edge touching */
+}
+
+/* Responsive Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* Responsive Join Mission Flex */
+.join-mission-flex {
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    flex-wrap: wrap; 
+    gap: 40px;
+}
+
+.join-mission-item {
+    flex: 1;
+    min-width: 280px; /* Safer for small screens */
+}
+
+@media (max-width: 991px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .stats-grid {
+        grid-template-columns: 1fr; /* Stack on mobile */
+    }
+    .join-mission-item {
+        min-width: 100%; /* Full width on mobile */
+    }
 }
 
 .text-center { text-align: center; }
