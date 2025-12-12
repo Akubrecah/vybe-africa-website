@@ -1,61 +1,46 @@
 /* Layout: Header & Footer */
 
 /* Header & Navigation */
-/* Header & Navigation */
+/* Header: QClay Style Glassmorphism */
 .main-header {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1200px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
     z-index: 1000;
-    height: 90px;
-    display: flex;
-    align-items: center;
-    transition: background-color 0.3s ease;
+    padding: 15px 30px;
+    transition: all 0.3s ease;
 }
 
-/* Homepage Transparent Header Override */
-.main-header.transparent-header {
-    background-color: transparent;
-    box-shadow: none;
-    position: absolute; /* Sits on top */
-}
-
-/* Change link colors when header is transparent */
-.main-header.transparent-header .nav-link,
-.main-header.transparent-header .logo span {
-    color: white; 
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3); /* Legibility */
-}
-
-.main-header.transparent-header .logo {
-    color: white;
-}
-
-.main-header.transparent-header .nav-link:hover,
-.main-header.transparent-header .nav-link.active {
-    color: var(--primary-color); /* Keep primary accent on hover */
+.main-header.scrolled {
+    background: rgba(5, 5, 5, 0.8);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 100%;
 }
 
 .logo {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-family: var(--font-heading);
-    font-weight: 700;
+}
+
+.logo span {
+    font-family: var(--font-display);
+    font-weight: 800;
     font-size: 1.5rem;
-    color: var(--secondary-color);
-    text-transform: uppercase;
-    line-height: 1;
+    color: var(--text-primary);
+    letter-spacing: -1px;
 }
 
 .logo img {
@@ -64,9 +49,8 @@
 
 .nav-links {
     display: flex;
-    gap: 3.5rem; /* Further increased spacing */
+    gap: 2rem;
     align-items: center;
-    flex-wrap: nowrap;
 }
 
 .nav-link {
