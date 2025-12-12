@@ -23,7 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Animated Counters
-    const counters = document.querySelectorAll('.counter-number');
+    // Animated Counters
+    const counters = document.querySelectorAll('.stat-number');
     const speed = 200; // The lower the slower
 
     const animateCounters = () => {
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Trigger animation when stats section is in view
-    const statsSection = document.querySelector('.impact-stats');
+    const statsSection = document.querySelector('.stats-grid');
     let animated = false;
 
     if (statsSection) {
