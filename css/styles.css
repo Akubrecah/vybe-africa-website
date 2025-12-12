@@ -115,6 +115,11 @@ img {
     align-items: center; 
     justify-content: space-between; 
     flex-wrap: wrap; 
+.join-mission-item {
+    flex: 1;
+    min-width: 280px; /* Safer for small screens */
+}
+
 /* Responsive Partner Grid */
 .partner-grid {
     display: grid;
