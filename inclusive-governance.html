@@ -15,40 +15,82 @@
     
     <style>
         .page-header {
-            background: var(--secondary-color);
-            color: white;
+            background-color: var(--background-dark);
+            color: var(--text-primary);
             padding: 180px 0 80px;
             text-align: center;
         }
+        
+        .page-header h1 {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
 
-        .highlight-box {
-            background-color: var(--background-light);
-            padding: 2rem;
+        .content-block {
+            margin-bottom: 60px;
+        }
+
+        .content-block h2 {
+            color: var(--primary-brand);
+            margin-bottom: 20px;
+            font-family: var(--font-display);
+            font-size: 2rem;
+        }
+        
+        .content-block p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .stat-box {
+            background: var(--surface-dark);
+            padding: 30px;
             border-radius: var(--radius-md);
-            margin-bottom: 2rem;
-        }
-
-        .principles-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .principle-item {
-            background: white;
-            padding: 1rem;
+            border: 1px solid var(--surface-hover);
             text-align: center;
-            box-shadow: var(--shadow-sm);
-            font-weight: 500;
-            color: var(--primary-color);
+            margin-top: 30px;
         }
 
-        .barriers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
+        .stat-box h3 {
+            font-size: 3rem;
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            margin-bottom: 10px;
+        }
+        
+        .stat-box p { font-size: 1rem; color: var(--text-muted); }
+        
+        .sidebar-card {
+            background: var(--surface-dark);
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--surface-hover);
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-card h4 {
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            border-bottom: 1px solid var(--surface-hover);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 15px;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            transition: all 0.3s;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: var(--surface-hover);
+            color: var(--primary-brand);
+            padding-left: 20px;
         }
     </style>
 </head>
