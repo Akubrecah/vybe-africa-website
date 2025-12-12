@@ -280,6 +280,15 @@ img {
     filter: drop-shadow(0 2px 10px rgba(0,0,0,0.3));
 }
 
+.text-gradient-brand {
+    background: var(--gradient-brand); /* Pink/Purple Gradient */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    filter: drop-shadow(0 2px 10px rgba(112, 0, 255, 0.3));
+}
+
 .hero-header-style h1 {
     font-size: 5rem;
     line-height: 1;
