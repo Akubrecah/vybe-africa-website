@@ -232,6 +232,7 @@
     justify-content: center;
     color: white;
     transition: var(--transition);
+    margin-bottom: 0; /* Override generic .footer-col a margin */
 }
 
 .social-icon:hover {
