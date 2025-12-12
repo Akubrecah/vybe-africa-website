@@ -130,17 +130,18 @@
         top: 90px;
         left: 0;
         width: 100%;
-        background: white;
+        background: var(--surface-dark); /* Dark background for white text */
         flex-direction: column;
         padding: 2rem;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.5); /* Stronger shadow */
         transform: translateY(-150%);
         transition: transform 0.3s ease;
         align-items: flex-start;
-        gap: 1.5rem; /* Reset gap for mobile */
+        gap: 1.5rem;
         z-index: 9999;
-        height: calc(100vh - 90px); /* Full height */
+        height: calc(100vh - 90px);
         overflow-y: auto;
+        border-top: 1px solid var(--surface-hover);
     }
 
     /* Force dark text on mobile menu even if header is transparent */
