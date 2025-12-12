@@ -9,8 +9,8 @@
     transform: translateX(-50%);
     width: 90%;
     max-width: 1200px;
-    background: rgba(5, 5, 5, 0.7); /* Slightly darker default for contrast */
-    backdrop-filter: blur(15px); /* Stronger blur */
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     z-index: 9999; /* Ensure top */
@@ -19,9 +19,10 @@
 }
 
 .main-header.scrolled {
-    background: rgba(5, 5, 5, 0.95);
+    background: var(--background-dark); /* Solid background on scroll */
     border-color: var(--primary-brand);
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    opacity: 0.98;
 }
 
 .navbar {
