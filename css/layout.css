@@ -90,22 +90,13 @@
 }
 
 .nav-cta .btn {
-    font-size: 0.95rem;
-    padding: 12px 30px;
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 50px;
-    text-transform: uppercase;
-    font-weight: 700;
-    border: none;
-    transition: background 0.3s;
+    /* Inherits from .btn and .btn-primary */
+    font-size: 0.9rem; /* Slight adjust for header */
 }
 
 .nav-cta .btn:hover {
-    background-color: var(--secondary-brand);
-    color: white;
+    /* Inherits hover from .btn-primary */
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(112, 0, 255, 0.3);
 }
 
 .btn-icon {
