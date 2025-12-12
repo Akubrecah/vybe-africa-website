@@ -64,6 +64,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         observer.observe(statsSection);
     }
+
+    // Scroll Animations (Fade Up)
+    const fadeElements = document.querySelectorAll('.animate-fade-up');
+    const fadeObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                // Optional: Stop observing after animation
+                fadeObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    fadeElements.forEach(el => fadeObserver.observe(el));
     // Theme Toggle Logic
     const themeToggleBtn = document.getElementById('theme-toggle');
     const body = document.body;
