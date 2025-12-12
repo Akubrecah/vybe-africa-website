@@ -60,10 +60,10 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading);
+    font-family: var(--font-display);
     font-weight: 700;
-    color: var(--secondary-color); /* Navy headings */
-    line-height: var(--heading-line-height);
+    color: var(--text-primary);
+    line-height: 1.2;
     margin-bottom: 1rem;
 }
 
@@ -76,12 +76,12 @@ h6 { font-size: 17px; }
 
 a {
     text-decoration: none;
-    color: var(--secondary-color);
-    transition: var(--transition);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
 }
 
 a:hover {
-    color: var(--primary-color);
+    color: var(--primary-brand);
 }
 
 img {
