@@ -222,21 +222,23 @@
     margin-top: 1rem;
 }
 
-.social-icon {
+/* Higher specificity to override .footer-col a */
+.footer-col .social-icon {
     width: 36px;
     height: 36px;
     background: rgba(255,255,255,0.1);
     border-radius: 50%;
-    display: flex;
+    display: flex; /* Restores flex centering */
     align-items: center;
     justify-content: center;
     color: white;
     transition: var(--transition);
-    margin-bottom: 0; /* Override generic .footer-col a margin */
+    margin-bottom: 0; 
 }
 
-.social-icon:hover {
+.footer-col .social-icon:hover {
     background: var(--primary-color);
+    color: white;
 }
 
 .copyright {
