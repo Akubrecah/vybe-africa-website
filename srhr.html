@@ -15,42 +15,82 @@
     
     <style>
         .page-header {
-            background: var(--secondary-color);
-            color: white;
+            background-color: var(--background-dark);
+            color: var(--text-primary);
             padding: 180px 0 80px;
             text-align: center;
         }
+        
+        .page-header h1 {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
 
         .content-block {
-            margin-bottom: 3rem;
+            margin-bottom: 60px;
         }
 
-        .challenge-list {
-            list-style: none;
-            margin-top: 1rem;
+        .content-block h2 {
+            color: var(--primary-brand);
+            margin-bottom: 20px;
+            font-family: var(--font-display);
+            font-size: 2rem;
+        }
+        
+        .content-block p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
         }
 
-        .challenge-list li {
-            margin-bottom: 1rem;
-            padding-left: 1.5rem;
-            position: relative;
+        .stat-box {
+            background: var(--surface-dark);
+            padding: 30px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--surface-hover);
+            text-align: center;
+            margin-top: 30px;
         }
 
-        .challenge-list li::before {
-            content: '\f071';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            color: var(--accent-color);
-            position: absolute;
-            left: 0;
-            top: 2px;
+        .stat-box h3 {
+            font-size: 3rem;
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            margin-bottom: 10px;
         }
-
-        .solution-card {
-            background: var(--background-light);
-            padding: 1.5rem;
-            border-left: 4px solid var(--secondary-color);
-            margin-bottom: 1rem;
+        
+        .stat-box p { font-size: 1rem; color: var(--text-muted); }
+        
+        .sidebar-card {
+            background: var(--surface-dark);
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--surface-hover);
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-card h4 {
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            border-bottom: 1px solid var(--surface-hover);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 15px;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            transition: all 0.3s;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: var(--surface-hover);
+            color: var(--primary-brand);
+            padding-left: 20px;
         }
     </style>
 </head>
