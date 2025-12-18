@@ -296,17 +296,18 @@
         }
 
         @media (max-width: 1024px) {
-           body { flex-direction: column; height: auto; }
-            .sidebar { width: 100%; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border-glass); }
+           body { flex-direction: column; min-height: 100vh; height: auto; overflow-y: auto; overflow-x: hidden; }
+            .sidebar { width: 100%; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border-glass); overflow-x: auto; }
             .nav-link { display: inline-flex; padding: 8px 12px; margin: 0 0.25rem 0.5rem 0; font-size: 0.85rem; }
-            .main { padding: 1.5rem 1rem; overflow-y: visible; }
+            .main { padding: 1.5rem 1rem; overflow-y: auto; height: auto; max-width: 100vw; }
             .metrics-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
             .charts-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
             h1 { font-size: 1.5rem; }
             .metrics-grid { grid-template-columns: 1fr 1fr; }
-            table { font-size: 0.85rem; }
+            table { font-size: 0.85rem; width: 100%; }
+            .main { max-width: 100vw; overflow-x: hidden; }
         }
         @media (max-width: 480px) {
             .metrics-grid { grid-template-columns: 1fr; }

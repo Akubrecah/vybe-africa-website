@@ -33,8 +33,8 @@
             background: var(--bg-deep);
             color: var(--text-primary);
             display: flex;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
             background-image: radial-gradient(circle at top right, #0a2e1e 0%, transparent 40%);
         }
 
@@ -203,19 +203,20 @@
 
         /* Mobile Responsive */
         @media (max-width: 1024px) {
-           body { flex-direction: column; height: auto; }
-            .sidebar { width: 100%; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border-glass); }
+           body { flex-direction: column; min-height: 100vh; height: auto; overflow-y: auto; overflow-x: hidden; }
+            .sidebar { width: 100%; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border-glass); overflow-x: auto; }
             .nav-link { display: inline-flex; padding: 8px 12px; margin: 0 0.25rem 0.5rem 0; font-size: 0.85rem; }
-            .main { padding: 1.5rem 1rem; overflow-y: visible; }
+            .main { padding: 1.5rem 1rem; overflow-y: auto; height: auto; max-width: 100vw; }
             .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
             .dashboard-grid { grid-template-columns: 1fr; }
-            #map { height: 300px; }
+            #map { height: 300px; width: 100%; }
         }
         @media (max-width: 768px) {
-            .sidebar { overflow-x: auto; }
+            .sidebar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
             h1 { font-size: 1.5rem; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
             .team-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+            .main { max-width: 100vw; overflow-x: hidden; }
         }
         @media (max-width: 480px) {
             .stats-grid { grid-template-columns: 1fr; }
