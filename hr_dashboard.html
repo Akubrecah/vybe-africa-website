@@ -419,82 +419,85 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
 
     <script>
-        // Initialize Supabase
-        const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("HR Dashboard: DOM loaded");
+            
+            // Initialize Supabase
+            const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Auth / Basic Setup
-        document.getElementById('logout-btn').addEventListener('click', () => {
-             window.location.href = 'login.html';
-        });
-
-        const userName = localStorage.getItem('name');
-        if(userName) document.getElementById('user-name').innerText = userName.split(' ')[0];
-
-        // Nav Logic
-        function showSection(name) {
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            if(event && event.currentTarget) event.currentTarget.classList.add('active');
-
-            // Hide all sections first
-            document.getElementById('dashboard-section').style.display = 'none';
-            ['view-employee', 'view-calendar', 'view-payroll', 'view-reports', 'view-recruitment'].forEach(id => {
-                document.getElementById(id).style.display = 'none';
+            // Auth / Basic Setup
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                 window.location.href = 'login.html';
             });
 
-            // Show selected
-            if(name === 'dashboard') {
-                document.getElementById('dashboard-section').style.display = 'block';
-            } else {
-                const target = document.getElementById('view-' + name);
-                if(target) target.style.display = 'block';
-                if(name === 'employee') loadEmployees();
-            }
-        }
+            const userName = localStorage.getItem('name');
+            if(userName) document.getElementById('user-name').innerText = userName.split(' ')[0];
 
-        async function loadEmployees() {
-            try {
-                const { data: users, error } = await supabase.from('users').select('*');
-                if(error) throw error;
-                
-                const rows = users.map(u => `
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <td style="padding:15px;">
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <div style="width:30px; height:30px; background:var(--accent-yellow); color:black; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.name.charAt(0)}</div>
-                                <strong>${u.name}</strong>
-                            </div>
-                        </td>
-                        <td>${u.designation}</td>
-                        <td><span style="background:rgba(16, 185, 129, 0.2); color:#10b981; padding:4px 8px; border-radius:4px; font-size:0.8rem;">Active</span></td>
-                        <td>${u.email}</td>
-                        <td>
-                            <button onclick="deleteUser('${u.id}')" style="color:#ef4444; background:none; border:none; cursor:pointer;" title="Remove User"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `).join('');
-                document.getElementById('employee-table-body').innerHTML = rows;
-            } catch(e) { 
-                console.error(e); 
-                document.getElementById('employee-table-body').innerHTML = '<tr><td colspan="4" style="padding:20px; text-align:center;">Failed to load data users.</td></tr>';
-            }
-        }
+            // Nav Logic - make it global so onclick works
+            window.showSection = function(name) {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                if(event && event.currentTarget) event.currentTarget.classList.add('active');
 
-        async function addUser(e) {
-             // You can implement add user modal for HR if needed, usually HR just views.
-             // But if specific request, we can add. For now, just fixing the view list.
-             alert("Contact Admin to add new employees."); // Simplified for HR view unless requested
-        }
-        
-        async function deleteUser(id) {
-             if(!confirm('Delete this user?')) return;
-             try {
-                 const { error } = await supabase.from('users').delete().eq('id', id);
-                 if(error) throw error;
-                 loadEmployees();
-             } catch(e) { alert('Action failed'); }
-        }
+                // Hide all sections first
+                document.getElementById('dashboard-section').style.display = 'none';
+                ['view-employee', 'view-calendar', 'view-payroll', 'view-reports', 'view-recruitment'].forEach(id => {
+                    document.getElementById(id).style.display = 'none';
+                });
+
+                // Show selected
+                if(name === 'dashboard') {
+                    document.getElementById('dashboard-section').style.display = 'block';
+                } else {
+                    const target = document.getElementById('view-' + name);
+                    if(target) target.style.display = 'block';
+                    if(name === 'employee') loadEmployees();
+                }
+            };
+
+            async function loadEmployees() {
+                try {
+                    const { data: users, error } = await supabase.from('users').select('*');
+                    if(error) throw error;
+                    
+                    const rows = users.map(u => `
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <td style="padding:15px;">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <div style="width:30px; height:30px; background:var(--accent-yellow); color:black; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.name.charAt(0)}</div>
+                                    <strong>${u.name}</strong>
+                                </div>
+                            </td>
+                            <td>${u.designation}</td>
+                            <td><span style="background:rgba(16, 185, 129, 0.2); color:#10b981; padding:4px 8px; border-radius:4px; font-size:0.8rem;">Active</span></td>
+                            <td>${u.email}</td>
+                            <td>
+                                <button onclick="deleteUser('${u.id}')" style="color:#ef4444; background:none; border:none; cursor:pointer;" title="Remove User"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `).join('');
+                    document.getElementById('employee-table-body').innerHTML = rows;
+                } catch(e) { 
+                    console.error(e); 
+                    document.getElementById('employee-table-body').innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center;">Failed to load data users.</td></tr>';
+                }
+            }
+
+            window.addUser = async function(e) {
+                 // You can implement add user modal for HR if needed, usually HR just views.
+                 // But if specific request, we can add. For now, just fixing the view list.
+                 alert("Contact Admin to add new employees."); // Simplified for HR view unless requested
+            };
+            
+            window.deleteUser = async function(id) {
+                 if(!confirm('Delete this user?')) return;
+                 try {
+                     const { error } = await supabase.from('users').delete().eq('id', id);
+                     if(error) throw error;
+                     loadEmployees();
+                 } catch(e) { alert('Action failed'); }
+            };
 
         // --- ATTENDANCE CHART (Donut) ---
         new Chart(document.getElementById('attnChart'), {
