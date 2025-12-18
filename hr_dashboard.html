@@ -499,46 +499,47 @@
                  } catch(e) { alert('Action failed'); }
             };
 
-        // --- ATTENDANCE CHART (Donut) ---
-        new Chart(document.getElementById('attnChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Present', 'Leave'],
-                datasets: [{
-                    data: [70, 30],
-                    backgroundColor: ['#000', '#ffffff'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                cutout: '60%',
-                plugins: { legend: { display: false } }
-            }
-        });
-
-        // --- KPI CHART (Bar Mix) ---
-        new Chart(document.getElementById('kpiChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov'],
-                datasets: [{
-                    label: 'KPI',
-                    data: [40, 50, 45, 60, 55, 70, 65, 80, 75, 60, 85],
-                    backgroundColor: (ctx) => {
-                        return ctx.raw > 70 ? '#facc15' : '#ffffff'; // Highlight high scores
-                    },
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                scales: {
-                    y: { display: false, grid: { display: false } },
-                    x: { grid: { display: false }, ticks: { color: '#666' } }
+            // --- ATTENDANCE CHART (Donut) ---
+            new Chart(document.getElementById('attnChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Present', 'Leave'],
+                    datasets: [{
+                        data: [70, 30],
+                        backgroundColor: ['#000', '#ffffff'],
+                        borderWidth: 0
+                    }]
                 },
-                plugins: { legend: { display: false } },
-                maintainAspectRatio: false
-            }
-        });
+                options: {
+                    cutout: '60%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // --- KPI CHART (Bar Mix) ---
+            new Chart(document.getElementById('kpiChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov'],
+                    datasets: [{
+                        label: 'KPI',
+                        data: [40, 50, 45, 60, 55, 70, 65, 80, 75, 60, 85],
+                        backgroundColor: (ctx) => {
+                            return ctx.raw > 70 ? '#facc15' : '#ffffff'; // Highlight high scores
+                        },
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { display: false, grid: { display: false } },
+                        x: { grid: { display: false }, ticks: { color: '#666' } }
+                    },
+                    plugins: { legend: { display: false } },
+                    maintainAspectRatio: false
+                }
+            });
+        }); // Close DOMContentLoaded
     </script>
 </body>
 </html>
