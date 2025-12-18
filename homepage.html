@@ -419,6 +419,31 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script>
+        // Fetch Latest News
+        async function fetchNews() {
+            try {
+                const res = await fetch('http://localhost:5000/api/posts');
+                const posts = await res.json();
+                
+                const container = document.getElementById('latest-posts');
+                if(!posts.length) {
+                    container.innerHTML = '<p style="color:var(--text-secondary);">No updates yet.</p>';
+                    return;
+                }
+
+                container.innerHTML = posts.slice(0, 3).map(post => `
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                        <span class="role-tag" style="margin-left:0; margin-bottom:10px; display:inline-block;">${post.category}</span>
+                        <h3 style="color:white; margin-bottom:0.5rem; font-size:1.2rem;">${post.title}</h3>
+                        <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:1rem;">${post.content}</p>
+                        <small style="color:var(--text-muted);">By ${post.authorName} • ${new Date(post.date).toLocaleDateString()}</small>
+                    </div>
+                `).join('');
+            } catch(err) { console.error('Failed to load news', err); }
+        }
+        fetchNews();
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/js/glightbox.min.js"></script>
     <script>

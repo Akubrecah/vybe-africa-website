@@ -21,6 +21,8 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes (Placeholder)
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/posts', require('./routes/posts'));
+app.use('/api/hr', require('./routes/hr'));
 
 // Serve Frontend
 app.get('/', (req, res) => {

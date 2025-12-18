@@ -120,11 +120,11 @@
         <form id="login-form">
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" class="form-control" required>
+                <input type="email" id="email" class="form-control" value="sharon@vybe.org" required>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" class="form-control" required>
+                <input type="password" id="password" class="form-control" value="password123" required>
             </div>
             <button type="submit" class="btn-login">Sign In</button>
         </form>
@@ -140,7 +140,8 @@
             const password = document.getElementById('password').value;
 
             try {
-                const res = await fetch('/api/auth/login', {
+                // Use absolute URL to allow cross-port requests (e.g. from Live Server)
+                const res = await fetch('http://localhost:5000/api/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

@@ -197,70 +197,105 @@
             }
         }
 
-        function renderRoleTools(user) {
+        // Render Role-Specific Tools
+        async function renderRoleTools(user) {
             const card = document.getElementById('role-tools-card');
             const title = document.getElementById('role-tools-title');
             const content = document.getElementById('role-tools-content');
             const designation = (user.designation || '').toLowerCase();
             
-            let toolsHtml = '';
             let toolTitle = 'Work Tools';
             let icon = 'fa-briefcase';
+            let toolsHtml = '';
+
+            // CMS Section (Available to all)
+            const cmsSection = `
+                <div style="margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
+                    <h4 style="color:white; margin-bottom:1rem;"><i class="fas fa-pen-nib"></i> Create News Update</h4>
+                    <form id="cms-form" style="display:grid; gap:10px;">
+                        <input type="text" id="post-title" class="form-control" placeholder="Title (e.g. New Partnership)" required>
+                        <textarea id="post-content" class="form-control" rows="3" placeholder="Content details..." required></textarea>
+                        <select id="post-category" class="form-control">
+                            <option value="News">News</option>
+                            <option value="Event">Event</option>
+                        </select>
+                        <button type="submit" class="btn-action" style="width:100%;">Publish to Homepage</button>
+                    </form>
+                </div>
+            `;
 
             // Logic for Roles
             if (designation.includes('hr') || designation.includes('human resource')) {
                 toolTitle = 'HR Portal';
                 icon = 'fa-users-cog';
+                
+                // Fetch Apps (Trigger seed if empty first time in prod, but here we assume seed)
+                let appsHtml = '<p>Loading applicants...</p>';
+                try {
+                    const res = await fetch('/api/hr/applications', { headers: { 'x-auth-token': token } });
+                    const apps = await res.json();
+                    if(apps.length === 0) {
+                        await fetch('/api/hr/seed-applicants', { method: 'POST', headers: { 'x-auth-token': token } });
+                        const seedRes = await fetch('/api/hr/applications', { headers: { 'x-auth-token': token } });
+                        const seedApps = await seedRes.json();
+                        appsHtml = renderAppsList(seedApps);
+                    } else {
+                        appsHtml = renderAppsList(apps);
+                    }
+                } catch(e) { appsHtml = '<p class="error-msg">Error loading data</p>'; }
+
                 toolsHtml = `
-                    <p>Manage employee records and payroll.</p>
-                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-                        <a href="#" class="btn-action" style="background: rgba(255, 0, 85, 0.2);">Generate Payslips</a>
-                        <a href="#" class="btn-action" style="background: rgba(255, 0, 85, 0.2);">Review Applications</a>
+                    ${cmsSection}
+                    <h4 style="color:var(--primary-brand); margin-bottom:1rem;">Recruitment & Payroll</h4>
+                    <div style="background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px;">
+                        <h5 style="color:white; margin-bottom:0.5rem;">Job Applications</h5>
+                        ${appsHtml}
                     </div>
-                `;
-            } else if (designation.includes('program') || designation.includes('project')) {
-                toolTitle = 'Project Management';
-                icon = 'fa-project-diagram';
-                toolsHtml = `
-                    <p>Track active projects and deliverables.</p>
-                    <div style="margin-top: 15px;">
-                        <a href="#" class="btn-action">Update Project Status</a>
-                        <a href="#" class="btn-action">Budget Requests</a>
-                    </div>
-                `;
-            } else if (designation.includes('communication') || designation.includes('media')) {
-                toolTitle = 'Media Center';
-                icon = 'fa-bullhorn';
-                toolsHtml = `
-                    <p>Manage social media and internal comms.</p>
-                    <div style="margin-top: 15px;">
-                        <a href="#" class="btn-action">Create Campaign</a>
-                        <a href="#" class="btn-action">Upload Assets</a>
-                    </div>
-                `;
-            } else if (designation.includes('monitor') || designation.includes('m&e')) {
-                toolTitle = 'Data & Reporting';
-                icon = 'fa-chart-line';
-                toolsHtml = `
-                    <p>Track impact metrics and generate reports.</p>
-                    <div style="margin-top: 15px;">
-                        <a href="#" class="btn-action">Input Data</a>
-                        <a href="#" class="btn-action">Export Reports</a>
+                    <div style="margin-top:1rem;">
+                         <button class="btn-action" onclick="alert('Payroll Module Loading...')"><i class="fas fa-file-invoice-dollar"></i> Manage Payroll</button>
                     </div>
                 `;
             } else {
-                // Default View
+                // Generic View for others
                 toolsHtml = `
-                    <p>Access general staff resources and files.</p>
-                    <div style="margin-top: 15px;">
-                        <a href="#" class="btn-action">View Handbook</a>
-                    </div>
+                    ${cmsSection}
+                    <p style="color:var(--text-secondary);">Role-specific tools for <strong>${user.designation}</strong> are being configured.</p>
                 `;
             }
 
             title.innerHTML = `<i class="fas ${icon}"></i> ${toolTitle}`;
             content.innerHTML = toolsHtml;
             card.style.display = 'block';
+
+            // Bind CMS Form
+            document.getElementById('cms-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('post-title').value;
+                const body = document.getElementById('post-content').value;
+                const cat = document.getElementById('post-category').value;
+
+                try {
+                    const res = await fetch('/api/posts', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                        body: JSON.stringify({ title, content: body, category: cat })
+                    });
+                    if(res.ok) {
+                        alert('Post Published!');
+                        e.target.reset();
+                    }
+                } catch(err) { console.error(err); }
+            });
+        }
+
+        function renderAppsList(apps) {
+            if(!apps.length) return '<p>No pending applications.</p>';
+            return apps.map(app => `
+                <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span><strong style="color:white;">${app.applicantName}</strong> <small>(${app.position})</small></span>
+                    <span class="role-tag">${app.status}</span>
+                </div>
+            `).join('');
         }
 
         fetchProfile();

@@ -77,8 +77,9 @@ router.post('/login', async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+        console.error('LOGIN ERROR:', err);
+        console.log('JWT_SECRET present:', !!process.env.JWT_SECRET);
+        res.status(500).send('Server error: ' + err.message);
     }
 });
 
