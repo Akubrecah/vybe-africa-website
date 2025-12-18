@@ -177,6 +177,7 @@
                 localStorage.setItem('token', 'fakesessiontoken'); // No real JWT needed for public site logic usually, or use user.id
                 localStorage.setItem('role', user.role);
                 localStorage.setItem('name', user.name);
+                localStorage.setItem('user_id', user.id); // Storing ID for dashboards to fetch profile
 
                 const designation = (user.designation || '').toLowerCase();
                 const role = user.role;

@@ -413,7 +413,17 @@
 
     </main>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Supabase & Bcrypt -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+
     <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
         // Auth / Basic Setup
         document.getElementById('logout-btn').addEventListener('click', () => {
              window.location.href = 'login.html';
@@ -422,7 +432,6 @@
         const userName = localStorage.getItem('name');
         if(userName) document.getElementById('user-name').innerText = userName.split(' ')[0];
 
-        // Nav Logic
         // Nav Logic
         function showSection(name) {
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -446,8 +455,8 @@
 
         async function loadEmployees() {
             try {
-                const res = await fetch('/api/users', { headers: { 'x-auth-token': localStorage.getItem('token') } });
-                const users = await res.json();
+                const { data: users, error } = await supabase.from('users').select('*');
+                if(error) throw error;
                 
                 const rows = users.map(u => `
                     <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
@@ -460,6 +469,9 @@
                         <td>${u.designation}</td>
                         <td><span style="background:rgba(16, 185, 129, 0.2); color:#10b981; padding:4px 8px; border-radius:4px; font-size:0.8rem;">Active</span></td>
                         <td>${u.email}</td>
+                        <td>
+                            <button onclick="deleteUser('${u.id}')" style="color:#ef4444; background:none; border:none; cursor:pointer;" title="Remove User"><i class="fas fa-trash"></i></button>
+                        </td>
                     </tr>
                 `).join('');
                 document.getElementById('employee-table-body').innerHTML = rows;
@@ -467,6 +479,21 @@
                 console.error(e); 
                 document.getElementById('employee-table-body').innerHTML = '<tr><td colspan="4" style="padding:20px; text-align:center;">Failed to load data users.</td></tr>';
             }
+        }
+
+        async function addUser(e) {
+             // You can implement add user modal for HR if needed, usually HR just views.
+             // But if specific request, we can add. For now, just fixing the view list.
+             alert("Contact Admin to add new employees."); // Simplified for HR view unless requested
+        }
+        
+        async function deleteUser(id) {
+             if(!confirm('Delete this user?')) return;
+             try {
+                 const { error } = await supabase.from('users').delete().eq('id', id);
+                 if(error) throw error;
+                 loadEmployees();
+             } catch(e) { alert('Action failed'); }
         }
 
         // --- ATTENDANCE CHART (Donut) ---

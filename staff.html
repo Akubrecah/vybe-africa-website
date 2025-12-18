@@ -149,10 +149,17 @@
         </div>
     </div>
 
+    <!-- Supabase & Bcrypt -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
         // Auth Check
-        const token = localStorage.getItem('token');
-        if (!token) window.location.href = 'login.html';
+        const userId = localStorage.getItem('user_id');
+        if (!userId) window.location.href = 'login.html';
 
         // Logout
         document.getElementById('logout-btn').addEventListener('click', () => {
@@ -160,22 +167,16 @@
             window.location.href = 'login.html';
         });
 
-        // Fetch User Data
+        // Fetch User Data (Direct Supabase)
         async function fetchProfile() {
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 sec timeout
-
-                const res = await fetch('/api/users/me', {
-                    headers: { 'x-auth-token': token },
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
+                const { data: user, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
                 
-                if (!res.ok) throw new Error('Failed to fetch profile: ' + res.status);
-                
-                const user = await res.json();
-                if (!user) throw new Error('User data empty');
+                if (error || !user) throw new Error('User not found');
 
                 console.log('User fetched:', user); // Debug
 
@@ -222,10 +223,6 @@
                     <div class="profile-field">
                         <div class="profile-label">Designation</div>
                         <div class="profile-value">${user.designation}</div>
-                    </div>
-                    <div class="profile-field">
-                        <div class="profile-label">Joined</div>
-                        <div class="profile-value">${new Date(user.date).toLocaleDateString()}</div>
                     </div>
                 `;
 
