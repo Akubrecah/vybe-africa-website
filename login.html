@@ -135,70 +135,97 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
 
     <script>
-        // Initialize Supabase
-        const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-        const loginForm = document.getElementById('login-form');
-        const errorMsg = document.getElementById('error-msg');
-        const btnLogin = document.querySelector('.btn-login');
-
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            // Loading State
-            btnLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
-            btnLogin.disabled = true;
-            errorMsg.style.display = 'none';
-
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM loaded");
+            
+            // Initialize Supabase
+            const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
+            
+            let supabase;
             try {
-                // 1. Fetch User by Email
-                const { data: user, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('email', email)
-                    .single();
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                console.log("Supabase initialized");
+            } catch(err) {
+                console.error("Supabase init failed:", err);
+            }
 
-                if (error || !user) {
-                    throw new Error("Invalid Credentials");
-                }
+            const loginForm = document.getElementById('login-form');
+            const errorMsg = document.getElementById('error-msg');
+            const btnLogin = document.querySelector('.btn-login');
 
-                // 2. Verify Password (Client-side)
-                const isMatch = dcodeIO.bcrypt.compareSync(password, user.password);
-                
-                if (!isMatch) {
-                    throw new Error("Invalid Credentials");
-                }
+            if(loginForm) {
+                console.log("Form found, attaching listener");
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    console.log("Submit intercepted");
+                    
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
 
-                // 3. Success Login
-                localStorage.setItem('token', 'fakesessiontoken'); // No real JWT needed for public site logic usually, or use user.id
-                localStorage.setItem('role', user.role);
-                localStorage.setItem('name', user.name);
-                localStorage.setItem('user_id', user.id); // Storing ID for dashboards to fetch profile
+                    // Loading State
+                    btnLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                    btnLogin.disabled = true;
+                    errorMsg.style.display = 'none';
 
-                const designation = (user.designation || '').toLowerCase();
-                const role = user.role;
+                    try {
+                        // 1. Fetch User by Email
+                        console.log("Fetching user...");
+                        const { data: user, error } = await supabase
+                            .from('users')
+                            .select('*')
+                            .eq('email', email)
+                            .single();
+                        
+                        console.log("User fetch result:", user, error);
 
-                // 4. Redirect
-                setTimeout(() => {
-                    if (role === 'superadmin' || designation.includes('executive')) {
-                        window.location.href = 'admin_dashboard.html';
-                    } else if (designation.includes('hr') || designation.includes('human resource')) {
-                        window.location.href = 'hr_dashboard.html';
-                    } else {
-                        window.location.href = 'staff.html';
+                        if (error || !user) {
+                            throw new Error("Invalid Credentials (User not found)");
+                        }
+
+                        // 2. Verify Password (Client-side)
+                        // Verify bcrypt is loaded
+                        if (typeof dcodeIO === 'undefined' || !dcodeIO.bcrypt) {
+                            throw new Error("Encryption library missing. Please refresh.");
+                        }
+
+                        const isMatch = dcodeIO.bcrypt.compareSync(password, user.password);
+                        
+                        if (!isMatch) {
+                            throw new Error("Invalid Credentials (Password mismatch)");
+                        }
+
+                        // 3. Success Login
+                        console.log("Login success");
+                        localStorage.setItem('token', 'fakesessiontoken'); 
+                        localStorage.setItem('role', user.role);
+                        localStorage.setItem('name', user.name);
+                        localStorage.setItem('user_id', user.id); 
+
+                        const designation = (user.designation || '').toLowerCase();
+                        const role = user.role;
+
+                        // 4. Redirect
+                        setTimeout(() => {
+                            if (role === 'superadmin' || designation.includes('executive')) {
+                                window.location.href = 'admin_dashboard.html';
+                            } else if (designation.includes('hr') || designation.includes('human resource')) {
+                                window.location.href = 'hr_dashboard.html';
+                            } else {
+                                window.location.href = 'staff.html';
+                            }
+                        }, 1000);
+
+                    } catch (err) {
+                        console.error(err);
+                        btnLogin.innerHTML = 'Sign In';
+                        btnLogin.disabled = false;
+                        errorMsg.textContent = err.message || 'Login failed';
+                        errorMsg.style.display = 'block';
                     }
-                }, 1000);
-
-            } catch (err) {
-                console.error(err);
-                btnLogin.innerHTML = 'Sign In';
-                btnLogin.disabled = false;
-                errorMsg.textContent = err.message || 'Login failed';
-                errorMsg.style.display = 'block';
+                });
+            } else {
+                console.error("Login form not found!");
             }
         });
     </script>
