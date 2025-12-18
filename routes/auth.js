@@ -73,7 +73,7 @@ router.post('/login', async (req, res) => {
 
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 }, (err, token) => {
             if (err) throw err;
-            res.json({ token, role: user.role, name: user.name });
+            res.json({ token, role: user.role, name: user.name, designation: user.designation });
         });
 
     } catch (err) {

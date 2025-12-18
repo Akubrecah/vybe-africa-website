@@ -112,7 +112,12 @@
             <div class="dash-card">
                 <h3 class="card-title"><i class="fas fa-id-card"></i> My Profile</h3>
                 <div class="card-content" id="profile-details">
-                    <p>Loading details...</p>
+                    <!-- Loaded dynamically -->
+                </div>
+                <!-- Manual Redirects (Failsafe) -->
+                <div id="redirect-btns" style="margin-top:10px; display:none; flex-direction:column; gap:10px;">
+                    <a href="hr_dashboard.html" class="btn-action" style="background:var(--accent-green); text-align:center;">Go to HR Dashboard</a>
+                    <a href="admin_dashboard.html" class="btn-action" style="background:var(--accent-purple); text-align:center;">Go to Admin Dashboard</a>
                 </div>
                 <a href="#" class="btn-action">Edit Details</a>
             </div>
@@ -158,18 +163,56 @@
         // Fetch User Data
         async function fetchProfile() {
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 sec timeout
+
                 const res = await fetch('/api/users/me', {
-                    headers: { 'x-auth-token': token }
+                    headers: { 'x-auth-token': token },
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
                 
-                if (!res.ok) throw new Error('Failed to fetch profile');
+                if (!res.ok) throw new Error('Failed to fetch profile: ' + res.status);
                 
                 const user = await res.json();
+                if (!user) throw new Error('User data empty');
+
+                console.log('User fetched:', user); // Debug
+
+                // Safety Redirects
+                const des = (user.designation || '').toLowerCase().replace(/[^a-z]/g, ''); // strip punctuation
+                const role = user.role || '';
+
+                // Check Admin
+                if (role === 'superadmin' || des.includes('executive')) {
+                    console.log('Redirecting to Admin Dash');
+                    window.location.href = 'admin_dashboard.html';
+                    return;
+                }
+                
+                // Check HR (matches 'hr', 'humanresource', 'human-resource', etc)
+                if (des.includes('hr') || des.includes('human') || des.includes('resource') || des.includes('talent')) {
+                     console.log('Redirecting to HR Dash');
+                    window.location.href = 'hr_dashboard.html';
+                    return;
+                }
                 
                 // Update UI
                 document.getElementById('user-name').textContent = user.name;
                 document.getElementById('user-role-badge').textContent = user.designation || user.role;
                 
+                // Show Manual Redirects if applicable
+                const fallbackDiv = document.getElementById('redirect-btns');
+                if (role === 'superadmin' || des.includes('executive')) {
+                    fallbackDiv.style.display = 'flex';
+                    fallbackDiv.children[1].style.display = 'block'; // Admin btn
+                    fallbackDiv.children[0].style.display = 'none';
+                } else if (des.includes('hr') || des.includes('human') || des.includes('resource') || des.includes('talent')) {
+                    fallbackDiv.style.display = 'flex';
+                    fallbackDiv.children[0].style.display = 'block'; // HR btn
+                    fallbackDiv.children[1].style.display = 'none';
+                }
+
                 // Profile Card
                 document.getElementById('profile-details').innerHTML = `
                     <div class="profile-field">
@@ -191,9 +234,9 @@
 
             } catch (err) {
                 console.error(err);
-                // alert('Session expired');
-                // localStorage.clear();
-                // window.location.href = 'login.html';
+                alert('Session expired or connection failed. Please login again.');
+                localStorage.clear();
+                window.location.href = 'login.html';
             }
         }
 
