@@ -43,6 +43,12 @@ The site has been completely redesigned with a **Premium "Dark Mode" Aesthetic**
     -   [GLightbox](https://github.com/biati-digital/glightbox): For the video/image lightbox.
     -   [Google Fonts](https://fonts.google.com): **Syne** (Headings) and **Inter** (Body) typography.
 
+### 🛡️ Admin & Staff Portals
+-   **Executive Dashboard**: "BlackGlass" theme for Super Admins with Global Project Map, Financial Overview, and Team Management.
+-   **HRFusion Portal**: Dedicated HR dashboard with Employee Directory, Payroll, Recruitment Kanban, and Calendar.
+-   **Staff Dashboard**: Role-specific views for Program Managers, Communication Officers, etc.
+-   **Secure Auth**: JWT-based authentication with Admin-only account creation (Public registration disabled).
+
 ---
 
 ## 📂 Project Structure
@@ -50,16 +56,18 @@ The site has been completely redesigned with a **Premium "Dark Mode" Aesthetic**
 ```bash
 /
 ├── index.html          # Homepage (Hero, Stats, Focus Areas)
-├── about.html          # Mission, Vision, Team
-├── work.html           # Overview of all program areas
-├── gallery.html        # Masonry image gallery
-├── contact.html        # Contact form and location
-├── get-involved.html   # Donation and Volunteer info
+├── admin_dashboard.html # Executive Portal (Super Admin)
+├── hr_dashboard.html   # HR Management Portal
+├── staff.html          # Standard Staff Portal
+├── login.html          # Unified Login Page
 ├── css/
 │   ├── styles.css      # Core variables, typography, and utility classes
 │   └── layout.css      # Header, Footer, and Component specific styles
 ├── js/
 │   └── main.js         # Theme logic, Mobile Menu, Animations, Counters
+├── models/             # MongoDB Models (User, Post, etc.)
+├── routes/             # Express API Routes
+├── seed.js             # Database Seeder
 └── assets/
     └── images/         # Project images and icons
 ```
