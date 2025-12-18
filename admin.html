@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - VYBE Africa</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .admin-header {
+            padding: 2rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-header h1 {
+            font-size: 2rem;
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-logout:hover { background: rgba(255,255,255,0.2); }
+
+        .staff-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .staff-table th, .staff-table td {
+            text-align: left;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-secondary);
+        }
+
+        .staff-table th {
+            background: rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            color: white;
+        }
+
+        .staff-table tr:last-child td { border-bottom: none; }
+        .staff-table tr:hover { background: rgba(255,255,255,0.01); }
+
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            background: rgba(112, 0, 255, 0.2);
+            color: #d1aaff;
+        }
+        .role-badge.superadmin {
+            background: rgba(255, 0, 85, 0.2);
+            color: #ffaad4;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #ff3333;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .add-staff-form {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-control {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="admin-header">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p style="color: var(--text-secondary);">Manage your team and permissions</p>
+            </div>
+            <button class="btn-logout" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </header>
+
+        <!-- Add Staff -->
+        <div class="add-staff-form">
+            <h3 style="margin-bottom: 1.5rem; color: white;">Add New Staff Member</h3>
+            <form id="add-staff-form">
+                <div class="form-grid">
+                    <input type="text" id="new-name" class="form-control" placeholder="Full Name" required>
+                    <input type="email" id="new-email" class="form-control" placeholder="Email Address" required>
+                    <input type="text" id="new-password" class="form-control" placeholder="Password" required>
+                    <input type="text" id="new-designation" class="form-control" placeholder="Designation (e.g. HR)" required>
+                    <select id="new-role" class="form-control">
+                        <option value="staff">Staff</option>
+                        <option value="superadmin">Super Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">
+                    <i class="fas fa-plus"></i> Add Member
+                </button>
+            </form>
+        </div>
+
+        <!-- Staff List -->
+        <table class="staff-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Designation</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="staff-list">
+                <!-- Populated via JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Auth Check
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+
+        if (!token || role !== 'superadmin') {
+            window.location.href = 'login.html';
+        }
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+
+        // Fetch Users
+        async function fetchUsers() {
+            try {
+                const res = await fetch('/api/users', {
+                    headers: { 'x-auth-token': token }
+                });
+                const users = await res.json();
+                
+                const tbody = document.getElementById('staff-list');
+                tbody.innerHTML = '';
+
+                users.forEach(user => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${user.name}</strong></td>
+                        <td>${user.email}</td>
+                        <td><span class="role-badge ${user.role}">${user.role}</span></td>
+                        <td>${user.designation}</td>
+                        <td>
+                            <button class="action-btn" onclick="deleteUser('${user._id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error('Error fetching users:', err);
+            }
+        }
+
+        // Add User
+        document.getElementById('add-staff-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userData = {
+                name: document.getElementById('new-name').value,
+                email: document.getElementById('new-email').value,
+                password: document.getElementById('new-password').value,
+                designation: document.getElementById('new-designation').value,
+                role: document.getElementById('new-role').value
+            };
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                if (res.ok) {
+                    alert('Staff added successfully!');
+                    fetchUsers();
+                    e.target.reset();
+                } else {
+                    const data = await res.json();
+                    alert(data.msg || 'Error adding staff');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // Delete User
+        async function deleteUser(id) {
+            if(!confirm('Are you sure you want to remove this staff member?')) return;
+            
+            try {
+                const res = await fetch(`/api/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'x-auth-token': token } 
+                });
+                if(res.ok) fetchUsers();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Init
+        fetchUsers();
+    </script>
+</body>
+</html>
