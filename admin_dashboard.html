@@ -385,175 +385,185 @@
     </main>
 
     <script>
-        // Auth Check
-        if(!localStorage.getItem('token')) window.location.href = 'login.html';
-
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            localStorage.clear();
-            window.location.href = 'login.html';
-        });
-
-        // VIEW SWITCHER
-        function switchView(viewName, btn) {
-            document.querySelectorAll('.content-view').forEach(el => el.style.display = 'none');
-            document.getElementById('view-' + viewName).style.display = 'block';
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Admin Dashboard: DOM loaded");
             
-            const titles = {
-                'dashboard': 'Welcome Back, Sharon! 👋',
-                'reports': 'System Reports',
-                'team': 'Team Management',
-                'history': 'Activity Log',
-                'settings': 'Settings'
+            // Auth Check
+            if(!localStorage.getItem('token')) window.location.href = 'login.html';
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            });
+
+            // VIEW SWITCHER
+            window.switchView = function(viewName, btn) {
+                document.querySelectorAll('.content-view').forEach(el => el.style.display = 'none');
+                document.getElementById('view-' + viewName).style.display = 'block';
+                
+                const titles = {
+                    'dashboard': 'Welcome Back, Sharon! 👋',
+                    'reports': 'System Reports',
+                    'team': 'Team Management',
+                    'history': 'Activity Log',
+                    'settings': 'Settings'
+                };
+                document.getElementById('page-title').innerText = titles[viewName];
+
+                if(btn) {
+                    document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+                    btn.classList.add('active');
+                }
+                if(viewName === 'dashboard') setTimeout(() => { map.invalidateSize(); }, 100);
+                if(viewName === 'team') loadTeam();
             };
-            document.getElementById('page-title').innerText = titles[viewName];
 
-            if(btn) {
-                document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-                btn.classList.add('active');
+            // --- DOWNLOAD MODAL LOGIC (Existing) ---
+            let currentFile = '';
+            window.openDownloadModal = function(fileName) {
+                currentFile = fileName;
+                document.getElementById('download-fname').innerText = fileName;
+                document.getElementById('download-modal').style.display = 'flex';
+            };
+            window.closeDownloadModal = function() { document.getElementById('download-modal').style.display = 'none'; };
+            window.downloadFile = function(format) {
+                closeDownloadModal();
+                alert(`Downloading: ${currentFile}.${format}`);
+                if(format === 'csv') {
+                    const csvContent = "data:text/csv;charset=utf-8,ID,Report Name\\n1," + currentFile;
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodeURI(csvContent));
+                    link.setAttribute("download", "report.csv");
+                    document.body.appendChild(link);
+                    link.click();
+                }
+            };
+            
+            window.openAddStaffModal = function() { document.getElementById('add-staff-modal').style.display = 'flex'; };
+            window.closeAddStaffModal = function() { document.getElementById('add-staff-modal').style.display = 'none'; };
+
+            // Close modals on outside click
+            window.onclick = function(event) {
+                if (event.target == document.getElementById('download-modal')) closeDownloadModal();
+                if (event.target == document.getElementById('add-staff-modal')) closeAddStaffModal();
+            };
+
+            // Initialize Map
+            const map = L.map('map').setView([1.23, 35.1], 7); 
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            L.marker([1.23, 35.1]).addTo(map).bindPopup('<b>West Pokot HQ</b><br>Main Office').openPopup();
+
+            // ----------------------------------------------------
+            // DIRECT SUPABASE INTEGRATION (SERVERLESS)
+            // ----------------------------------------------------
+            // Initialize Supabase
+            const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+            // Fetch Data (Dashboard View)
+            async function loadData() {
+                try {
+                    // 1. Get User Count
+                    const { count, error } = await supabase
+                        .from('users')
+                        .select('*', { count: 'exact', head: true });
+                    
+                    if(!error) document.getElementById('user-count').textContent = count;
+
+                    // 2. Get Recent Posts
+                    const { data: posts } = await supabase
+                        .from('posts')
+                        .select('title, category')
+                        .order('created_at', { ascending: false })
+                        .limit(3);
+
+                    const container = document.getElementById('recent-posts-list');
+                    if(posts) {
+                        container.innerHTML = posts.map(post => `
+                            <div class="report-item">
+                                <div><strong style="display:block;">${post.title}</strong><span style="font-size:0.8rem; color:var(--text-secondary);">${post.category}</span></div>
+                            </div>
+                        `).join('');
+                    }
+                } catch(e) { console.error(e); }
             }
-            if(viewName === 'dashboard') setTimeout(() => { map.invalidateSize(); }, 100);
-            if(viewName === 'team') loadTeam();
-        }
+            loadData();
 
-        // --- DOWNLOAD MODAL LOGIC (Existing) ---
-        let currentFile = '';
-        function openDownloadModal(fileName) {
-            currentFile = fileName;
-            document.getElementById('download-fname').innerText = fileName;
-            document.getElementById('download-modal').style.display = 'flex';
-        }
-        function closeDownloadModal() { document.getElementById('download-modal').style.display = 'none'; }
-        function downloadFile(format) {
-            closeDownloadModal();
-            alert(`Downloading: ${currentFile}.${format}`);
-            if(format === 'csv') {
-                const csvContent = "data:text/csv;charset=utf-8,ID,Report Name\n1," + currentFile;
-                const link = document.createElement("a");
-                link.setAttribute("href", encodeURI(csvContent));
-                link.setAttribute("download", "report.csv");
-                document.body.appendChild(link);
-                link.click();
-            }
-        }
-        
-        function openAddStaffModal() { document.getElementById('add-staff-modal').style.display = 'flex'; }
-        function closeAddStaffModal() { document.getElementById('add-staff-modal').style.display = 'none'; }
+            // --- TEAM MANAGEMENT (Supabase) ---
+            async function loadTeam() {
+                try {
+                    const { data: users, error } = await supabase.from('users').select('*');
+                    
+                    if(error) throw error;
 
-        // Initialize Map
-        const map = L.map('map').setView([1.23, 35.1], 7); 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        L.marker([1.23, 35.1]).addTo(map).bindPopup('<b>West Pokot HQ</b><br>Main Office').openPopup();
-
-        // ----------------------------------------------------
-        // DIRECT SUPABASE INTEGRATION (SERVERLESS)
-        // ----------------------------------------------------
-        // Initialize Supabase
-        const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-        // Fetch Data (Dashboard View)
-        async function loadData() {
-            try {
-                // 1. Get User Count
-                const { count, error } = await supabase
-                    .from('users')
-                    .select('*', { count: 'exact', head: true });
-                
-                if(!error) document.getElementById('user-count').textContent = count;
-
-                // 2. Get Recent Posts
-                const { data: posts } = await supabase
-                    .from('posts')
-                    .select('title, category')
-                    .order('created_at', { ascending: false })
-                    .limit(3);
-
-                const container = document.getElementById('recent-posts-list');
-                if(posts) {
-                    container.innerHTML = posts.map(post => `
-                        <div class="report-item">
-                            <div><strong style="display:block;">${post.title}</strong><span style="font-size:0.8rem; color:var(--text-secondary);">${post.category}</span></div>
-                        </div>
+                    const rows = users.map(u => `
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <td style="padding:10px;"><strong>${u.name}</strong></td>
+                            <td>${u.email}</td>
+                            <td><span class="tag tag-med">${u.role}</span></td>
+                            <td>${u.designation}</td>
+                            <td>
+                                <button onclick="deleteUser('${u.id}')" style="color:#ef4444; background:none; border:none; cursor:pointer;" title="Remove User"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
                     `).join('');
+                    document.getElementById('team-list-body').innerHTML = rows;
+                } catch(e) { 
+                    console.error(e); 
+                    document.getElementById('team-list-body').innerHTML = '<tr><td colspan="5">Failed to load team.</td></tr>';
                 }
-            } catch(e) { console.error(e); }
-        }
-        loadData();
-
-        // --- TEAM MANAGEMENT (Supabase) ---
-        async function loadTeam() {
-            try {
-                const { data: users, error } = await supabase.from('users').select('*');
-                
-                if(error) throw error;
-
-                const rows = users.map(u => `
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <td style="padding:10px;"><strong>${u.name}</strong></td>
-                        <td>${u.email}</td>
-                        <td><span class="tag tag-med">${u.role}</span></td>
-                        <td>${u.designation}</td>
-                        <td>
-                            <button onclick="deleteUser('${u.id}')" style="color:#ef4444; background:none; border:none; cursor:pointer;" title="Remove User"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `).join('');
-                document.getElementById('team-list-body').innerHTML = rows;
-            } catch(e) { 
-                console.error(e); 
-                document.getElementById('team-list-body').innerHTML = '<tr><td colspan="5">Failed to load team.</td></tr>';
             }
-        }
 
-        async function addUser(e) {
-            e.preventDefault();
-            const name = document.getElementById('new-name').value;
-            const email = document.getElementById('new-email').value;
-            const password = document.getElementById('new-password').value;
-            const designation = document.getElementById('new-des').value;
-            const role = document.getElementById('new-role').value;
+            window.addUser = async function(e) {
+                e.preventDefault();
+                const name = document.getElementById('new-name').value;
+                const email = document.getElementById('new-email').value;
+                const password = document.getElementById('new-password').value;
+                const designation = document.getElementById('new-des').value;
+                const role = document.getElementById('new-role').value;
 
-            // Hash Password
-            const salt = dcodeIO.bcrypt.genSaltSync(10);
-            const hashedPassword = dcodeIO.bcrypt.hashSync(password, salt);
+                // Hash Password
+                const salt = dcodeIO.bcrypt.genSaltSync(10);
+                const hashedPassword = dcodeIO.bcrypt.hashSync(password, salt);
 
-            try {
-                const { error } = await supabase
-                    .from('users')
-                    .insert([{ 
-                        name, 
-                        email, 
-                        password: hashedPassword, 
-                        role, 
-                        designation 
-                    }]);
+                try {
+                    const { error } = await supabase
+                        .from('users')
+                        .insert([{ 
+                            name, 
+                            email, 
+                            password: hashedPassword, 
+                            role, 
+                            designation 
+                        }]);
 
-                if(error) {
-                    alert('Error: ' + error.message);
-                } else {
-                    alert('User Created Successfully!');
-                    closeAddStaffModal();
-                    loadTeam(); // Refresh list
-                    // Reset form
-                    document.getElementById('new-name').value = '';
-                    document.getElementById('new-email').value = '';
-                    document.getElementById('new-password').value = '';
+                    if(error) {
+                        alert('Error: ' + error.message);
+                    } else {
+                        alert('User Created Successfully!');
+                        closeAddStaffModal();
+                        loadTeam(); // Refresh list
+                        // Reset form
+                        document.getElementById('new-name').value = '';
+                        document.getElementById('new-email').value = '';
+                        document.getElementById('new-password').value = '';
+                    }
+                } catch(err) { alert('Request failed'); }
+            };
+
+            window.deleteUser = async function(id) {
+                if(!confirm('Are you sure you want to remove this user?')) return;
+                try {
+                    const { error } = await supabase.from('users').delete().eq('id', id);
+                    if(error) throw error;
+                    loadTeam();
+                } catch(e) { 
+                    console.error(e); 
+                    alert('Failed to delete user');
                 }
-            } catch(err) { alert('Request failed'); }
-        }
-
-        async function deleteUser(id) {
-            if(!confirm('Are you sure you want to remove this user?')) return;
-            try {
-                const { error } = await supabase.from('users').delete().eq('id', id);
-                if(error) throw error;
-                loadTeam();
-            } catch(e) { 
-                console.error(e); 
-                alert('Failed to delete user');
-            }
-        }
+            };
+        });
     </script>
 
     <!-- Download Modal -->
