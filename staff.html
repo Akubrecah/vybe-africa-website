@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard - VYBE Africa</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .dashboard-header {
+            padding: 2rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .welcome-text h1 {
+            font-size: 2rem;
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .welcome-text p { color: var(--text-secondary); }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .dash-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            transition: 0.3s;
+        }
+        .dash-card:hover { 
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary-brand);
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-content { color: var(--text-muted); font-size: 0.95rem; }
+
+        .btn-action {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .btn-action:hover { background: var(--primary-brand); }
+
+        /* Role Specific Badge */
+        .role-tag {
+            background: rgba(112, 0, 255, 0.2);
+            color: #d1aaff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .profile-field {
+            margin-bottom: 0.8rem;
+        }
+        .profile-label { color: var(--text-secondary); font-size: 0.85rem; }
+        .profile-value { color: white; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="dashboard-header">
+            <div class="welcome-text">
+                <h1>Welcome, <span id="user-name">Staff</span></h1>
+                <p>Staff Dashboard <span id="user-role-badge" class="role-tag">Loading...</span></p>
+            </div>
+            <button class="btn btn-outline" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </header>
+
+        <div class="dashboard-grid">
+            
+            <!-- 1. My Profile -->
+            <div class="dash-card">
+                <h3 class="card-title"><i class="fas fa-id-card"></i> My Profile</h3>
+                <div class="card-content" id="profile-details">
+                    <p>Loading details...</p>
+                </div>
+                <a href="#" class="btn-action">Edit Details</a>
+            </div>
+
+            <!-- 2. Role Specific Tools (Dynamic) -->
+            <div class="dash-card" id="role-tools-card" style="display:none;">
+                <h3 class="card-title" id="role-tools-title"><i class="fas fa-briefcase"></i> Work Tools</h3>
+                <div class="card-content" id="role-tools-content">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <!-- 3. Tasks -->
+            <div class="dash-card">
+                <h3 class="card-title"><i class="fas fa-tasks"></i> Pending Tasks</h3>
+                <div class="card-content">
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <i class="far fa-circle"></i> Complete weekly report
+                        </li>
+                        <li>
+                            <i class="far fa-circle"></i> Update timesheet
+                        </li>
+                    </ul>
+                </div>
+                <a href="#" class="btn-action">View All Tasks</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Auth Check
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+
+        // Fetch User Data
+        async function fetchProfile() {
+            try {
+                const res = await fetch('/api/users/me', {
+                    headers: { 'x-auth-token': token }
+                });
+                
+                if (!res.ok) throw new Error('Failed to fetch profile');
+                
+                const user = await res.json();
+                
+                // Update UI
+                document.getElementById('user-name').textContent = user.name;
+                document.getElementById('user-role-badge').textContent = user.designation || user.role;
+                
+                // Profile Card
+                document.getElementById('profile-details').innerHTML = `
+                    <div class="profile-field">
+                        <div class="profile-label">Email</div>
+                        <div class="profile-value">${user.email}</div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-label">Designation</div>
+                        <div class="profile-value">${user.designation}</div>
+                    </div>
+                    <div class="profile-field">
+                        <div class="profile-label">Joined</div>
+                        <div class="profile-value">${new Date(user.date).toLocaleDateString()}</div>
+                    </div>
+                `;
+
+                // Render Role-Specific Tools
+                renderRoleTools(user);
+
+            } catch (err) {
+                console.error(err);
+                // alert('Session expired');
+                // localStorage.clear();
+                // window.location.href = 'login.html';
+            }
+        }
+
+        function renderRoleTools(user) {
+            const card = document.getElementById('role-tools-card');
+            const title = document.getElementById('role-tools-title');
+            const content = document.getElementById('role-tools-content');
+            const designation = (user.designation || '').toLowerCase();
+            
+            let toolsHtml = '';
+            let toolTitle = 'Work Tools';
+            let icon = 'fa-briefcase';
+
+            // Logic for Roles
+            if (designation.includes('hr') || designation.includes('human resource')) {
+                toolTitle = 'HR Portal';
+                icon = 'fa-users-cog';
+                toolsHtml = `
+                    <p>Manage employee records and payroll.</p>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                        <a href="#" class="btn-action" style="background: rgba(255, 0, 85, 0.2);">Generate Payslips</a>
+                        <a href="#" class="btn-action" style="background: rgba(255, 0, 85, 0.2);">Review Applications</a>
+                    </div>
+                `;
+            } else if (designation.includes('program') || designation.includes('project')) {
+                toolTitle = 'Project Management';
+                icon = 'fa-project-diagram';
+                toolsHtml = `
+                    <p>Track active projects and deliverables.</p>
+                    <div style="margin-top: 15px;">
+                        <a href="#" class="btn-action">Update Project Status</a>
+                        <a href="#" class="btn-action">Budget Requests</a>
+                    </div>
+                `;
+            } else if (designation.includes('communication') || designation.includes('media')) {
+                toolTitle = 'Media Center';
+                icon = 'fa-bullhorn';
+                toolsHtml = `
+                    <p>Manage social media and internal comms.</p>
+                    <div style="margin-top: 15px;">
+                        <a href="#" class="btn-action">Create Campaign</a>
+                        <a href="#" class="btn-action">Upload Assets</a>
+                    </div>
+                `;
+            } else if (designation.includes('monitor') || designation.includes('m&e')) {
+                toolTitle = 'Data & Reporting';
+                icon = 'fa-chart-line';
+                toolsHtml = `
+                    <p>Track impact metrics and generate reports.</p>
+                    <div style="margin-top: 15px;">
+                        <a href="#" class="btn-action">Input Data</a>
+                        <a href="#" class="btn-action">Export Reports</a>
+                    </div>
+                `;
+            } else {
+                // Default View
+                toolsHtml = `
+                    <p>Access general staff resources and files.</p>
+                    <div style="margin-top: 15px;">
+                        <a href="#" class="btn-action">View Handbook</a>
+                    </div>
+                `;
+            }
+
+            title.innerHTML = `<i class="fas ${icon}"></i> ${toolTitle}`;
+            content.innerHTML = toolsHtml;
+            card.style.display = 'block';
+        }
+
+        fetchProfile();
+    </script>
+</body>
+</html>

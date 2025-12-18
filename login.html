@@ -158,8 +158,7 @@
                     if (data.role === 'superadmin') {
                         window.location.href = 'admin.html';
                     } else {
-                        alert('Logged in as Staff. Dashboard coming soon.');
-                        window.location.href = 'index.html'; // Temp redirect
+                        window.location.href = 'staff.html';
                     }
                 } else {
                     errorMsg.textContent = data.msg || 'Login failed';
