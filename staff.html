@@ -280,7 +280,7 @@
                             <span style="color:white;">Climate Action Drive</span>
                             <span class="role-tag" style="background:rgba(255,200,0,0.1); color:#ffc107;">Planning</span>
                         </div>
-                         <a href="#" class="btn-action" style="margin-top:10px;">Create New Project</a>
+                         <a href="#" id="btn-new-project" class="btn-action" style="margin-top:10px;">Create New Project</a>
                     </div>
                 `;
             } else if (designation.includes('communication') || designation.includes('media')) {
@@ -315,7 +315,7 @@
                         <li><strong>Training Sessions:</strong> 12 Completed</li>
                         <li><strong>Maternal Kits Distributed:</strong> 450</li>
                     </ul>
-                    <a href="#" class="btn-action" style="margin-top:10px;">Download Full Report</a>
+                    <a href="#" id="btn-download-report" class="btn-action" style="margin-top:10px;">Download Full Report</a>
                 `;
             } else {
                 // Default View
@@ -336,24 +336,18 @@
                 e.target.reset();
             });
 
-            // Bind CMS Form
-            document.getElementById('cms-form')?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const title = document.getElementById('post-title').value;
-                const body = document.getElementById('post-content').value;
-                const cat = document.getElementById('post-category').value;
-
-                try {
-                    const res = await fetch('/api/posts', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
-                        body: JSON.stringify({ title, content: body, category: cat })
-                    });
-                    if(res.ok) {
-                        alert('Post Published!');
-                        e.target.reset();
-                    }
                 } catch(err) { console.error(err); }
+            });
+
+            // Bind Action Buttons
+            document.getElementById('btn-new-project')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal('Create New Project', 'Enter project name:', 'Create Project');
+            });
+            
+            document.getElementById('btn-download-report')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('Downloading Report... (Simulated)');
             });
         }
 
@@ -367,7 +361,51 @@
             `).join('');
         }
 
+        // --- Generic Modal Logic ---
+        function openModal(title, label, btnText) {
+            const modal = document.getElementById('action-modal');
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-label').innerText = label;
+            document.getElementById('modal-submit').innerText = btnText;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('action-modal').style.display = 'none';
+        }
+
+        // Close on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('action-modal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        document.getElementById('modal-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val = document.getElementById('modal-input').value;
+            alert(`Action Confirmed: ${val}`);
+            closeModal();
+            document.getElementById('modal-input').value = '';
+        });
+
         fetchProfile();
     </script>
+    
+    <!-- Generic Action Modal -->
+    <div id="action-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:1000;">
+        <div style="background:#1b1626; padding:2rem; border-radius:12px; width:90%; max-width:400px; border:1px solid rgba(255,255,255,0.1);">
+            <h3 id="modal-title" style="color:white; margin-bottom:1rem;">Action</h3>
+            <form id="modal-form">
+                <label id="modal-label" style="display:block; color:var(--text-secondary); margin-bottom:0.5rem;">Input</label>
+                <input type="text" id="modal-input" class="form-control" required style="margin-bottom:1rem;">
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button type="button" onclick="closeModal()" style="padding:8px 16px; background:transparent; color:white; border:1px solid rgba(255,255,255,0.2); border-radius:6px; cursor:pointer;">Cancel</button>
+                    <button type="submit" id="modal-submit" class="btn-action" style="margin-top:0;">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
