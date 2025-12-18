@@ -1,0 +1,24 @@
+
+/* Mobile Responsive CSS for All Dashboards */
+@media (max-width: 1024px) {
+   body { flex-direction: column !important; height: auto !important; }
+    .sidebar { width: 100% !important; padding: 1rem !important; border-right: none !important; border-bottom: 1px solid var(--border-glass) !important; }
+    .nav-link { display: inline-flex !important; padding: 8px 12px !important; margin: 0 0.25rem 0.5rem 0 !important; font-size: 0.85rem !important; }
+    .main { padding: 1.5rem 1rem !important; overflow-y: visible !important; }
+    .metrics-grid, .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important; gap: 1rem !important; }
+    .charts-grid, .dashboard-grid { grid-template-columns: 1fr !important; }
+    #map { height: 300px !important; }
+}
+@media (max-width: 768px) {
+    .sidebar { overflow-x: auto !important; }
+    h1 { font-size: 1.5rem !important; }
+    .metrics-grid, .stats-grid { grid-template-columns: 1fr 1fr !important; }
+    .team-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important; }
+    .task-list table { font-size: 0.85rem !important; }
+}
+@media (max-width: 480px) {
+    .metrics-grid, .stats-grid { grid-template-columns: 1fr !important; }
+    .team-grid { grid-template-columns: 1fr 1fr !important; }
+    button { padding: 8px 12px !important; font-size: 0.85rem !important; }
+    .task-list table { display: block !important; overflow-x: auto !important; }
+}
