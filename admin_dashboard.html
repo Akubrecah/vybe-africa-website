@@ -11,6 +11,9 @@
     <!-- Map (Leaflet) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Supabase & Bcrypt -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
 
     <style>
         :root {
@@ -412,59 +415,25 @@
             if(viewName === 'team') loadTeam();
         }
 
-        // --- TEAM MANAGEMENT ---
-        async function loadTeam() {
-            try {
-                const res = await fetch('/api/users', { headers: { 'x-auth-token': localStorage.getItem('token') } });
-                const users = await res.json();
-                
-                const rows = users.map(u => `
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <td style="padding:10px;"><strong>${u.name}</strong></td>
-                        <td>${u.email}</td>
-                        <td><span class="tag tag-med">${u.role}</span></td>
-                        <td>${u.designation}</td>
-                        <td>
-                            <button onclick="deleteUser('${u._id}')" style="color:#ef4444; background:none; border:none; cursor:pointer;" title="Remove User"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `).join('');
-                document.getElementById('team-list-body').innerHTML = rows;
-            } catch(e) { console.error(e); }
+        // --- DOWNLOAD MODAL LOGIC (Existing) ---
+        let currentFile = '';
+        function openDownloadModal(fileName) {
+            currentFile = fileName;
+            document.getElementById('download-fname').innerText = fileName;
+            document.getElementById('download-modal').style.display = 'flex';
         }
-
-        async function addUser(e) {
-            e.preventDefault();
-            const name = document.getElementById('new-name').value;
-            const email = document.getElementById('new-email').value;
-            const password = document.getElementById('new-password').value;
-            const designation = document.getElementById('new-des').value;
-            const role = document.getElementById('new-role').value;
-
-            try {
-                const res = await fetch('/api/users', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'x-auth-token': localStorage.getItem('token') },
-                    body: JSON.stringify({ name, email, password, designation, role })
-                });
-                
-                if(res.ok) {
-                    alert('User Created Successfully!');
-                    closeAddStaffModal();
-                    loadTeam(); // Refresh list
-                } else {
-                    const d = await res.json();
-                    alert('Error: ' + d.msg);
-                }
-            } catch(err) { alert('Request failed'); }
-        }
-
-        async function deleteUser(id) {
-            if(!confirm('Are you sure you want to remove this user?')) return;
-            try {
-                await fetch('/api/users/' + id, { method: 'DELETE', headers: { 'x-auth-token': localStorage.getItem('token') } });
-                loadTeam();
-            } catch(e) { console.error(e); }
+        function closeDownloadModal() { document.getElementById('download-modal').style.display = 'none'; }
+        function downloadFile(format) {
+            closeDownloadModal();
+            alert(`Downloading: ${currentFile}.${format}`);
+            if(format === 'csv') {
+                const csvContent = "data:text/csv;charset=utf-8,ID,Report Name\n1," + currentFile;
+                const link = document.createElement("a");
+                link.setAttribute("href", encodeURI(csvContent));
+                link.setAttribute("download", "report.csv");
+                document.body.appendChild(link);
+                link.click();
+            }
         }
         
         function openAddStaffModal() { document.getElementById('add-staff-modal').style.display = 'flex'; }
@@ -502,25 +471,116 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         L.marker([1.23, 35.1]).addTo(map).bindPopup('<b>West Pokot HQ</b><br>Main Office').openPopup();
 
+        // ----------------------------------------------------
+        // DIRECT SUPABASE INTEGRATION (SERVERLESS)
+        // ----------------------------------------------------
+        // Initialize Supabase
+        const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
         // Fetch Data (Dashboard View)
         async function loadData() {
             try {
-                const userRes = await fetch('/api/users', { headers: { 'x-auth-token': localStorage.getItem('token') } });
-                const users = await userRes.json();
-                document.getElementById('user-count').textContent = users.length;
-
-                const postsRes = await fetch('/api/posts');
-                const posts = await postsRes.json();
-                const container = document.getElementById('recent-posts-list');
+                // 1. Get User Count
+                const { count, error } = await supabase
+                    .from('users')
+                    .select('*', { count: 'exact', head: true });
                 
-                container.innerHTML = posts.slice(0, 3).map(post => `
-                    <div class="report-item">
-                        <div><strong style="display:block;">${post.title}</strong><span style="font-size:0.8rem; color:var(--text-secondary);">${post.category}</span></div>
-                    </div>
-                `).join('');
+                if(!error) document.getElementById('user-count').textContent = count;
+
+                // 2. Get Recent Posts
+                const { data: posts } = await supabase
+                    .from('posts')
+                    .select('title, category')
+                    .order('created_at', { ascending: false })
+                    .limit(3);
+
+                const container = document.getElementById('recent-posts-list');
+                if(posts) {
+                    container.innerHTML = posts.map(post => `
+                        <div class="report-item">
+                            <div><strong style="display:block;">${post.title}</strong><span style="font-size:0.8rem; color:var(--text-secondary);">${post.category}</span></div>
+                        </div>
+                    `).join('');
+                }
             } catch(e) { console.error(e); }
         }
         loadData();
+
+        // --- TEAM MANAGEMENT (Supabase) ---
+        async function loadTeam() {
+            try {
+                const { data: users, error } = await supabase.from('users').select('*');
+                
+                if(error) throw error;
+
+                const rows = users.map(u => `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <td style="padding:10px;"><strong>${u.name}</strong></td>
+                        <td>${u.email}</td>
+                        <td><span class="tag tag-med">${u.role}</span></td>
+                        <td>${u.designation}</td>
+                        <td>
+                            <button onclick="deleteUser('${u.id}')" style="color:#ef4444; background:none; border:none; cursor:pointer;" title="Remove User"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                document.getElementById('team-list-body').innerHTML = rows;
+            } catch(e) { 
+                console.error(e); 
+                document.getElementById('team-list-body').innerHTML = '<tr><td colspan="5">Failed to load team.</td></tr>';
+            }
+        }
+
+        async function addUser(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-name').value;
+            const email = document.getElementById('new-email').value;
+            const password = document.getElementById('new-password').value;
+            const designation = document.getElementById('new-des').value;
+            const role = document.getElementById('new-role').value;
+
+            // Hash Password
+            const salt = dcodeIO.bcrypt.genSaltSync(10);
+            const hashedPassword = dcodeIO.bcrypt.hashSync(password, salt);
+
+            try {
+                const { error } = await supabase
+                    .from('users')
+                    .insert([{ 
+                        name, 
+                        email, 
+                        password: hashedPassword, 
+                        role, 
+                        designation 
+                    }]);
+
+                if(error) {
+                    alert('Error: ' + error.message);
+                } else {
+                    alert('User Created Successfully!');
+                    closeAddStaffModal();
+                    loadTeam(); // Refresh list
+                    // Reset form
+                    document.getElementById('new-name').value = '';
+                    document.getElementById('new-email').value = '';
+                    document.getElementById('new-password').value = '';
+                }
+            } catch(err) { alert('Request failed'); }
+        }
+
+        async function deleteUser(id) {
+            if(!confirm('Are you sure you want to remove this user?')) return;
+            try {
+                const { error } = await supabase.from('users').delete().eq('id', id);
+                if(error) throw error;
+                loadTeam();
+            } catch(e) { 
+                console.error(e); 
+                alert('Failed to delete user');
+            }
+        }
     </script>
 
     <!-- Download Modal -->
