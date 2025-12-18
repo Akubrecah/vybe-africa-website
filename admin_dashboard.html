@@ -203,17 +203,17 @@
 <body>
 
     <aside class="sidebar">
-        <div class="logo"><i class="fas fa-shield-alt"></i> BlackGlass</div>
+        <div class="logo"><i class="fas fa-shield-alt"></i> Vybe Africa</div>
         
-        <a href="#" class="cta-btn"><i class="fas fa-plus"></i> New Report</a>
+        <a href="#" class="cta-btn" onclick="switchView('reports')"><i class="fas fa-plus"></i> New Report</a>
 
         <div class="nav-group-title">Navigation</div>
-        <a href="#" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
-        <a href="#" class="nav-link"><i class="fas fa-file-alt"></i> Reports</a>
-        <a href="#" class="nav-link"><i class="fas fa-history"></i> History</a>
+        <a href="#" class="nav-link active" onclick="switchView('dashboard', this)"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="#" class="nav-link" onclick="switchView('reports', this)"><i class="fas fa-file-alt"></i> Reports</a>
+        <a href="#" class="nav-link" onclick="switchView('history', this)"><i class="fas fa-history"></i> History</a>
 
         <div class="nav-group-title" style="margin-top: 2rem;">Account</div>
-        <a href="#" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+        <a href="#" class="nav-link" onclick="switchView('settings', this)"><i class="fas fa-cog"></i> Settings</a>
         <a href="#" class="nav-link" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         
         <div style="margin-top: auto; display: flex; align-items: center; gap: 10px; padding-top: 1rem; border-top: 1px solid var(--border-glass);">
@@ -227,60 +227,135 @@
 
     <main class="main">
         <header class="top-bar">
-            <h1>Welcome Back, Sharon! 👋</h1>
+            <h1 id="page-title">Welcome Back, Sharon! 👋</h1>
             <button class="notification-btn"><i class="fas fa-bell"></i></button>
         </header>
 
-        <!-- Key Metrics -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="icon-float"><i class="fas fa-users"></i></div>
-                <div class="stat-title">Total Users</div>
-                <div class="stat-val" id="user-count">--</div>
-                <div class="stat-footer">Across all departments</div>
+        <!-- VIEW: DASHBOARD -->
+        <div id="view-dashboard" class="content-view">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="icon-float"><i class="fas fa-users"></i></div>
+                    <div class="stat-title">Total Users</div>
+                    <div class="stat-val" id="user-count">--</div>
+                    <div class="stat-footer">Across all departments</div>
+                </div>
+                <!-- ... other stats ... -->
+                <div class="stat-card">
+                    <div class="icon-float"><i class="fas fa-clock"></i></div>
+                    <div class="stat-title">Reports Pending</div>
+                    <div class="stat-val">3</div>
+                    <div class="stat-footer">Monthly quota</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-float" style="color:#ef4444;"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="stat-title">Critical Issues</div>
+                    <div class="stat-val">0</div>
+                    <div class="stat-footer">System healthy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-float"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-title">Traffic Growth</div>
+                    <div class="stat-val">+24%</div>
+                    <div class="stat-footer">vs last month</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="icon-float"><i class="fas fa-clock"></i></div>
-                <div class="stat-title">Reports Pending</div>
-                <div class="stat-val">3</div>
-                <div class="stat-footer">Monthly quota</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon-float" style="color:#ef4444;"><i class="fas fa-exclamation-triangle"></i></div>
-                <div class="stat-title">Critical Issues</div>
-                <div class="stat-val">0</div>
-                <div class="stat-footer">System healthy</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon-float"><i class="fas fa-chart-line"></i></div>
-                <div class="stat-title">Traffic Growth</div>
-                <div class="stat-val">+24%</div>
-                <div class="stat-footer">vs last month</div>
+
+            <div class="dashboard-grid">
+                <!-- Global Map -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Global Project Map</h3>
+                        <span class="tag tag-med">Live View</span>
+                    </div>
+                    <p style="color:var(--text-secondary); font-size: 0.9rem;">Visualization of active project locations.</p>
+                    <div id="map"></div>
+                </div>
+
+                <!-- Recent Reports -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Recent CMS Updates</h3>
+                        <a href="#" onclick="switchView('reports')" style="color:var(--accent-green); text-decoration:none;">View all</a>
+                    </div>
+                    <div id="recent-posts-list">
+                        <!-- Injected -->
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="dashboard-grid">
-            <!-- Global Map -->
-            <div class="section-card">
+        <!-- VIEW: REPORTS -->
+        <div id="view-reports" class="content-view" style="display:none;">
+             <div class="section-card">
                 <div class="section-header">
-                    <h3>Global Project Map</h3>
-                    <span class="tag tag-med">Live View</span>
+                    <h3>All System Reports</h3>
+                    <button class="cta-btn" style="margin:0; padding:8px 16px; font-size:0.9rem;">Export CSV</button>
                 </div>
-                <p style="color:var(--text-secondary); font-size: 0.9rem;">Visualization of active project locations.</p>
-                <div id="map"></div>
-            </div>
+                <table style="width:100%; border-collapse:collapse; color:#ccc;">
+                    <thead>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.1); text-align:left;">
+                            <th style="padding:10px;">Report Name</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <td style="padding:10px;">Q3 Financial Audit</td>
+                            <td>Dec 10, 2024</td>
+                            <td><span class="tag tag-med">Review</span></td>
+                            <td><a href="#" style="color:white;"><i class="fas fa-download"></i></a></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:10px;">Security Log #4092</td>
+                            <td>Dec 18, 2024</td>
+                            <td><span class="tag tag-high">Critical</span></td>
+                            <td><a href="#" style="color:white;"><i class="fas fa-download"></i></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+             </div>
+        </div>
 
-            <!-- Recent Reports (CMS Posts) -->
+        <!-- VIEW: HISTORY -->
+        <div id="view-history" class="content-view" style="display:none;">
             <div class="section-card">
-                <div class="section-header">
-                    <h3>Recent CMS Updates</h3>
-                    <a href="#" style="color:var(--accent-green); text-decoration:none;">View all</a>
+                <h3>Activity History</h3>
+                <p style="color:#aaa; margin-bottom:1rem;">Recent actions performed by admins.</p>
+                <div class="report-item">
+                    <span><strong>Sharon C.</strong> updated Global Map settings</span>
+                    <small style="color:#666;">2 mins ago</small>
                 </div>
-                <div id="recent-posts-list">
-                    <!-- Injected -->
+                <div class="report-item">
+                     <span><strong>Farex N.</strong> generated Payroll (Nov)</span>
+                     <small style="color:#666;">1 hour ago</small>
                 </div>
             </div>
         </div>
+
+        <!-- VIEW: SETTINGS -->
+        <div id="view-settings" class="content-view" style="display:none;">
+            <div class="section-card" style="max-width:600px;">
+                <h3>System Settings</h3>
+                <form style="display:grid; gap:15px; margin-top:1rem;">
+                    <div>
+                        <label style="display:block; color:#aaa; margin-bottom:5px;">Site Name</label>
+                        <input type="text" value="VYBE Africa" style="width:100%; padding:10px; background:#000; border:1px solid #333; color:white; border-radius:6px;">
+                    </div>
+                    <div>
+                        <label style="display:block; color:#aaa; margin-bottom:5px;">Maintenance Mode</label>
+                        <select style="width:100%; padding:10px; background:#000; border:1px solid #333; color:white; border-radius:6px;">
+                            <option>Off</option>
+                            <option>On</option>
+                        </select>
+                    </div>
+                    <button type="button" class="cta-btn" onclick="alert('Settings Saved!')">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
     </main>
 
     <script>
@@ -291,6 +366,34 @@
             localStorage.clear();
             window.location.href = 'login.html';
         });
+
+        // VIEW SWITCHER
+        function switchView(viewName, btn) {
+            // Hide all views
+            document.querySelectorAll('.content-view').forEach(el => el.style.display = 'none');
+            // Show target
+            document.getElementById('view-' + viewName).style.display = 'block';
+            
+            // Update Title
+            const titles = {
+                'dashboard': 'Welcome Back, Sharon! 👋',
+                'reports': 'System Reports',
+                'history': 'Activity Log',
+                'settings': 'Settings'
+            };
+            document.getElementById('page-title').innerText = titles[viewName];
+
+            // Update Nav State
+            if(btn) {
+                document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            
+            // Re-render map if dashboard (leaflet needs resize trigger usually, but simple display toggle might work)
+             if(viewName === 'dashboard') {
+                 setTimeout(() => { map.invalidateSize(); }, 100);
+             }
+        }
 
         // Initialize Map (West Pokot Focus)
         const map = L.map('map').setView([1.23, 35.1], 7); 

@@ -336,6 +336,23 @@
                 e.target.reset();
             });
 
+            // Bind CMS Form
+            document.getElementById('cms-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('post-title').value;
+                const body = document.getElementById('post-content').value;
+                const cat = document.getElementById('post-category').value;
+
+                try {
+                    const res = await fetch('/api/posts', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+                        body: JSON.stringify({ title, content: body, category: cat })
+                    });
+                    if(res.ok) {
+                        alert('Post Published!');
+                        e.target.reset();
+                    }
                 } catch(err) { console.error(err); }
             });
 
