@@ -581,7 +581,13 @@
                 document.getElementById('view-' + viewName).style.display = 'block';
                 
                 document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-                event.currentTarget.classList.add('active');
+                // Find and activate the correct nav link
+                const navLinks = document.querySelectorAll('.nav-link');
+                navLinks.forEach(link => {
+                    if(link.getAttribute('onclick') && link.getAttribute('onclick').includes(viewName)) {
+                        link.classList.add('active');
+                    }
+                });
                 
                 if(viewName === 'projects') loadProjects();
                 if(viewName === 'reports') loadReports();
