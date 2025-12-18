@@ -138,7 +138,7 @@
 @media (max-width: 991px) {
     .hamburger { 
         display: block; 
-        color: var(--secondary-color) !important; /* Force dark color */
+        color: var(--primary-brand) !important; /* Pink/Red for visibility and brand */
         z-index: 1001; /* Above everything */
         position: relative;
         width: 44px; /* Touch target size */
@@ -151,7 +151,7 @@
         top: 90px;
         left: 0;
         width: 100%;
-        background: var(--surface-dark); /* Dark background for white text */
+        background: #050505; /* Hardcoded dark background */
         flex-direction: column;
         padding: 2rem;
         box-shadow: 0 10px 20px rgba(0,0,0,0.5); /* Stronger shadow */
