@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programs Manager - VYBE Africa</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --card-glass: rgba(20, 20, 20, 0.6);
+            --accent-yellow: #facc15;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --border-glass: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-image: radial-gradient(circle at top right, #1a0a2e 0%, transparent 40%);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            padding: 2rem 1.5rem;
+            border-right: 1px solid var(--border-glass);
+            display: flex;
+            flex-direction: column;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 3rem;
+            color: var(--accent-yellow);
+        }
+
+        .nav-group-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            margin-top: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+        }
+        .nav-link.active { border-left: 3px solid var(--accent-yellow); }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 2rem 3rem;
+            overflow-y: auto;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .top-bar h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .tab-btn:hover, .tab-btn.active {
+            background: var(--accent-yellow);
+            color: #000;
+            border-color: var(--accent-yellow);
+        }
+
+        /* Metrics Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metric-card {
+            background: var(--card-glass);
+            border: 1px solid var(--border-glass);
+            padding: 1.5rem;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-trend {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .metric-trend.up { color: var(--accent-green); }
+        .metric-trend.down { color: var(--accent-red); }
+
+        .metric-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--card-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* Task List */
+        .task-list {
+            background: var(--card-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-glass);
+            transition: 0.3s;
+        }
+        .task-item:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .task-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .task-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .status-progress { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .status-complete { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+
+        .user-profile {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-yellow);
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .content-view { display: none; }
+        .content-view.active { display: block; }
+
+        #logout-btn {
+            background: none;
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        #logout-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo"><i class="fas fa-project-diagram"></i> VYBE Programs</div>
+        
+        <div class="nav-group-title">Navigation</div>
+        <a class="nav-link active" onclick="switchView('overview')"><i class="fas fa-th-large"></i> Overview</a>
+        <a class="nav-link" onclick="switchView('projects')"><i class="fas fa-folder-open"></i> Projects</a>
+        <a class="nav-link" onclick="switchView('tasks')"><i class="fas fa-tasks"></i> Tasks</a>
+        <a class="nav-link" onclick="switchView('reports')"><i class="fas fa-chart-bar"></i> Reports</a>
+
+        <div class="nav-group-title">Account</div>
+        <a class="nav-link" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        
+        <div class="user-profile">
+            <div class="user-avatar" id="user-avatar">M</div>
+            <div>
+                <div style="font-size: 0.9rem; font-weight: 600;" id="user-name">Moses</div>
+                <div style="font-size: 0.7rem; color: var(--text-secondary);">Program Manager</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <!-- OVERVIEW VIEW -->
+        <div id="view-overview" class="content-view active">
+            <div class="top-bar">
+                <h1>Program Overview</h1>
+            </div>
+
+            <div class="filter-tabs">
+                <button class="tab-btn active">Monthly</button>
+                <button class="tab-btn">Quarterly</button>
+                <button class="tab-btn">Yearly</button>
+            </div>
+
+            <h4 style="color: var(--text-secondary); margin-bottom: 1rem;">Program task completion rate within SLA over the last 30 days</h4>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Completed by due date</div>
+                    <div class="metric-value" style="color: var(--accent-green);">90%</div>
+                    <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 30%</div>
+                    <div class="metric-subtitle">400 of 450 tasks</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Completed past due date</div>
+                    <div class="metric-value" style="color: #f59e0b;">40%</div>
+                    <div class="metric-trend down"><i class="fas fa-arrow-down"></i> 20%</div>
+                    <div class="metric-subtitle">35 of 450 tasks</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Completed without due date</div>
+                    <div class="metric-value" style="color: var(--accent-purple);">10%</div>
+                    <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 10%</div>
+                    <div class="metric-subtitle">15 of 450 tasks</div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Assigned Tasks</h3>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: var(--accent-yellow);"></div>
+                                <span>Assigned</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: var(--text-secondary);"></div>
+                                <span>Unassigned</span>
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="tasksChart" height="200"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Framework Progress</h3>
+                    </div>
+                    <canvas id="progressChart" height="200"></canvas>
+                </div>
+            </div>
+
+            <div class="task-list">
+                <div class="chart-header">
+                    <h3>Upcoming Tasks</h3>
+                    <a href="#" style="color: var(--accent-yellow); text-decoration: none;">View all</a>
+                </div>
+                <div class="task-item">
+                    <div class="task-info">
+                        <div class="task-title">SRHR Workshop Preparation</div>
+                        <div class="task-meta">West Pokot Team • Due Nov 30, 2024</div>
+                    </div>
+                    <span class="status-badge status-pending">Pending</span>
+                </div>
+                <div class="task-item">
+                    <div class="task-info">
+                        <div class="task-title">Climate Action Report</div>
+                        <div class="task-meta">M&E Team • Due Dec 5, 2024</div>
+                    </div>
+                    <span class="status-badge status-progress">In Progress</span>
+                </div>
+                <div class="task-item">
+                    <div class="task-info">
+                        <div class="task-title">Quarterly Budget Review</div>
+                        <div class="task-meta">Finance • Due Dec 10, 2024</div>
+                    </div>
+                    <span class="status-badge status-complete">Completed</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Programs Dashboard: DOM loaded");
+            
+            // Auth Check
+            if(!localStorage.getItem('token')) window.location.href = 'login.html';
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            });
+
+            // Set user info
+            const userName = localStorage.getItem('name');
+            if(userName) {
+                document.getElementById('user-name').textContent = userName.split(' ')[0];
+                document.getElementById('user-avatar').textContent = userName.charAt(0);
+            }
+
+            // View Switcher
+            window.switchView = function(viewName) {
+                document.querySelectorAll('.content-view').forEach(el => el.style.display = 'none');
+                document.getElementById('view-' + viewName).style.display = 'block';
+                
+                document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+                event.currentTarget.classList.add('active');
+            };
+
+            // Tasks Chart (Stacked Bar)
+            new Chart(document.getElementById('tasksChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['1 Dec', '4 Dec', '8 Dec', '12 Dec', '16 Dec', '20 Dec', '24 Dec', '28 Dec', '31 Dec'],
+                    datasets: [{
+                        label: 'Assigned',
+                        data: [65, 59, 80, 81, 56, 75, 70, 85, 90],
+                        backgroundColor: 'rgba(250, 204, 21, 0.8)',
+                    }, {
+                        label: 'Unassigned',
+                        data: [28, 48, 40, 19, 36, 27, 30, 15, 10],
+                        backgroundColor: 'rgba(156, 163, 175, 0.5)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Progress Chart (Line)
+            new Chart(document.getElementById('progressChart'), {
+                type: 'line',
+                data: {
+                    labels: ['1 Dec', '4 Dec', '8 Dec', '12 Dec', '16 Dec', '20 Dec', '24 Dec', '28 Dec', '31 Dec'],
+                    datasets: [{
+                        label: 'Progress',
+                        data: [30, 35, 40, 50, 55, 65, 70, 80, 85],
+                        borderColor: 'rgba(139, 92, 246, 1)',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
