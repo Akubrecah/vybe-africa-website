@@ -168,16 +168,16 @@
             <a href="#" class="nav-btn" onclick="showSection('employee')">
                 <i class="fas fa-user-friends"></i> <span>Employee</span>
             </a>
-            <a href="#" class="nav-btn">
+            <a href="#" class="nav-btn" onclick="showSection('calendar')">
                 <i class="fas fa-calendar-alt"></i> <span>Calendar</span>
             </a>
-            <a href="#" class="nav-btn">
+            <a href="#" class="nav-btn" onclick="showSection('payroll')">
                 <i class="fas fa-wallet"></i> <span>Payroll</span>
             </a>
-            <a href="#" class="nav-btn">
+            <a href="#" class="nav-btn" onclick="showSection('reports')">
                 <i class="fas fa-file-alt"></i> <span>Reports</span>
             </a>
-            <a href="#" class="nav-btn">
+            <a href="#" class="nav-btn" onclick="showSection('recruitment')">
                 <i class="fas fa-user-plus"></i> <span>Recruitment</span>
             </a>
         </div>
@@ -278,11 +278,137 @@
             </div>
         </div>
         
-        <!-- GENERIC SECTION (Placeholder for others) -->
-        <div id="generic-section" style="display:none; text-align:center; padding-top:4rem;">
-            <i class="fas fa-tools" style="font-size:3rem; color:var(--text-muted); margin-bottom:1rem;"></i>
-            <h3>Under Construction</h3>
-            <p style="color:var(--text-muted);">This module is coming soon.</p>
+        <!-- VIEW: EMPLOYEE -->
+        <div id="view-employee" class="content-section" style="display:none;">
+            <div class="header">
+                <h2>Employee Directory</h2>
+                <button class="nav-btn active" style="padding:10px 20px; font-size:0.9rem; height:auto; width:auto;">+ Add Employee</button>
+            </div>
+            <div class="chart-container">
+                <table style="width:100%; border-collapse:collapse; color:white;">
+                    <thead>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.1); text-align:left;">
+                            <th style="padding:15px;">Name</th>
+                            <th>Designation</th>
+                            <th>Status</th>
+                            <th>Contact</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employee-table-body">
+                        <!-- Injected via JS -->
+                        <tr><td colspan="4" style="padding:20px; text-align:center; color:#666;">Loading directory...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW: CALENDAR -->
+        <div id="view-calendar" class="content-section" style="display:none;">
+            <div class="header"><h2>Event Calendar</h2></div>
+            <div class="chart-container">
+                <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:10px; text-align:center; margin-bottom:20px;">
+                    <div style="color:var(--text-muted);">Mon</div><div style="color:var(--text-muted);">Tue</div>
+                    <div style="color:var(--text-muted);">Wed</div><div style="color:var(--text-muted);">Thu</div>
+                    <div style="color:var(--text-muted);">Fri</div><div style="color:var(--text-muted);">Sat</div>
+                    <div style="color:var(--text-muted);">Sun</div>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:10px; height:400px;">
+                    <!-- Mock Calendar Days -->
+                    <div style="background:rgba(255,255,255,0.02); border-radius:8px; padding:10px;">1</div>
+                    <div style="background:rgba(255,255,255,0.02); border-radius:8px; padding:10px;">2</div>
+                    <div style="background:rgba(255,255,255,0.02); border-radius:8px; padding:10px;">3</div>
+                    <div style="background:rgba(255,255,255,0.02); border-radius:8px; padding:10px;">4</div>
+                    <div style="background:rgba(255,255,255,0.02); border-radius:8px; padding:10px; border:1px solid var(--accent-yellow);">5 <div style="font-size:0.6rem; background:var(--accent-yellow); color:black; padding:2px; border-radius:4px; margin-top:5px;">Team Meeting</div></div>
+                    <div style="background:rgba(255,255,255,0.02); border-radius:8px; padding:10px;">6</div>
+                    <div style="background:rgba(255,255,255,0.02); border-radius:8px; padding:10px;">7</div>
+                    <!-- ... -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: PAYROLL -->
+        <div id="view-payroll" class="content-section" style="display:none;">
+            <div class="header"><h2>Payroll Management</h2></div>
+             <div class="metrics-row">
+                 <div class="metric-card">
+                     <span class="metric-label">Total Payroll (Dec)</span>
+                     <span class="metric-val" style="color:var(--accent-green);">Ksh 1.2M</span>
+                 </div>
+                 <div class="metric-card">
+                     <span class="metric-label">Pending Slips</span>
+                     <span class="metric-val">4</span>
+                 </div>
+             </div>
+             <div class="chart-container">
+                 <h3>Run Payroll</h3>
+                 <form id="hr-payroll-form" style="display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:15px; align-items:end; margin-top:15px;">
+                     <div>
+                         <label style="color:var(--text-muted); font-size:0.8rem;">Employee Name</label>
+                         <input type="text" class="search-bar" placeholder="e.g. Moses Kibet" style="margin:0; background:rgba(0,0,0,0.3);">
+                     </div>
+                     <div>
+                         <label style="color:var(--text-muted); font-size:0.8rem;">Amount</label>
+                         <input type="number" class="search-bar" placeholder="50000" style="margin:0; background:rgba(0,0,0,0.3);">
+                     </div>
+                     <div>
+                         <label style="color:var(--text-muted); font-size:0.8rem;">Month</label>
+                         <select class="search-bar" style="margin:0; background:rgba(0,0,0,0.3); color:white;">
+                             <option>December 2024</option>
+                             <option>January 2025</option>
+                         </select>
+                     </div>
+                     <button type="submit" style="background:var(--accent-yellow); color:black; font-weight:700; border:none; padding:12px 24px; border-radius:8px; cursor:pointer;">Process</button>
+                 </form>
+             </div>
+        </div>
+
+        <!-- VIEW: REPORTS -->
+        <div id="view-reports" class="content-section" style="display:none;">
+            <div class="header"><h2>HR Reports</h2></div>
+            <div class="chart-container">
+                <div class="report-item" style="display:flex; justify-content:space-between; padding:15px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <div>
+                        <strong>Monthly Attendance Report</strong>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Generated on Dec 01, 2024</div>
+                    </div>
+                    <button style="background:none; border:none; color:var(--accent-green); cursor:pointer;"><i class="fas fa-download"></i> Download CSV</button>
+                </div>
+                <div class="report-item" style="display:flex; justify-content:space-between; padding:15px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <div>
+                        <strong>Q4 Performance Review</strong>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Generated on Dec 15, 2024</div>
+                    </div>
+                    <button style="background:none; border:none; color:var(--accent-green); cursor:pointer;"><i class="fas fa-download"></i> Download PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: RECRUITMENT -->
+        <div id="view-recruitment" class="content-section" style="display:none;">
+            <div class="header"><h2>Recruitment Pipeline</h2></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px;">
+                <div style="background:var(--card-bg); padding:15px; border-radius:12px;">
+                    <h4 style="border-bottom:2px solid var(--accent-yellow); padding-bottom:10px; margin-bottom:15px;">Applied (5)</h4>
+                    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; margin-bottom:10px;">
+                        <strong>John Doe</strong><br><small>Senior Dev</small>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; margin-bottom:10px;">
+                        <strong>Jane Smith</strong><br><small>Designer</small>
+                    </div>
+                </div>
+                 <div style="background:var(--card-bg); padding:15px; border-radius:12px;">
+                    <h4 style="border-bottom:2px solid var(--accent-green); padding-bottom:10px; margin-bottom:15px;">Interview (2)</h4>
+                    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; margin-bottom:10px;">
+                        <strong>Alex M.</strong><br><small>Project Manager</small>
+                    </div>
+                </div>
+                 <div style="background:var(--card-bg); padding:15px; border-radius:12px;">
+                    <h4 style="border-bottom:2px solid white; padding-bottom:10px; margin-bottom:15px;">Hired (1)</h4>
+                     <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; margin-bottom:10px; opacity:0.6;">
+                        <strong>Sarah K.</strong><br><small>Intern</small>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </main>
@@ -297,16 +423,49 @@
         if(userName) document.getElementById('user-name').innerText = userName.split(' ')[0];
 
         // Nav Logic
+        // Nav Logic
         function showSection(name) {
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             if(event && event.currentTarget) event.currentTarget.classList.add('active');
 
+            // Hide all sections first
+            document.getElementById('dashboard-section').style.display = 'none';
+            ['view-employee', 'view-calendar', 'view-payroll', 'view-reports', 'view-recruitment'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+
+            // Show selected
             if(name === 'dashboard') {
                 document.getElementById('dashboard-section').style.display = 'block';
-                document.getElementById('generic-section').style.display = 'none';
             } else {
-                document.getElementById('dashboard-section').style.display = 'none';
-                document.getElementById('generic-section').style.display = 'block';
+                const target = document.getElementById('view-' + name);
+                if(target) target.style.display = 'block';
+                if(name === 'employee') loadEmployees();
+            }
+        }
+
+        async function loadEmployees() {
+            try {
+                const res = await fetch('/api/users', { headers: { 'x-auth-token': localStorage.getItem('token') } });
+                const users = await res.json();
+                
+                const rows = users.map(u => `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <td style="padding:15px;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="width:30px; height:30px; background:var(--accent-yellow); color:black; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.name.charAt(0)}</div>
+                                <strong>${u.name}</strong>
+                            </div>
+                        </td>
+                        <td>${u.designation}</td>
+                        <td><span style="background:rgba(16, 185, 129, 0.2); color:#10b981; padding:4px 8px; border-radius:4px; font-size:0.8rem;">Active</span></td>
+                        <td>${u.email}</td>
+                    </tr>
+                `).join('');
+                document.getElementById('employee-table-body').innerHTML = rows;
+            } catch(e) { 
+                console.error(e); 
+                document.getElementById('employee-table-body').innerHTML = '<tr><td colspan="4" style="padding:20px; text-align:center;">Failed to load data users.</td></tr>';
             }
         }
 
