@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -13,10 +12,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '/'))); // Serve static files from root
 
-// Database Connection
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.log(err));
+// Database Connection (Supabase is handled in routes via config/supabase.js)
+// MongoDB connection removed.
 
 // Routes (Placeholder)
 app.use('/api/auth', require('./routes/auth'));

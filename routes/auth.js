@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const supabase = require('../config/supabase');
+// const User = require('../models/User'); // Mongoose Model Removed
 
 // @route   POST api/auth/register
 // @desc    Register a user (Use for seeding initially)
@@ -26,8 +27,14 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        let user = await User.findOne({ email });
-        if (!user) {
+        // Supabase Query
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('email', email)
+            .single();
+
+        if (error || !user) {
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
 
@@ -50,8 +57,7 @@ router.post('/login', async (req, res) => {
 
     } catch (err) {
         console.error('LOGIN ERROR:', err);
-        console.log('JWT_SECRET present:', !!process.env.JWT_SECRET);
-        res.status(500).send('Server error: ' + err.message);
+        res.status(500).send('Server error');
     }
 });
 

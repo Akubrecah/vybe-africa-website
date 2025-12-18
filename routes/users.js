@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const User = require('../models/User');
-
+const supabase = require('../config/supabase');
 const bcrypt = require('bcryptjs');
 
 // @route   GET api/users/me
@@ -10,7 +9,13 @@ const bcrypt = require('bcryptjs');
 // @access  Private
 router.get('/me', auth, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password');
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('id, name, email, role, designation')
+            .eq('id', req.user.id)
+            .single();
+
+        if (error) throw error;
         res.json(user);
     } catch (err) {
         console.error(err.message);
@@ -19,13 +24,15 @@ router.get('/me', auth, async (req, res) => {
 });
 
 // @route   GET api/users
-// @desc    Get all users (Super Admin only check inside)
+// @desc    Get all users
 // @access  Private
 router.get('/', auth, async (req, res) => {
     try {
-        // Optional: Check if admin
-        // if(req.user.role !== 'superadmin') return res.status(403).json({msg:'Access denied'});
-        const users = await User.find().select('-password');
+        const { data: users, error } = await supabase
+            .from('users')
+            .select('id, name, email, role, designation');
+
+        if (error) throw error;
         res.json(users);
     } catch (err) {
         console.error(err.message);
@@ -39,36 +46,40 @@ router.get('/', auth, async (req, res) => {
 router.post('/', auth, async (req, res) => {
     try {
         // Verify Admin
-        const reqUser = await User.findById(req.user.id);
-        if(reqUser.role !== 'superadmin' && !reqUser.designation.toLowerCase().includes('executive')) {
+        const { data: reqUser } = await supabase
+            .from('users')
+            .select('role, designation')
+            .eq('id', req.user.id)
+            .single();
+
+        if (reqUser.role !== 'superadmin' && !reqUser.designation.toLowerCase().includes('executive')) {
             return res.status(403).json({ msg: 'Access Denied: Admins only' });
         }
 
         const { name, email, password, role, designation } = req.body;
         
-        // Check exists
-        let user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).json({ msg: 'User already exists' });
-        }
-
-        user = new User({
-            name,
-            email,
-            password,
-            role,
-            designation
-        });
-
+        // Hash Password
         const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
-        await user.save();
-        res.json({ msg: 'User created successfully', user: { name, email, role, designation } });
+        // Insert User
+        const { data: newUser, error } = await supabase
+            .from('users')
+            .insert([{ 
+                name, 
+                email, 
+                password: hashedPassword, 
+                role, 
+                designation 
+            }])
+            .select();
+
+        if (error) throw error;
+        res.json({ msg: 'User created successfully', user: newUser[0] });
 
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send('Server Error: ' + err.message);
     }
 });
 
@@ -77,7 +88,12 @@ router.post('/', auth, async (req, res) => {
 // @access  Private
 router.delete('/:id', auth, async (req, res) => {
     try {
-        await User.findByIdAndDelete(req.params.id);
+        const { error } = await supabase
+            .from('users')
+            .delete()
+            .eq('id', req.params.id);
+
+        if (error) throw error;
         res.json({ msg: 'User removed' });
     } catch (err) {
         console.error(err.message);
