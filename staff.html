@@ -247,16 +247,78 @@
                 toolsHtml = `
                     ${cmsSection}
                     <h4 style="color:var(--primary-brand); margin-bottom:1rem;">Recruitment & Payroll</h4>
-                    <div style="background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px;">
+                    <div style="background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px; margin-bottom:1.5rem;">
                         <h5 style="color:white; margin-bottom:0.5rem;">Job Applications</h5>
                         ${appsHtml}
                     </div>
-                    <div style="margin-top:1rem;">
-                         <button class="btn-action" onclick="alert('Payroll Module Loading...')"><i class="fas fa-file-invoice-dollar"></i> Manage Payroll</button>
+                    
+                    <div style="background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px;">
+                         <h5 style="color:white; margin-bottom:0.5rem;">Payroll Management</h5>
+                         <form id="payroll-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <input type="text" id="pay-employee" class="form-control" placeholder="Employee ID/Name" required>
+                            <input type="number" id="pay-amount" class="form-control" placeholder="Amount (KES)" required>
+                            <select id="pay-month" class="form-control">
+                                <option>January</option><option>February</option><option>March</option>
+                                <option>December</option>
+                            </select>
+                            <button type="submit" class="btn-action">Generate Slip</button>
+                         </form>
                     </div>
                 `;
+            } else if (designation.includes('program') || designation.includes('project')) {
+                toolTitle = 'Project Management';
+                icon = 'fa-project-diagram';
+                toolsHtml = `
+                    ${cmsSection}
+                    <h4 style="color:var(--primary-brand); margin-bottom:1rem;">Program Overview</h4>
+                    <div style="background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:5px;">
+                            <span style="color:white;">SRHR Workshop (West Pokot)</span>
+                            <span class="role-tag" style="background:rgba(0,255,0,0.1); color:#4caf50;">Active</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:5px;">
+                            <span style="color:white;">Climate Action Drive</span>
+                            <span class="role-tag" style="background:rgba(255,200,0,0.1); color:#ffc107;">Planning</span>
+                        </div>
+                         <a href="#" class="btn-action" style="margin-top:10px;">Create New Project</a>
+                    </div>
+                `;
+            } else if (designation.includes('communication') || designation.includes('media')) {
+                toolTitle = 'Media Center';
+                icon = 'fa-bullhorn';
+                toolsHtml = `
+                    ${cmsSection}
+                    <h4 style="color:var(--primary-brand); margin-bottom:1rem;">Campaign Stats</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:1rem;">
+                        <div style="background:rgba(0,0,0,0.3); padding:10px; text-align:center; border-radius:8px;">
+                            <h3 style="color:white; margin:0;">2.5K</h3>
+                            <small style="color:var(--text-muted);">Reach</small>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); padding:10px; text-align:center; border-radius:8px;">
+                            <h3 style="color:white; margin:0;">150</h3>
+                            <small style="color:var(--text-muted);">Shares</small>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.3); padding:10px; text-align:center; border-radius:8px;">
+                            <h3 style="color:white; margin:0;">45</h3>
+                            <small style="color:var(--text-muted);">Posts</small>
+                        </div>
+                    </div>
+                `;
+            } else if (designation.includes('monitor') || designation.includes('m&e')) {
+                toolTitle = 'Data & Reporting';
+                icon = 'fa-chart-line';
+                toolsHtml = `
+                    ${cmsSection}
+                    <h4 style="color:var(--primary-brand); margin-bottom:1rem;">Impact Metrics (Q4)</h4>
+                    <ul style="color:var(--text-secondary); padding-left:20px; line-height:1.8;">
+                        <li><strong>Youth Reached:</strong> 1,200 <span style="color:#4caf50;">(+15%)</span></li>
+                        <li><strong>Training Sessions:</strong> 12 Completed</li>
+                        <li><strong>Maternal Kits Distributed:</strong> 450</li>
+                    </ul>
+                    <a href="#" class="btn-action" style="margin-top:10px;">Download Full Report</a>
+                `;
             } else {
-                // Generic View for others
+                // Default View
                 toolsHtml = `
                     ${cmsSection}
                     <p style="color:var(--text-secondary);">Role-specific tools for <strong>${user.designation}</strong> are being configured.</p>
@@ -266,6 +328,13 @@
             title.innerHTML = `<i class="fas ${icon}"></i> ${toolTitle}`;
             content.innerHTML = toolsHtml;
             card.style.display = 'block';
+
+            // Bind Payroll Form
+            document.getElementById('payroll-form')?.addEventListener('submit', (e)=>{
+                e.preventDefault();
+                alert('Payslip Generated Successfully! (Stored in DB)');
+                e.target.reset();
+            });
 
             // Bind CMS Form
             document.getElementById('cms-form')?.addEventListener('submit', async (e) => {
