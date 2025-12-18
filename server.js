@@ -26,7 +26,12 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 
 // Serve Frontend
-app.get('*', (req, res) => {
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Fallback for other routes (optional, mainly for SPA)
+app.use((req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
