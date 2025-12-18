@@ -439,33 +439,6 @@
         function openAddStaffModal() { document.getElementById('add-staff-modal').style.display = 'flex'; }
         function closeAddStaffModal() { document.getElementById('add-staff-modal').style.display = 'none'; }
 
-        // --- DOWNLOAD MODAL LOGIC (Existing) ---
-        let currentFile = '';
-        function openDownloadModal(fileName) {
-            currentFile = fileName;
-            document.getElementById('download-fname').innerText = fileName;
-            document.getElementById('download-modal').style.display = 'flex';
-        }
-        function closeDownloadModal() { document.getElementById('download-modal').style.display = 'none'; }
-        function downloadFile(format) {
-            closeDownloadModal();
-            alert(`Downloading: ${currentFile}.${format}`);
-            if(format === 'csv') {
-                const csvContent = "data:text/csv;charset=utf-8,ID,Report Name\n1," + currentFile;
-                const link = document.createElement("a");
-                link.setAttribute("href", encodeURI(csvContent));
-                link.setAttribute("download", "report.csv");
-                document.body.appendChild(link);
-                link.click();
-            }
-        }
-
-        // Close on outside click
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('download-modal')) closeDownloadModal();
-            if (event.target == document.getElementById('add-staff-modal')) closeAddStaffModal();
-        }
-
         // Initialize Map
         const map = L.map('map').setView([1.23, 35.1], 7); 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
