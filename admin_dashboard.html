@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Portal - VYBE Africa</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Map (Leaflet) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --card-glass: rgba(20, 20, 20, 0.6);
+            --accent-green: #10b981;
+            --accent-green-glass: rgba(16, 185, 129, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --border-glass: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-image: radial-gradient(circle at top right, #0a2e1e 0%, transparent 40%);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            padding: 2rem 1.5rem;
+            border-right: 1px solid var(--border-glass);
+            display: flex;
+            flex-direction: column;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 3rem;
+            color: var(--accent-green);
+        }
+
+        .cta-btn {
+            background: var(--accent-green);
+            color: black;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 2rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .cta-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .nav-group-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+        }
+        .nav-link.active { border-left: 3px solid var(--accent-green); }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 2rem 3rem;
+            overflow-y: auto;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .notification-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: var(--card-glass);
+            border: 1px solid var(--border-glass);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        /* Stats Row */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-glass);
+            border: 1px solid var(--border-glass);
+            padding: 1.5rem;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-title { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .stat-val { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .stat-footer { font-size: 0.8rem; color: var(--text-secondary); }
+        .icon-float {
+            position: absolute; top: 1.5rem; right: 1.5rem;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.05);
+            color: var(--accent-green);
+        }
+
+        /* Content Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .section-card {
+            background: var(--card-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Map Container */
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 12px;
+            margin-top: 10px;
+            filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+        }
+
+        .report-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+        .report-item:hover { border-color: var(--accent-green); }
+
+        .tag {
+            padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+        }
+        .tag-high { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .tag-med { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo"><i class="fas fa-shield-alt"></i> BlackGlass</div>
+        
+        <a href="#" class="cta-btn"><i class="fas fa-plus"></i> New Report</a>
+
+        <div class="nav-group-title">Navigation</div>
+        <a href="#" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="#" class="nav-link"><i class="fas fa-file-alt"></i> Reports</a>
+        <a href="#" class="nav-link"><i class="fas fa-history"></i> History</a>
+
+        <div class="nav-group-title" style="margin-top: 2rem;">Account</div>
+        <a href="#" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+        <a href="#" class="nav-link" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        
+        <div style="margin-top: auto; display: flex; align-items: center; gap: 10px; padding-top: 1rem; border-top: 1px solid var(--border-glass);">
+            <div style="width: 32px; height: 32px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center;">SC</div>
+            <div>
+                <div style="font-size: 0.9rem; font-weight: 600;">Sharon C.</div>
+                <div style="font-size: 0.7rem; color: var(--text-secondary);">Super Admin</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="top-bar">
+            <h1>Welcome Back, Sharon! 👋</h1>
+            <button class="notification-btn"><i class="fas fa-bell"></i></button>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon-float"><i class="fas fa-users"></i></div>
+                <div class="stat-title">Total Users</div>
+                <div class="stat-val" id="user-count">--</div>
+                <div class="stat-footer">Across all departments</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon-float"><i class="fas fa-clock"></i></div>
+                <div class="stat-title">Reports Pending</div>
+                <div class="stat-val">3</div>
+                <div class="stat-footer">Monthly quota</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon-float" style="color:#ef4444;"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stat-title">Critical Issues</div>
+                <div class="stat-val">0</div>
+                <div class="stat-footer">System healthy</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon-float"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-title">Traffic Growth</div>
+                <div class="stat-val">+24%</div>
+                <div class="stat-footer">vs last month</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Global Map -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>Global Project Map</h3>
+                    <span class="tag tag-med">Live View</span>
+                </div>
+                <p style="color:var(--text-secondary); font-size: 0.9rem;">Visualization of active project locations.</p>
+                <div id="map"></div>
+            </div>
+
+            <!-- Recent Reports (CMS Posts) -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>Recent CMS Updates</h3>
+                    <a href="#" style="color:var(--accent-green); text-decoration:none;">View all</a>
+                </div>
+                <div id="recent-posts-list">
+                    <!-- Injected -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Auth Check
+        if(!localStorage.getItem('token')) window.location.href = 'login.html';
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+
+        // Initialize Map (West Pokot Focus)
+        const map = L.map('map').setView([1.23, 35.1], 7); 
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        
+        // Add Marker
+        L.marker([1.23, 35.1]).addTo(map)
+            .bindPopup('<b>West Pokot HQ</b><br>Main Office').openPopup();
+
+        // Fetch Data
+        async function loadData() {
+            try {
+                // Users
+                const userRes = await fetch('/api/users', { headers: { 'x-auth-token': localStorage.getItem('token') } });
+                const users = await userRes.json();
+                document.getElementById('user-count').textContent = users.length;
+
+                // Posts
+                const postsRes = await fetch('/api/posts');
+                const posts = await postsRes.json();
+                const container = document.getElementById('recent-posts-list');
+                
+                container.innerHTML = posts.slice(0, 3).map(post => `
+                    <div class="report-item">
+                        <div>
+                            <strong style="display:block; margin-bottom:4px;">${post.title}</strong>
+                            <span style="font-size:0.8rem; color:var(--text-secondary);">${post.category} • ${post.authorName}</span>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color:var(--text-secondary);"></i>
+                    </div>
+                `).join('');
+
+            } catch(e) { console.error(e); }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Portal - VYBE Africa</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0f0b15;
+            --card-bg: #1b1626;
+            --sidebar-bg: #130f1a;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #3b82f6;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255,255,255,0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand span { color: var(--accent-purple); }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent-purple);
+        }
+
+        .nav-item i { width: 20px; }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-value { font-size: 1.8rem; font-weight: 700; margin: 10px 0; }
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; }
+        .stat-trend { font-size: 0.8rem; color: #4caf50; display: flex; align-items: center; gap: 5px; }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Table */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 1rem; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+        th { color: var(--text-main); font-weight: 600; }
+        tr:last-child td { border-bottom: none; }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-pending { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+        .status-paid { background: rgba(76, 175, 80, 0.15); color: #4caf50; }
+
+        .btn-primary {
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+
+        /* Sections Toggle */
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <i class="fas fa-shapes"></i> VYBE<span>HR</span>
+        </div>
+        <nav>
+            <a href="#" class="nav-item active" onclick="showSection('dashboard', this)">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('employees', this)">
+                <i class="fas fa-users"></i> Employees
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('applications', this)">
+                <i class="fas fa-user-plus"></i> Recruitment
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('payroll', this)">
+                <i class="fas fa-file-invoice-dollar"></i> Payroll
+            </a>
+            <div style="margin-top:auto">
+                <a href="#" class="nav-item" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div>
+                <h2 id="page-title">Overview</h2>
+                <p style="color:var(--text-muted)">Welcome back, Farex 👋</p>
+            </div>
+            <div class="user-profile">
+                <div style="width:32px; height:32px; background:var(--accent-purple); border-radius:50%; display:flex; align-items:center; justify-content:center;">FN</div>
+                <span>Farex Nandwa</span>
+            </div>
+        </header>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboard" class="content-section active">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Employees</div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-trend"><i class="fas fa-arrow-up"></i> 12% vs last month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Payroll (Monthly)</div>
+                    <div class="stat-value">Ksh 450k</div>
+                    <div class="stat-trend"><i class="fas fa-check"></i> Disbursed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Open Positions</div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-trend" style="color:var(--accent-blue);">Active Hiring</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="section-header">
+                        <h3>Payroll Analytics</h3>
+                        <select style="background:transparent; color:white; border:1px solid var(--border-color); padding:5px; border-radius:6px;">
+                            <option>Last 6 Months</option>
+                        </select>
+                    </div>
+                    <canvas id="payrollChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Demographics</h3>
+                    <canvas id="demoChart" style="margin-top:20px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECRUITMENT VIEW -->
+        <div id="applications" class="content-section">
+            <div class="section-header">
+                <h3>Job Applications</h3>
+                <button class="btn-primary" onclick="seedApps()">Refresh Data</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Position</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="app-list">
+                        <!-- Injected -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Auth Check
+        const token = localStorage.getItem('token');
+        if(!token) window.location.href = 'login.html';
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+
+        // Navigation Logic
+        function showSection(id, btn) {
+            // Update Nav UI
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+
+            // Toggle Sections
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            // Update Header
+            document.getElementById('page-title').textContent = id.charAt(0).toUpperCase() + id.slice(1);
+
+            // Fetch Data if needed
+            if(id === 'applications') fetchApplications();
+        }
+
+        // --- CHART JS SETUP ---
+        const ctxP = document.getElementById('payrollChart').getContext('2d');
+        new Chart(ctxP, {
+            type: 'bar',
+            data: {
+                labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Expenditure (KES)',
+                    data: [380000, 390000, 410000, 400000, 420000, 450000],
+                    backgroundColor: '#8b5cf6',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { 
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        const ctxD = document.getElementById('demoChart').getContext('2d');
+        new Chart(ctxD, {
+            type: 'doughnut',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [45, 55],
+                    backgroundColor: ['#3b82f6', '#ec4899'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                plugins: { legend: { position: 'bottom', labels: { color:'white' } } }
+            }
+        });
+
+        // --- DATA FETCHING ---
+        async function fetchApplications() {
+            try {
+                const res = await fetch('/api/hr/applications', { headers: { 'x-auth-token': token } });
+                const apps = await res.json();
+                const tbody = document.getElementById('app-list');
+                
+                if(!apps.length) return; // Maybe seed here
+                
+                tbody.innerHTML = apps.map(app => `
+                    <tr>
+                        <td>
+                            <div style="font-weight:600;">${app.applicantName}</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">${app.email}</div>
+                        </td>
+                        <td>${app.position}</td>
+                        <td>${new Date(app.dateApplied).toLocaleDateString()}</td>
+                        <td><span class="status-badge status-pending">${app.status}</span></td>
+                        <td><button style="background:none; border:none; color:white; cursor:pointer;"><i class="fas fa-ellipsis-v"></i></button></td>
+                    </tr>
+                `).join('');
+            } catch(err) { console.error(err); }
+        }
+
+        async function seedApps() {
+            await fetch('/api/hr/seed-applicants', { method: 'POST', headers: { 'x-auth-token': token } });
+            fetchApplications();
+        }
+
+        // Init
+        fetchApplications();
+
+    </script>
+</body>
+</html>
