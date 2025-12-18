@@ -306,13 +306,21 @@
                             <td style="padding:10px;">Q3 Financial Audit</td>
                             <td>Dec 10, 2024</td>
                             <td><span class="tag tag-med">Review</span></td>
-                            <td><a href="#" style="color:white;"><i class="fas fa-download"></i></a></td>
+                            <td>
+                                <button onclick="openDownloadModal('Q3 Financial Audit')" style="background:none; border:none; color:white; cursor:pointer;" title="Download Options">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </td>
                         </tr>
                         <tr>
                             <td style="padding:10px;">Security Log #4092</td>
                             <td>Dec 18, 2024</td>
                             <td><span class="tag tag-high">Critical</span></td>
-                            <td><a href="#" style="color:white;"><i class="fas fa-download"></i></a></td>
+                            <td>
+                                <button onclick="openDownloadModal('Security Log 4092')" style="background:none; border:none; color:white; cursor:pointer;" title="Download Options">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -395,6 +403,47 @@
              }
         }
 
+        // --- DOWNLOAD MODAL LOGIC ---
+        let currentFile = '';
+
+        function openDownloadModal(fileName) {
+            currentFile = fileName;
+            document.getElementById('download-fname').innerText = fileName;
+            document.getElementById('download-modal').style.display = 'flex';
+        }
+
+        function closeDownloadModal() {
+            document.getElementById('download-modal').style.display = 'none';
+        }
+
+        function downloadFile(format) {
+            // Close modal first
+            closeDownloadModal();
+            
+            // Simulation
+            const msg = `Downloading: ${currentFile}.${format}`;
+            alert(msg);
+
+            // Real CSV download simulation
+            if(format === 'csv') {
+                const csvContent = "data:text/csv;charset=utf-8,ID,Report Name,Date,Status\n1," + currentFile + ",2024-12-18,Active";
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `${currentFile.replace(/\s/g,'_')}.csv`);
+                document.body.appendChild(link);
+                link.click();
+            }
+        }
+
+        // Close on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('download-modal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
         // Initialize Map (West Pokot Focus)
         const map = L.map('map').setView([1.23, 35.1], 7); 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -431,5 +480,31 @@
 
         loadData();
     </script>
+
+    <!-- Download Options Modal -->
+    <div id="download-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:2000;">
+        <div style="background:#111; padding:2rem; border-radius:12px; width:90%; max-width:400px; border:1px solid rgba(255,255,255,0.1); text-align:center;">
+            <i class="fas fa-file-download" style="font-size:2rem; color:var(--accent-green); margin-bottom:1rem;"></i>
+            <h3 style="color:white; margin-bottom:0.5rem;">Download Report</h3>
+            <p id="download-fname" style="color:#aaa; margin-bottom:1.5rem;">Report Name</p>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button onclick="downloadFile('pdf')" style="padding:10px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid #333; color:white; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px;">
+                    <i class="fas fa-file-pdf" style="color:#ef4444;"></i> PDF
+                </button>
+                <button onclick="downloadFile('csv')" style="padding:10px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid #333; color:white; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px;">
+                    <i class="fas fa-file-csv" style="color:#10b981;"></i> CSV
+                </button>
+                <button onclick="downloadFile('xlsx')" style="padding:10px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid #333; color:white; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px;">
+                    <i class="fas fa-file-excel" style="color:#10b981;"></i> Excel
+                </button>
+                <button onclick="downloadFile('docx')" style="padding:10px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid #333; color:white; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px;">
+                    <i class="fas fa-file-word" style="color:#3b82f6;"></i> Word
+                </button>
+            </div>
+
+            <button onclick="closeDownloadModal()" style="margin-top:1.5rem; background:none; border:none; color:#666; cursor:pointer;">Cancel</button>
+        </div>
+    </div>
 </body>
 </html>
