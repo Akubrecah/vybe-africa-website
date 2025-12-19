@@ -411,48 +411,24 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log("Admin Dashboard: DOM loaded");
             
-            // Initialize Supabase
-            const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
-            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-            // Auth Check - Use Supabase Session
-            async function checkAuth() {
-                const { data: { user }, error } = await supabase.auth.getUser();
-                
-                if (error || !user) {
-                    window.location.href = 'login.html';
-                    return null;
-                }
-                
-                return user;
+            // Auth Check - localStorage
+            const userId = localStorage.getItem('user_id');
+            const userName = localStorage.getItem('name');
+            
+            if (!userId) {
+                window.location.href = 'login.html';
+                return;
             }
-
-            // Initialize dashboard
-            async function init() {
-                const user = await checkAuth();
-                if (!user) return;
-
-                // Load user profile
-                const { data: profile } = await supabase
-                    .from('user_profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
-
-                if (profile) {
-                    document.getElementById('admin-name').textContent = profile.name;
-                }
-            }
+            
+            // Set user name
+            const adminNameEl = document.getElementById('admin-name');
+            if (adminNameEl) adminNameEl.textContent = userName || 'Admin';
 
             // Logout
-            document.getElementById('logout-btn').addEventListener('click', async () => {
-                await supabase.auth.signOut();
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.clear();
                 window.location.href = 'login.html';
             });
-
-            // Run init on page load
-            init();
 
             // VIEW SWITCHER
             window.switchView = function(viewName, btn) {

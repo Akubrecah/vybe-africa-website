@@ -580,49 +580,34 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log("Programs Dashboard: DOM loaded");
             
-            // Initialize Supabase
+            // Initialize Supabase (for database only)
             const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
             const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
             const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-            // Auth Check
-            async function checkAuth() {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) {
-                    window.location.href = 'login.html';
-                    return null;
-                }
-                return user;
+            // Auth Check - localStorage
+            const userId = localStorage.getItem('user_id');
+            const userName = localStorage.getItem('name');
+            
+            if (!userId) {
+                window.location.href = 'login.html';
+                return;
             }
-
-            // Init
-            async function init() {
-                const user = await checkAuth();
-                if (!user) return;
-                
-                const { data: profile } = await supabase
-                    .from('user_profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
-                
-                if (profile) {
-                    document.getElementById('user-name').textContent = profile.name.split(' ')[0]; // Assuming 'user-name' is the element for first name
-                    document.getElementById('user-avatar').textContent = profile.name.charAt(0); // Assuming 'user-avatar' is for the first initial
-                }
-                
-                // Load projects
-                loadProjects();
-            }
+            
+            // Set user name
+            const userNameEl = document.getElementById('user-name');
+            const userAvatarEl = document.getElementById('user-avatar');
+            if (userNameEl) userNameEl.textContent = (userName || 'Programs').split(' ')[0];
+            if (userAvatarEl) userAvatarEl.textContent = (userName || 'P').charAt(0);
 
             // Logout
-            document.getElementById('logout-btn').addEventListener('click', async () => {
-                await supabase.auth.signOut();
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.clear();
                 window.location.href = 'login.html';
             });
 
-            // Init on load
-            init();
+            // Load projects on start
+            loadProjects();
 
             // View Switcher
             window.switchView = function(viewName) {

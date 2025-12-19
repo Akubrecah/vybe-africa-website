@@ -7,9 +7,10 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
     
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             min-height: 100vh;
             background: #050505;
@@ -22,7 +23,7 @@
 
         .register-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             background: rgba(20, 20, 20, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
@@ -56,7 +57,7 @@
             font-size: 0.9rem;
         }
 
-        input, select, textarea {
+        input, select {
             width: 100%;
             padding: 12px;
             background: rgba(255, 255, 255, 0.05);
@@ -67,7 +68,7 @@
             transition: 0.3s;
         }
 
-        input:focus, select:focus, textarea:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #ec4899;
             background: rgba(255, 255, 255, 0.08);
@@ -77,23 +78,6 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
-            margin-top: 4px;
-        }
-
-        .checkbox-group label {
-            margin: 0;
-            font-size: 0.85rem;
         }
 
         .btn {
@@ -114,18 +98,23 @@
             box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
         }
 
-        .login-link {
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .links {
             text-align: center;
             margin-top: 1.5rem;
             color: #9ca3af;
         }
 
-        .login-link a {
+        .links a {
             color: #ec4899;
             text-decoration: none;
         }
 
-        .login-link a:hover {
+        .links a:hover {
             text-decoration: underline;
         }
 
@@ -139,113 +128,138 @@
             display: none;
         }
 
-        @media (max-width: 768px) {
-            .register-container {
-                padding: 2rem 1.5rem;
-            }
-            .form-row {
-                grid-template-columns: 1fr;
-            }
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="register-container">
         <div class="logo-section">
-            <h1><i class="fas fa-users"></i> Join VYBE Africa</h1>
-            <p>Become a member of our community</p>
+            <h1><i class="fas fa-user-plus"></i> Join VYBE Africa</h1>
+            <p>Create your member account</p>
         </div>
 
         <div class="error-message" id="error-message"></div>
+        <div class="success-message" id="success-message"></div>
 
-        <form id="register-form">
+        <form id="register-form" onsubmit="handleRegister(event)">
             <div class="form-group">
                 <label for="name">Full Name *</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" required placeholder="Your full name">
             </div>
 
             <div class="form-group">
                 <label for="email">Email Address *</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" required placeholder="your.email@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" placeholder="+254 xxx xxx xxx">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="county">County</label>
+                    <input type="text" id="county" placeholder="e.g., West Pokot">
+                </div>
+                <div class="form-group">
+                    <label for="member_type">Member Type</label>
+                    <select id="member_type">
+                        <option value="individual">Individual</option>
+                        <option value="organization">Organization</option>
+                        <option value="youth">Youth</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="organization">Organization (optional)</label>
+                <input type="text" id="organization" placeholder="Your organization name">
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label for="password">Password *</label>
-                    <input type="password" id="password" name="password" required minlength="6">
+                    <input type="password" id="password" required minlength="6" placeholder="Min 6 characters">
                 </div>
                 <div class="form-group">
-                    <label for="confirm-password">Confirm Password *</label>
-                    <input type="password" id="confirm-password" name="confirm-password" required>
+                    <label for="confirm_password">Confirm Password *</label>
+                    <input type="password" id="confirm_password" required placeholder="Confirm password">
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" placeholder="+254...">
-                </div>
-                <div class="form-group">
-                    <label for="county">County/Region</label>
-                    <input type="text" id="county" name="county" placeholder="e.g., West Pokot">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="member-type">Member Type *</label>
-                <select id="member-type" name="member-type" required>
-                    <option value="">Select type...</option>
-                    <option value="individual">Individual</option>
-                    <option value="organization">Organization</option>
-                    <option value="youth">Youth Group</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="organization">Organization Name (if applicable)</label>
-                <input type="text" id="organization" name="organization" placeholder="Your organization">
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="terms" name="terms" required>
-                <label for="terms">I agree to the terms and conditions and privacy policy *</label>
-            </div>
-
-            <button type="submit" class="btn">
-                <i class="fas fa-user-plus"></i> Register Now
+            <button type="submit" class="btn" id="submit-btn">
+                <i class="fas fa-user-plus"></i> Create Account
             </button>
         </form>
 
-        <div class="login-link">
+        <div class="links">
             Already have an account? <a href="member_login.html">Login here</a>
+        </div>
+
+        <div class="links" style="margin-top: 1rem;">
+            <a href="homepage.html"><i class="fas fa-home"></i> Back to Home</a>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+    
     <script>
-        // Initialize Supabase
+        // Initialize Supabase (for database only)
         const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        const form = document.getElementById('register-form');
-        const errorMessage = document.getElementById('error-message');
+        function showError(msg) {
+            const el = document.getElementById('error-message');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            errorMessage.style.display = 'none';
+        function showSuccess(msg) {
+            const el = document.getElementById('success-message');
+            el.innerHTML = msg;
+            el.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
 
-            // Get form values
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const county = document.getElementById('county').value.trim();
+            const member_type = document.getElementById('member_type').value;
+            const organization = document.getElementById('organization').value.trim();
             const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            const phone = document.getElementById('phone').value;
-            const county = document.getElementById('county').value;
-            const memberType = document.getElementById('member-type').value;
-            const organization = document.getElementById('organization').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
 
             // Validation
+            if (!name || !email || !password) {
+                showError('Please fill in all required fields');
+                return;
+            }
+
             if (password !== confirmPassword) {
                 showError('Passwords do not match');
                 return;
@@ -256,82 +270,62 @@
                 return;
             }
 
-            try {
-                // Register with Supabase Auth
-                const { data: authData, error: authError } = await supabase.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            name: name,
-                            user_type: 'member',
-                            phone: phone,
-                            county: county,
-                            member_type: memberType,
-                            organization: organization
-                        },
-                        emailRedirectTo: `${window.location.origin}/verify-email.html`
-                    }
-                });
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
 
-                if (authError) {
-                    if (authError.message.includes('already registered') || authError.message.includes('already exists')) {
-                        showError('Email already registered. Please login or use a different email.');
-                    } else {
-                        showError('Registration failed: ' + authError.message);
-                    }
+            try {
+                // Check if email already exists
+                const { data: existing } = await supabase
+                    .from('members')
+                    .select('id')
+                    .eq('email', email)
+                    .limit(1);
+
+                if (existing && existing.length > 0) {
+                    showError('Email already registered. Please login instead.');
                     return;
                 }
 
-                // Create user profile in user_profiles table
-                const { error: profileError } = await supabase
-                    .from('user_profiles')
-                    .insert([{
-                        id: authData.user.id,
-                        user_type: 'member',
-                        name: name,
-                        phone: phone || null,
-                        county: county || null,
-                        member_type: memberType,
-                        organization: organization || null
-                    }]);
-
-                if (profileError) {
-                    console.error('Profile creation error:', profileError);
-                    // Don't fail registration if profile creation fails - can be fixed later
+                // Hash password
+                if (typeof dcodeIO === 'undefined' || !dcodeIO.bcrypt) {
+                    showError('System error. Please refresh and try again.');
+                    return;
                 }
 
-                // Show success message
-                const successDiv = document.createElement('div');
-                successDiv.style.cssText = 'background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; padding: 15px; border-radius: 8px; margin-bottom: 1rem; text-align: center;';
-                successDiv.innerHTML = `
-                    <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                    <strong>Registration Successful!</strong><br>
-                    <p style="margin: 10px 0;">We've sent a verification email to <strong>${email}</strong></p>
-                    <p style="margin: 0; font-size: 0.9rem;">Please check your inbox and click the verification link to activate your account.</p>
-                `;
-                
-                // Hide form and show success message
-                form.style.display = 'none';
-                form.parentElement.insertBefore(successDiv, form);
-                
-                // Add button to go to login
-                const loginBtn = document.createElement('a');
-                loginBtn.href = 'member_login.html';
-                loginBtn.className = 'btn';
-                loginBtn.style.marginTop = '20px';
-                loginBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Go to Login';
-                successDiv.appendChild(loginBtn);
-                
+                const hashedPassword = dcodeIO.bcrypt.hashSync(password, 10);
+
+                // Insert member
+                const { data, error } = await supabase
+                    .from('members')
+                    .insert([{
+                        name: name,
+                        email: email,
+                        password: hashedPassword,
+                        phone: phone || null,
+                        county: county || null,
+                        member_type: member_type,
+                        organization: organization || null,
+                        created_at: new Date().toISOString()
+                    }])
+                    .select();
+
+                if (error) {
+                    console.error('Database error:', error);
+                    showError('Registration failed. Please try again.');
+                    return;
+                }
+
+                // Success!
+                showSuccess('<i class="fas fa-check-circle"></i> Account created successfully!<br><a href="member_login.html" style="color: #10b981;">Click here to login</a>');
+                document.getElementById('register-form').reset();
+
             } catch (err) {
                 console.error('Registration error:', err);
-                showError('Registration failed. Please try again.');
+                showError('An error occurred. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
             }
-        });
-
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
         }
     </script>
 </body>
