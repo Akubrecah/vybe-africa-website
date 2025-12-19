@@ -6,7 +6,9 @@ create table public.users (
   email text not null unique,
   password text not null, -- Stores hashed password
   role text default 'staff', -- 'superadmin', 'staff'
-  designation text -- 'HR', 'Executive Director', etc.
+  designation text, -- 'HR', 'Executive Director', etc.
+  phone text, -- Phone number
+  bio text -- Bio/notes
 );
 
 -- Turn on Row Level Security (Optional but recommended)

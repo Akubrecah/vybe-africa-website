@@ -119,7 +119,7 @@
                     <a href="hr_dashboard.html" class="btn-action" style="background:var(--accent-green); text-align:center;">Go to HR Dashboard</a>
                     <a href="admin_dashboard.html" class="btn-action" style="background:var(--accent-purple); text-align:center;">Go to Admin Dashboard</a>
                 </div>
-                <a href="#" class="btn-action">Edit Details</a>
+                <button class="btn-action" onclick="openEditProfileModal()" style="background: var(--primary-brand); border: none; cursor: pointer;">Edit Profile</button>
             </div>
 
             <!-- 2. Role Specific Tools (Dynamic) -->
@@ -146,6 +146,38 @@
                 <a href="#" class="btn-action">View All Tasks</a>
             </div>
 
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: rgba(20, 20, 20, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 2rem; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="color: white; margin: 0;">Edit Profile</h2>
+                <button onclick="closeEditProfileModal()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <form id="edit-profile-form" onsubmit="saveProfile(event)">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Full Name</label>
+                    <input type="text" id="edit-name" required style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Email</label>
+                    <input type="email" id="edit-email" required style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Phone Number</label>
+                    <input type="tel" id="edit-phone" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Bio / Notes</label>
+                    <textarea id="edit-bio" rows="3" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white;"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" onclick="closeEditProfileModal()" style="padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 6px; cursor: pointer;">Cancel</button>
+                    <button type="submit" style="padding: 10px 20px; background: var(--primary-brand); color: #000; border: none; font-weight: 600; border-radius: 6px; cursor: pointer;">Save Changes</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -437,7 +469,77 @@
             if (event.target == modal) {
                 modal.style.display = "none";
             }
-        }
+            const editModal = document.getElementById('edit-profile-modal');
+            if (event.target == editModal) {
+                editModal.style.display = "none";
+            }
+        };
+
+        // Profile Editing Functions
+        let currentUser = null;
+
+        window.openEditProfileModal = async function() {
+            try {
+                // Fetch latest user data
+                const { data: user, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                
+                if (error || !user) throw new Error('Failed to load profile');
+                
+                currentUser = user;
+                
+                // Populate form
+                document.getElementById('edit-name').value = user.name || '';
+                document.getElementById('edit-email').value = user.email || '';
+                document.getElementById('edit-phone').value = user.phone || '';
+                document.getElementById('edit-bio').value = user.bio || '';
+                
+                // Show modal
+                document.getElementById('edit-profile-modal').style.display = 'flex';
+            } catch(err) {
+                console.error(err);
+                alert('Failed to load profile data');
+            }
+        };
+
+        window.closeEditProfileModal = function() {
+            document.getElementById('edit-profile-modal').style.display = 'none';
+        };
+
+        window.saveProfile = async function(e) {
+            e.preventDefault();
+            
+            const updatedData = {
+                name: document.getElementById('edit-name').value,
+                email: document.getElementById('edit-email').value,
+                phone: document.getElementById('edit-phone').value || null,
+                bio: document.getElementById('edit-bio').value || null
+            };
+
+            try {
+                const { error } = await supabase
+                    .from('users')
+                    .update(updatedData)
+                    .eq('id', userId);
+                
+                if (error) throw error;
+                
+                alert('Profile updated successfully!');
+                closeEditProfileModal();
+                
+                // Update local storage name
+                localStorage.setItem('name', updatedData.name);
+                
+                // Refresh profile display
+                fetchProfile();
+            } catch(err) {
+                console.error(err);
+                alert('Failed to update profile: ' + err.message);
+            }
+        };
 
         document.getElementById('modal-form').addEventListener('submit', (e) => {
             e.preventDefault();
