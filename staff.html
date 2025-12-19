@@ -189,34 +189,31 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Auth Check - Use Supabase Session
-        async function checkAuth() {
-            const { data: { user }, error } = await supabase.auth.getUser();
-            
-            if (error || !user) {
-                window.location.href = 'login.html';
-                return null;
-            }
-            
-            return user;
+        // Auth Check - localStorage
+        const userId = localStorage.getItem('user_id');
+        if (!userId) {
+            window.location.href = 'login.html';
         }
 
         // Logout
-        document.getElementById('logout-btn').addEventListener('click', async () => {
-            await supabase.auth.signOut();
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.clear();
             window.location.href = 'login.html';
         });
 
-        // Fetch User Data (Direct Supabase)
+        // Fetch User Data (from localStorage + Supabase DB)
         async function fetchProfile() {
-            const user = await checkAuth();
-            if (!user) return;
+            const userId = localStorage.getItem('user_id');
+            if (!userId) {
+                window.location.href = 'login.html';
+                return;
+            }
 
             try {
                 const { data: profile, error } = await supabase
-                    .from('user_profiles')
+                    .from('users')
                     .select('*')
-                    .eq('id', user.id)
+                    .eq('id', userId)
                     .single();
                 
                 if (error || !profile) throw new Error('User not found');
@@ -231,7 +228,7 @@
                 document.getElementById('profile-details').innerHTML = `
                     <div class="profile-field">
                         <div class="profile-label">Email</div>
-                        <div class="profile-value">${user.email}</div>
+                        <div class="profile-value">${profile.email}</div>
                     </div>
                     <div class="profile-field">
                         <div class="profile-label">Designation</div>
