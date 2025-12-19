@@ -101,41 +101,66 @@
         }
 
         .error-msg {
-            color: #ff3333;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            color: #ff3b30;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.5rem;
             display: none;
+        }
+
+        .back-link {
+            margin-top: 2rem;
+        }
+
+        .back-link a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            color: var(--primary-brand);
         }
     </style>
 </head>
 <body>
-
     <div class="login-card">
-        <img src="assets/images/logo.png" alt="VYBE Africa" class="login-logo">
-        <h1 class="login-title">Staff Portal</h1>
-        <p class="login-subtitle">Please sign in to continue</p>
+        <div class="login-logo">
+            <i class="fas fa-user-shield" style="font-size: 3rem; color: var(--primary-brand);"></i>
+        </div>
+        
+        <h1 class="login-title">Staff Login</h1>
+        <p class="login-subtitle">VYBE Africa Staff Portal</p>
 
-        <div id="error-msg" class="error-msg"></div>
+        <div class="error-msg" id="error-msg"></div>
 
         <form id="login-form">
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" class="form-control" value="sharon@vybe.org" required>
+                <input type="email" id="email" class="form-control" required autofocus>
             </div>
+
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" class="form-control" value="password123" required>
+                <input type="password" id="password" class="form-control" required>
             </div>
-            <button type="submit" class="btn-login">Sign In</button>
+
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
         </form>
+
+        <div class="back-link">
+            <a href="homepage.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
     </div>
 
-    <!-- Supabase & Bcrypt Client-Side -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // Initialize Supabase
         const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiYm-VnhbDkWy34wcuYy--M';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         const loginForm = document.getElementById('login-form');
@@ -149,29 +174,107 @@
             const password = document.getElementById('password').value;
 
             try {
-                            if (role === 'superadmin' || designation.includes('executive')) {
-                                window.location.href = 'admin_dashboard.html';
-                            } else if (designation.includes('hr') || designation.includes('human resource')) {
-                                window.location.href = 'hr_dashboard.html';
-                            } else if (designation.includes('program')) {
-                                window.location.href = 'programs_dashboard.html';
-                            } else {
-                                window.location.href = 'staff.html';
-                            }
-                        }, 1000);
-
-                    } catch (err) {
-                        console.error(err);
-                        btnLogin.innerHTML = 'Sign In';
-                        btnLogin.disabled = false;
-                        errorMsg.textContent = err.message || 'Login failed';
-                        errorMsg.style.display = 'block';
-                    }
+                // Sign in with Supabase Auth
+                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
                 });
-            } else {
-                console.error("Login form not found!");
+
+                if (authError) {
+                    if (authError.message.includes('Invalid login credentials')) {
+                        showError('Invalid email or password');
+                    } else if (authError.message.includes('Email not confirmed')) {
+                        showError('Please verify your email first. Check your inbox for the verification link.');
+                    } else {
+                        showError(authError.message);
+                    }
+                    return;
+                }
+
+                // Check if email is confirmed
+                if (!authData.user.email_confirmed_at) {
+                    showError('Please verify your email first. Check your inbox for the verification link.');
+                    await supabase.auth.signOut();
+                    return;
+                }
+
+                // Fetch user profile
+                const { data: profile, error: profileError } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', authData.user.id)
+                    .single();
+
+                if (profileError || !profile) {
+                    // Profile doesn't exist - create it from metadata if staff
+                    const metadata = authData.user.user_metadata;
+                    
+                    if (metadata.user_type !== 'staff') {
+                        showError('This login is for staff only. Please use the Members Login page.');
+                        await supabase.auth.signOut();
+                        return;
+                    }
+
+                    const { error: createError } = await supabase
+                        .from('user_profiles')
+                        .insert([{
+                            id: authData.user.id,
+                            user_type: 'staff',
+                            name: metadata.name || authData.user.email,
+                            designation: metadata.designation,
+                            role: metadata.role || 'staff'
+                        }]);
+                    
+                    if (createError) {
+                        console.error('Profile creation error:', createError);
+                    }
+                }
+
+                // Re-fetch profile after creation
+                const { data: finalProfile } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', authData.user.id)
+                    .single();
+
+                // Verify user is staff (not member)
+                if (finalProfile && finalProfile.user_type !== 'staff') {
+                    showError('This login is for staff only. Please use the Members Login page.');
+                    await supabase.auth.signOut();
+                    return;
+                }
+
+                // Store session info
+                localStorage.setItem('user_type', 'staff');
+                localStorage.setItem('user_id', authData.user.id);
+                localStorage.setItem('name', finalProfile?.name || authData.user.email);
+                localStorage.setItem('role', finalProfile?.role || 'staff');
+                localStorage.setItem('designation', finalProfile?.designation || '');
+
+                // Route to appropriate dashboard
+                const role = finalProfile?.role?.toLowerCase() || '';
+                const designation = (finalProfile?.designation || '').toLowerCase().replace(/[^a-z]/g, '');
+
+                if (role === 'superadmin' || designation.includes('executive')) {
+                    window.location.href = 'admin_dashboard.html';
+                } else if (designation.includes('hr') || designation.includes('human') || designation.includes('resource')) {
+                    window.location.href = 'hr_dashboard.html';
+                } else if (designation.includes('program')) {
+                    window.location.href = 'programs_dashboard.html';
+                } else {
+                    window.location.href = 'staff.html';
+                }
+                
+            } catch (err) {
+                console.error('Login error:', err);
+                showError('Login failed. Please try again.');
             }
         });
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
     </script>
 </body>
 </html>
