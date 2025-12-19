@@ -5,52 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Login - VYBE Africa</title>
     
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: var(--background-dark);
+            background: #050505;
             background-image: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050505 100%);
+            font-family: 'Space Grotesk', sans-serif;
+            padding: 1rem;
         }
 
         .login-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 3rem;
-            border-radius: var(--radius-lg);
+            border-radius: 16px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             text-align: center;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .login-logo {
-            width: 80px;
-            margin-bottom: 2rem;
+        .login-logo i {
+            font-size: 3rem;
+            color: #facc15;
+            margin-bottom: 1.5rem;
         }
 
-        .login-title {
-            font-family: var(--font-display);
+        h1 {
+            color: white;
             font-size: 2rem;
             margin-bottom: 0.5rem;
-            color: var(--text-primary);
         }
 
-        .login-subtitle {
-            color: var(--text-secondary);
+        .subtitle {
+            color: #9ca3af;
             margin-bottom: 2rem;
         }
 
@@ -59,226 +56,341 @@
             text-align: left;
         }
 
-        .form-group label {
+        label {
             display: block;
-            color: var(--text-secondary);
+            color: #9ca3af;
             margin-bottom: 0.5rem;
             font-size: 0.9rem;
         }
 
-        .form-control {
+        input {
             width: 100%;
-            padding: 12px 16px;
-            background: rgba(0, 0, 0, 0.2);
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-family: var(--font-body);
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: 0.3s;
         }
 
-        .form-control:focus {
+        input:focus {
             outline: none;
-            border-color: var(--primary-brand);
-            background: rgba(0, 0, 0, 0.4);
+            border-color: #facc15;
+            background: rgba(0, 0, 0, 0.5);
         }
 
         .btn-login {
             width: 100%;
             padding: 14px;
-            background: var(--gradient-brand);
+            background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
             border: none;
-            border-radius: var(--radius-sm);
-            color: white;
+            border-radius: 8px;
+            color: #000;
             font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
-            transition: opacity 0.3s ease;
-            font-family: var(--font-body);
+            transition: 0.3s;
+            font-family: inherit;
         }
 
         .btn-login:hover {
-            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(250, 204, 21, 0.3);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .error-msg {
-            background: rgba(255, 59, 48, 0.1);
-            border: 1px solid rgba(255, 59, 48, 0.3);
-            color: #ff3b30;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #f87171;
             padding: 12px;
-            border-radius: var(--radius-sm);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            text-align: left;
+        }
+
+        .success-msg {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+            padding: 12px;
+            border-radius: 8px;
             margin-bottom: 1.5rem;
             display: none;
         }
 
-        .back-link {
-            margin-top: 2rem;
+        .links {
+            margin-top: 1.5rem;
         }
 
-        .back-link a {
-            color: var(--text-secondary);
+        .links a {
+            color: #9ca3af;
             text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            margin: 0.5rem 0;
         }
 
-        .back-link a:hover {
-            color: var(--primary-brand);
+        .links a:hover {
+            color: #facc15;
+        }
+
+        .debug-log {
+            margin-top: 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            color: #6b7280;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 6px;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="login-card">
         <div class="login-logo">
-            <i class="fas fa-user-shield" style="font-size: 3rem; color: var(--primary-brand);"></i>
+            <i class="fas fa-user-shield"></i>
         </div>
         
-        <h1 class="login-title">Staff Login</h1>
-        <p class="login-subtitle">VYBE Africa Staff Portal</p>
+        <h1>Staff Login</h1>
+        <p class="subtitle">VYBE Africa Staff Portal</p>
 
         <div class="error-msg" id="error-msg"></div>
+        <div class="success-msg" id="success-msg"></div>
 
-        <form id="login-form">
+        <form id="login-form" onsubmit="handleLogin(event)">
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" class="form-control" required autofocus>
+                <input type="email" id="email" required autofocus placeholder="Enter your email">
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" class="form-control" required>
+                <input type="password" id="password" required placeholder="Enter your password">
             </div>
 
-            <button type="submit" class="btn-login">
+            <button type="submit" class="btn-login" id="submit-btn">
                 <i class="fas fa-sign-in-alt"></i> Sign In
             </button>
         </form>
 
-        <div style="text-align: center; margin-top: 1rem;">
-            <a href="forgot-password.html" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">Forgot password?</a>
+        <div class="links">
+            <a href="forgot-password.html"><i class="fas fa-key"></i> Forgot Password?</a>
+            <a href="member_login.html"><i class="fas fa-users"></i> Member Login</a>
+            <a href="homepage.html"><i class="fas fa-home"></i> Back to Home</a>
         </div>
 
-        <div class="back-link">
-            <a href="homepage.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
-        </div>
+        <div class="debug-log" id="debug-log"></div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase with explicit version -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+    
     <script>
+        // Debug mode
+        const DEBUG = true;
+        
+        function log(msg) {
+            console.log('[LOGIN]', msg);
+            if (DEBUG) {
+                const debugDiv = document.getElementById('debug-log');
+                debugDiv.style.display = 'block';
+                debugDiv.innerHTML += msg + '<br>';
+            }
+        }
+
         // Initialize Supabase
         const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        let supabase;
+        
+        try {
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            log('✅ Supabase initialized');
+        } catch (err) {
+            log('❌ Supabase init error: ' + err.message);
+        }
 
-        const loginForm = document.getElementById('login-form');
-        const errorDiv = document.getElementById('error-msg');
+        function showError(msg) {
+            const el = document.getElementById('error-msg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('success-msg').style.display = 'none';
+        }
 
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        function showSuccess(msg) {
+            const el = document.getElementById('success-msg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            document.getElementById('error-msg').style.display = 'none';
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            log('Form submitted');
+            
+            const errorDiv = document.getElementById('error-msg');
+            const successDiv = document.getElementById('success-msg');
+            const submitBtn = document.getElementById('submit-btn');
+            
             errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
 
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
+            if (!email || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            log('Attempting login for: ' + email);
+            
+            // Disable button
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+
             try {
-                // Sign in with Supabase Auth
+                // Check if Supabase is available
+                if (!supabase) {
+                    showError('Connection error. Please refresh page.');
+                    log('❌ Supabase not available');
+                    return;
+                }
+
+                // Sign in
+                log('Calling signInWithPassword...');
                 const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
 
                 if (authError) {
+                    log('❌ Auth error: ' + authError.message);
                     if (authError.message.includes('Invalid login credentials')) {
-                        showError('Invalid email or password');
+                        showError('Invalid email or password. Please try again.');
                     } else if (authError.message.includes('Email not confirmed')) {
-                        showError('Please verify your email first. Check your inbox for the verification link.');
+                        showError('Please verify your email first. Check your inbox.');
                     } else {
                         showError(authError.message);
                     }
                     return;
                 }
 
-                // Check if email is confirmed
+                log('✅ Auth success! User: ' + authData.user.email);
+
+                // Check email confirmed
                 if (!authData.user.email_confirmed_at) {
-                    showError('Please verify your email first. Check your inbox for the verification link.');
+                    log('❌ Email not confirmed');
+                    showError('Please verify your email first.');
                     await supabase.auth.signOut();
                     return;
                 }
 
-                // Fetch user profile
+                log('Email confirmed: Yes');
+                showSuccess('Login successful! Loading profile...');
+
+                // Fetch profile
+                log('Fetching profile...');
                 const { data: profile, error: profileError } = await supabase
                     .from('user_profiles')
                     .select('*')
                     .eq('id', authData.user.id)
                     .single();
 
-                if (profileError || !profile) {
-                    // Profile doesn't exist - create it from metadata if staff
-                    const metadata = authData.user.user_metadata;
+                if (profileError) {
+                    log('Profile error: ' + profileError.message);
                     
-                    if (metadata.user_type !== 'staff') {
-                        showError('This login is for staff only. Please use the Members Login page.');
-                        await supabase.auth.signOut();
-                        return;
-                    }
-
-                    const { error: createError } = await supabase
+                    // Try to create profile from metadata
+                    const metadata = authData.user.user_metadata || {};
+                    log('Creating profile from metadata...');
+                    
+                    const newProfile = {
+                        id: authData.user.id,
+                        user_type: 'staff',
+                        name: metadata.name || email.split('@')[0],
+                        designation: metadata.designation || 'Staff',
+                        role: metadata.role || 'staff'
+                    };
+                    
+                    const { error: insertError } = await supabase
                         .from('user_profiles')
-                        .insert([{
-                            id: authData.user.id,
-                            user_type: 'staff',
-                            name: metadata.name || authData.user.email,
-                            designation: metadata.designation,
-                            role: metadata.role || 'staff'
-                        }]);
+                        .insert([newProfile]);
                     
-                    if (createError) {
-                        console.error('Profile creation error:', createError);
+                    if (insertError) {
+                        log('❌ Could not create profile: ' + insertError.message);
+                        // Continue anyway - redirect to staff.html
+                    } else {
+                        log('✅ Profile created');
                     }
                 }
 
-                // Re-fetch profile after creation
-                const { data: finalProfile } = await supabase
-                    .from('user_profiles')
-                    .select('*')
-                    .eq('id', authData.user.id)
-                    .single();
-
-                // Verify user is staff (not member)
-                if (finalProfile && finalProfile.user_type !== 'staff') {
-                    showError('This login is for staff only. Please use the Members Login page.');
-                    await supabase.auth.signOut();
-                    return;
+                // Determine redirect
+                let redirectUrl = 'staff.html'; // Default
+                
+                if (profile) {
+                    log('Profile found: ' + JSON.stringify(profile));
+                    
+                    const role = (profile.role || '').toLowerCase();
+                    const designation = (profile.designation || '').toLowerCase();
+                    
+                    if (role === 'superadmin' || designation.includes('executive') || designation.includes('director')) {
+                        redirectUrl = 'admin_dashboard.html';
+                    } else if (designation.includes('hr') || designation.includes('human')) {
+                        redirectUrl = 'hr_dashboard.html';
+                    } else if (designation.includes('program')) {
+                        redirectUrl = 'programs_dashboard.html';
+                    }
                 }
 
-                // Store session info
+                log('Redirecting to: ' + redirectUrl);
+                showSuccess('Success! Redirecting...');
+                
+                // Store session
                 localStorage.setItem('user_type', 'staff');
                 localStorage.setItem('user_id', authData.user.id);
-                localStorage.setItem('name', finalProfile?.name || authData.user.email);
-                localStorage.setItem('role', finalProfile?.role || 'staff');
-                localStorage.setItem('designation', finalProfile?.designation || '');
-
-                // Route to appropriate dashboard
-                const role = finalProfile?.role?.toLowerCase() || '';
-                const designation = (finalProfile?.designation || '').toLowerCase().replace(/[^a-z]/g, '');
-
-                if (role === 'superadmin' || designation.includes('executive')) {
-                    window.location.href = 'admin_dashboard.html';
-                } else if (designation.includes('hr') || designation.includes('human') || designation.includes('resource')) {
-                    window.location.href = 'hr_dashboard.html';
-                } else if (designation.includes('program')) {
-                    window.location.href = 'programs_dashboard.html';
-                } else {
-                    window.location.href = 'staff.html';
-                }
                 
+                // Redirect
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 500);
+
             } catch (err) {
-                console.error('Login error:', err);
-                showError('Login failed. Please try again.');
+                log('❌ Unexpected error: ' + err.message);
+                console.error(err);
+                showError('An error occurred. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+            }
+        }
+
+        // Check for existing session on load
+        window.addEventListener('load', async () => {
+            log('Page loaded, checking session...');
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    log('Found existing session, redirecting...');
+                    window.location.href = 'staff.html';
+                } else {
+                    log('No session, ready for login');
+                }
+            } catch (err) {
+                log('Session check error: ' + err.message);
             }
         });
-
-        function showError(message) {
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-        }
     </script>
 </body>
 </html>
