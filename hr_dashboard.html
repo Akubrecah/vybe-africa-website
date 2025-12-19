@@ -443,16 +443,39 @@
             const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
             const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-            // Auth / Basic Setup
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                 window.location.href = 'login.html';
-            });
+        // Auth Check
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            return user;
+        }
 
-            const userName = localStorage.getItem('name');
-            if(userName) document.getElementById('user-name').innerText = userName.split(' ')[0];
+        // Init
+        async function init() {
+            const user = await checkAuth();
+            if (!user) return;
+            
+            const { data: profile } = await supabase
+                .from('user_profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+            
+            if (profile) {
+                document.getElementById('user-name').textContent = profile.name.split(' ')[0];
+            }
+        }
 
-            // Nav Logic - make it global so onclick works
-            window.showSection = function(name) {
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+        });
+
+        init();    window.showSection = function(name) {
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 if(event && event.currentTarget) event.currentTarget.classList.add('active');
 
