@@ -1,103 +1,99 @@
--- RESTORE USERS FROM BACKUP & CREATE NEW STAFF
+-- VYBE AFRICA TEAM MEMBERS - STAFF ACCOUNTS
 -- Run this in Supabase SQL Editor
 
 -- ============================================
--- OPTION 1: Restore from backup (if exists)
+-- DROP AND RECREATE USERS TABLE
 -- ============================================
 
--- Check if backup exists and restore it
-DO $$
-BEGIN
-    -- Check if backup table exists
-    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'users_backup_old') THEN
-        -- Drop current users table if exists
-        DROP TABLE IF EXISTS users CASCADE;
-        
-        -- Rename backup to users
-        ALTER TABLE users_backup_old RENAME TO users;
-        
-        RAISE NOTICE '✅ Restored users from backup!';
-    ELSE
-        RAISE NOTICE '⚠️ No backup found. Creating new users table...';
-        
-        -- Create users table if doesn't exist
-        CREATE TABLE IF NOT EXISTS users (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            phone TEXT,
-            role TEXT DEFAULT 'staff',
-            designation TEXT,
-            bio TEXT,
-            avatar_url TEXT,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-            updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-    END IF;
-END $$;
+DROP TABLE IF EXISTS users CASCADE;
+
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    phone TEXT,
+    role TEXT DEFAULT 'staff',
+    designation TEXT,
+    bio TEXT,
+    avatar_url TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Disable RLS so login works
+ALTER TABLE users DISABLE ROW LEVEL SECURITY;
 
 -- ============================================
--- OPTION 2: Create sample staff users
+-- INSERT REAL TEAM MEMBERS
 -- ============================================
+-- Password for all: "Vybe2024" (hashed with bcrypt)
+-- bcrypt hash generated for "Vybe2024"
 
--- Clear existing users if starting fresh (COMMENTED OUT FOR SAFETY)
--- DELETE FROM users;
+INSERT INTO users (name, email, password, role, designation, phone) VALUES
 
--- Insert staff users with bcrypt-hashed passwords
--- Password for all: "Password123" (hashed with bcrypt)
--- You can change these to your actual staff members
-
-INSERT INTO users (id, name, email, password, role, designation, phone, created_at) VALUES
+-- 1. Sharon Chepkite - Executive Director (ADMIN)
 (
-    gen_random_uuid(),
-    'Akubrecah Entertainment',
-    'poweldayck@gmail.com',
-    '$2a$10$rQnM6OxLC.gOJL.VPGGxQOYJHKGVlDQxlXG6/bVXLqUUKI9lWOqKS', -- Password123
+    'Sharon Chepkite',
+    'sharon@vybeafrica.org',
+    '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
     'superadmin',
     'Executive Director',
-    '+254 717 648 457',
-    NOW()
+    '+254 700 000 001'
 ),
+
+-- 2. Moses Kibet - Programs Manager
 (
-    gen_random_uuid(),
-    'HR Manager',
-    'hr@vybeafrica.org',
-    '$2a$10$rQnM6OxLC.gOJL.VPGGxQOYJHKGVlDQxlXG6/bVXLqUUKI9lWOqKS', -- Password123
-    'hr',
-    'HR Manager',
-    '+254 700 000 001',
-    NOW()
-),
-(
-    gen_random_uuid(),
-    'Programs Coordinator',
-    'programs@vybeafrica.org',
-    '$2a$10$rQnM6OxLC.gOJL.VPGGxQOYJHKGVlDQxlXG6/bVXLqUUKI9lWOqKS', -- Password123
+    'Moses Kibet',
+    'moses@vybeafrica.org',
+    '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
     'programs',
     'Programs Manager',
-    '+254 700 000 002',
-    NOW()
+    '+254 700 000 002'
 ),
+
+-- 3. Marcellina Cherubia - Communication Officer
 (
-    gen_random_uuid(),
-    'Field Officer',
-    'field@vybeafrica.org',
-    '$2a$10$rQnM6OxLC.gOJL.VPGGxQOYJHKGVlDQxlXG6/bVXLqUUKI9lWOqKS', -- Password123
+    'Marcellina Cherubia',
+    'marcellina@vybeafrica.org',
+    '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
     'staff',
-    'Field Officer',
-    '+254 700 000 003',
-    NOW()
-)
-ON CONFLICT (email) DO UPDATE SET
-    name = EXCLUDED.name,
-    password = EXCLUDED.password,
-    role = EXCLUDED.role,
-    designation = EXCLUDED.designation,
-    updated_at = NOW();
+    'Communication Officer',
+    '+254 700 000 003'
+),
+
+-- 4. Farex Nandwa - HR
+(
+    'Farex Nandwa',
+    'farex@vybeafrica.org',
+    '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
+    'hr',
+    'HR Manager',
+    '+254 700 000 004'
+),
+
+-- 5. Tony Barasa - M&E
+(
+    'Tony Barasa',
+    'tony@vybeafrica.org',
+    '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
+    'staff',
+    'M&E Officer',
+    '+254 700 000 005'
+),
+
+-- 6. Admin Account (You)
+(
+    'Akubrecah Entertainment',
+    'poweldayck@gmail.com',
+    '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
+    'superadmin',
+    'System Admin',
+    '+254 717 648 457'
+);
 
 -- ============================================
--- OPTION 3: Create members table too
+-- CREATE MEMBERS TABLE
 -- ============================================
 
 CREATE TABLE IF NOT EXISTS members (
@@ -109,50 +105,36 @@ CREATE TABLE IF NOT EXISTS members (
     county TEXT,
     organization TEXT,
     member_type TEXT DEFAULT 'individual',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ============================================
--- ENABLE RLS (Row Level Security)
--- ============================================
-
--- Disable RLS for now to allow reads (you can enable later with proper policies)
-ALTER TABLE users DISABLE ROW LEVEL SECURITY;
 ALTER TABLE members DISABLE ROW LEVEL SECURITY;
 
 -- ============================================
--- VERIFY DATA
+-- VERIFY
 -- ============================================
 
-SELECT 'USERS TABLE:' as info;
-SELECT id, name, email, role, designation FROM users;
+SELECT '✅ STAFF ACCOUNTS CREATED:' as status;
+SELECT name, email, role, designation FROM users ORDER BY role;
 
-SELECT 'MEMBERS TABLE:' as info;
-SELECT id, name, email, member_type FROM members;
-
--- ============================================
--- LOGIN CREDENTIALS
--- ============================================
 /*
-After running this script, you can login with:
+============================================
+LOGIN CREDENTIALS (Password for all: Vybe2024)
+============================================
 
-ADMIN:
-- Email: poweldayck@gmail.com
-- Password: Password123
+ADMIN ACCOUNTS:
+- sharon@vybeafrica.org / Vybe2024 → Admin Dashboard
+- poweldayck@gmail.com / Vybe2024 → Admin Dashboard
 
-HR MANAGER:
-- Email: hr@vybeafrica.org
-- Password: Password123
+HR ACCOUNT:
+- farex@vybeafrica.org / Vybe2024 → HR Dashboard
 
-PROGRAMS:
-- Email: programs@vybeafrica.org
-- Password: Password123
+PROGRAMS ACCOUNT:
+- moses@vybeafrica.org / Vybe2024 → Programs Dashboard
 
-STAFF:
-- Email: field@vybeafrica.org
-- Password: Password123
+STAFF ACCOUNTS:
+- marcellina@vybeafrica.org / Vybe2024 → Staff Portal
+- tony@vybeafrica.org / Vybe2024 → Staff Portal
 
-NOTE: Password123 is the default password for all sample users.
-Change these passwords after first login!
+============================================
 */
