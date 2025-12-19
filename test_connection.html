@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-result {
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .success { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; }
+        .error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; }
+        .info { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #2563eb; }
+        pre { 
+            background: #000; 
+            padding: 10px; 
+            border-radius: 4px; 
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Supabase Connection Test</h1>
+    <p>This page will test your Supabase connection and auth setup.</p>
+
+    <div id="results"></div>
+
+    <h2>Quick Tests</h2>
+    <button onclick="testConnection()">1. Test Connection</button>
+    <button onclick="testAuth()">2. Test Auth Status</button>
+    <button onclick="testLogin()">3. Test Login</button>
+    <button onclick="checkProfile()">4. Check Profile</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const results = document.getElementById('results');
+        
+        // Initialize Supabase
+        const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        function addResult(title, content, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = `<strong>${title}</strong><br>${content}`;
+            results.appendChild(div);
+        }
+
+        async function testConnection() {
+            addResult('Testing Connection...', 'Checking Supabase connection...', 'info');
+            try {
+                const { data, error } = await supabase.from('user_profiles').select('count', { count: 'exact', head: true });
+                
+                if (error) {
+                    if (error.code === '42P01') {
+                        addResult('❌ Table Missing', 
+                            'The user_profiles table does not exist.<br>Run migrate_to_supabase_auth.sql first!', 
+                            'error');
+                    } else {
+                        addResult('❌ Connection Error', `Error: ${error.message}`, 'error');
+                    }
+                } else {
+                    addResult('✅ Connection Success', 
+                        `Connected to Supabase!<br>user_profiles table exists.`, 
+                        'success');
+                }
+            } catch (err) {
+                addResult('❌ Error', err.message, 'error');
+            }
+        }
+
+        async function testAuth() {
+            addResult('Checking Auth Status...', 'Checking current session...', 'info');
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    addResult('❌ Auth Error', error.message, 'error');
+                } else if (session) {
+                    addResult('✅ Logged In!', 
+                        `User: ${session.user.email}<br>ID: ${session.user.id}<br>Confirmed: ${session.user.email_confirmed_at ? 'Yes' : 'No'}`, 
+                        'success');
+                } else {
+                    addResult('ℹ️ Not Logged In', 'No active session found.', 'info');
+                }
+            } catch (err) {
+                addResult('❌ Error', err.message, 'error');
+            }
+        }
+
+        async function testLogin() {
+            const email = prompt('Enter email (poweldayck@gmail.com):') || 'poweldayck@gmail.com';
+            const password = prompt('Enter password:');
+            
+            if (!password) {
+                addResult('❌ Cancelled', 'Password not provided', 'error');
+                return;
+            }
+
+            addResult('Testing Login...', `Attempting to login as ${email}`, 'info');
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    addResult('❌ Login Failed', 
+                        `Error: ${error.message}<br><pre>${JSON.stringify(error, null, 2)}</pre>`, 
+                        'error');
+                } else {
+                    addResult('✅ Login Success!', 
+                        `Logged in as ${data.user.email}<br>Email confirmed: ${data.user.email_confirmed_at ? 'Yes' : 'No'}`, 
+                        'success');
+                    
+                    // Now check profile
+                    checkProfile();
+                }
+            } catch (err) {
+                addResult('❌ Error', err.message, 'error');
+            }
+        }
+
+        async function checkProfile() {
+            addResult('Checking Profile...', 'Looking up user profile...', 'info');
+            
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                
+                if (!user) {
+                    addResult('❌ Not Logged In', 'Please login first', 'error');
+                    return;
+                }
+
+                const { data: profile, error } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error) {
+                    addResult('❌ Profile Error', 
+                        `Error: ${error.message}<br>User ID: ${user.id}<br><br>This means the profile doesn't exist. Run fix_existing_account.sql!`, 
+                        'error');
+                } else if (profile) {
+                    addResult('✅ Profile Found!', 
+                        `<pre>${JSON.stringify(profile, null, 2)}</pre>`, 
+                        'success');
+                    
+                    // Determine redirect
+                    let redirect = 'Unknown';
+                    if (profile.user_type === 'member') {
+                        redirect = 'members_dashboard.html';
+                    } else if (profile.role === 'superadmin') {
+                        redirect = 'admin_dashboard.html';
+                    } else if (profile.designation?.toLowerCase().includes('hr')) {
+                        redirect = 'hr_dashboard.html';
+                    } else if (profile.designation?.toLowerCase().includes('program')) {
+                        redirect = 'programs_dashboard.html';
+                    } else {
+                        redirect = 'staff.html';
+                    }
+                    
+                    addResult('ℹ️ Should Redirect To', redirect, 'info');
+                } else {
+                    addResult('❌ No Profile', 'Profile is null', 'error');
+                }
+            } catch (err) {
+                addResult('❌ Error', err.message, 'error');
+            }
+        }
+
+        // Auto-run basic tests on load
+        window.addEventListener('load', () => {
+            testConnection();
+            testAuth();
+        });
+    </script>
+</body>
+</html>
