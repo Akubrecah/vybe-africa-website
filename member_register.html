@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Registration - VYBE Africa</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        body {
+            min-height: 100vh;
+            background: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 3rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-section h1 {
+            color: #facc15;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-section p {
+            color: #9ca3af;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #facc15;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-top: 4px;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: 0.85rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-brand, #facc15);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(250, 204, 21, 0.3);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #9ca3af;
+        }
+
+        .login-link a {
+            color: #facc15;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 2rem 1.5rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo-section">
+            <h1><i class="fas fa-users"></i> Join VYBE Africa</h1>
+            <p>Become a member of our community</p>
+        </div>
+
+        <div class="error-message" id="error-message"></div>
+
+        <form id="register-form">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password *</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="+254...">
+                </div>
+                <div class="form-group">
+                    <label for="county">County/Region</label>
+                    <input type="text" id="county" name="county" placeholder="e.g., West Pokot">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="member-type">Member Type *</label>
+                <select id="member-type" name="member-type" required>
+                    <option value="">Select type...</option>
+                    <option value="individual">Individual</option>
+                    <option value="organization">Organization</option>
+                    <option value="youth">Youth Group</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="organization">Organization Name (if applicable)</label>
+                <input type="text" id="organization" name="organization" placeholder="Your organization">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms">I agree to the terms and conditions and privacy policy *</label>
+            </div>
+
+            <button type="submit" class="btn">
+                <i class="fas fa-user-plus"></i> Register Now
+            </button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="member_login.html">Login here</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        const form = document.getElementById('register-form');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessage.style.display = 'none';
+
+            // Get form values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const phone = document.getElementById('phone').value;
+            const county = document.getElementById('county').value;
+            const memberType = document.getElementById('member-type').value;
+            const organization = document.getElementById('organization').value;
+
+            // Validation
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters');
+                return;
+            }
+
+            try {
+                // Hash password
+                const hashedPassword = await bcrypt.hash(password, 10);
+
+                // Insert into Supabase
+                const { data, error } = await supabase
+                    .from('members')
+                    .insert([{
+                        name: name,
+                        email: email,
+                        password: hashedPassword,
+                        phone: phone || null,
+                        county: county || null,
+                        member_type: memberType,
+                        organization: organization || null
+                    }])
+                    .select();
+
+                if (error) {
+                    if (error.message.includes('duplicate') || error.message.includes('unique')) {
+                        showError('Email already registered. Please login.');
+                    } else {
+                        showError('Registration failed: ' + error.message);
+                    }
+                    return;
+                }
+
+                alert('Registration successful! Please login.');
+                window.location.href = 'member_login.html';
+            } catch (err) {
+                console.error(err);
+                showError('Registration failed. Please try again.');
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

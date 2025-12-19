@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Login - VYBE Africa</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        body {
+            min-height: 100vh;
+            background: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 3rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-section h1 {
+            color: #facc15;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-section p {
+            color: #9ca3af;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #facc15;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-brand, #facc15);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(250, 204, 21, 0.3);
+        }
+
+        .register-link, .staff-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #9ca3af;
+        }
+
+        .register-link a, .staff-link a {
+            color: #facc15;
+            text-decoration: none;
+        }
+
+        .register-link a:hover, .staff-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .home-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .home-link a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .home-link a:hover {
+            color: #facc15;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-section">
+            <h1><i class="fas fa-user-circle"></i> Members Portal</h1>
+            <p>Login to your VYBE Africa account</p>
+        </div>
+
+        <div class="error-message" id="error-message"></div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="btn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+
+        <div class="register-link">
+            Don't have an account? <a href="member_register.html">Register here</a>
+        </div>
+
+        <div class="staff-link">
+            <a href="login.html"><i class="fas fa-briefcase"></i> Staff Login</a>
+        </div>
+
+        <div class="home-link">
+            <a href="homepage.html"><i class="fas fa-home"></i> Back to Home</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        const form = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessage.style.display = 'none';
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // Query member by email
+                const { data: members, error } = await supabase
+                    .from('members')
+                    .select('*')
+                    .eq('email', email)
+                    .limit(1);
+
+                if (error) throw error;
+
+                if (!members || members.length === 0) {
+                    showError('Invalid email or password');
+                    return;
+                }
+
+                const member = members[0];
+
+                // Verify password
+                const passwordMatch = await bcrypt.compare(password, member.password);
+
+                if (!passwordMatch) {
+                    showError('Invalid email or password');
+                    return;
+                }
+
+                // Check if active
+                if (!member.is_active) {
+                    showError('Account is inactive. Please contact support.');
+                    return;
+                }
+
+                // Update last login
+                await supabase
+                    .from('members')
+                    .update({ last_login: new Date().toISOString() })
+                    .eq('id', member.id);
+
+                // Store session
+                localStorage.setItem('member_id', member.id);
+                localStorage.setItem('member_name', member.name);
+                localStorage.setItem('member_email', member.email);
+                localStorage.setItem('member_type', member.member_type);
+
+                // Redirect to members dashboard
+                window.location.href = 'members_dashboard.html';
+            } catch (err) {
+                console.error(err);
+                showError('Login failed. Please try again.');
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
