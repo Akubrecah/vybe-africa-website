@@ -222,7 +222,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     <script>
         // Initialize Supabase
         const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
@@ -258,36 +257,58 @@
             }
 
             try {
-                // Hash password
-                const hashedPassword = await bcrypt.hash(password, 10);
+                // Register with Supabase Auth
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            name: name,
+                            user_type: 'member',
+                            phone: phone,
+                            county: county,
+                            member_type: memberType,
+                            organization: organization
+                        },
+                        emailRedirectTo: `${window.location.origin}/verify-email.html`
+                    }
+                });
 
-                // Insert into Supabase
-                const { data, error } = await supabase
-                    .from('members')
-                    .insert([{
-                        name: name,
-                        email: email,
-                        password: hashedPassword,
-                        phone: phone || null,
-                        county: county || null,
-                        member_type: memberType,
-                        organization: organization || null
-                    }])
-                    .select();
-
-                if (error) {
-                    if (error.message.includes('duplicate') || error.message.includes('unique')) {
-                        showError('Email already registered. Please login.');
+                if (authError) {
+                    if (authError.message.includes('already registered') || authError.message.includes('already exists')) {
+                        showError('Email already registered. Please login or use a different email.');
                     } else {
-                        showError('Registration failed: ' + error.message);
+                        showError('Registration failed: ' + authError.message);
                     }
                     return;
                 }
 
-                alert('Registration successful! Please login.');
+                // Create user profile in user_profiles table
+                const { error: profileError } = await supabase
+                    .from('user_profiles')
+                    .insert([{
+                        id: authData.user.id,
+                        user_type: 'member',
+                        name: name,
+                        phone: phone || null,
+                        county: county || null,
+                        member_type: memberType,
+                        organization: organization || null
+                    }]);
+
+                if (profileError) {
+                    console.error('Profile creation error:', profileError);
+                    // Don't fail registration if profile creation fails - can be fixed later
+                }
+
+                // Show success message
+                alert('Registration successful! Please check your email to verify your account before logging in.');
+                
+                // Redirect to login page
                 window.location.href = 'member_login.html';
+                
             } catch (err) {
-                console.error(err);
+                console.error('Registration error:', err);
                 showError('Registration failed. Please try again.');
             }
         });
