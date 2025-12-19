@@ -189,62 +189,43 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Auth Check
-        const userId = localStorage.getItem('user_id');
-        if (!userId) window.location.href = 'login.html';
+        // Auth Check - Use Supabase Session
+        async function checkAuth() {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            
+            if (error || !user) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            
+            return user;
+        }
 
         // Logout
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            localStorage.clear();
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
             window.location.href = 'login.html';
         });
 
         // Fetch User Data (Direct Supabase)
         async function fetchProfile() {
+            const user = await checkAuth();
+            if (!user) return;
+
             try {
-                const { data: user, error } = await supabase
-                    .from('users')
+                const { data: profile, error } = await supabase
+                    .from('user_profiles')
                     .select('*')
-                    .eq('id', userId)
+                    .eq('id', user.id)
                     .single();
                 
-                if (error || !user) throw new Error('User not found');
+                if (error || !profile) throw new Error('User not found');
 
-                console.log('User fetched:', user); // Debug
+                console.log('User fetched:', profile); // Debug
 
-                // Safety Redirects
-                const des = (user.designation || '').toLowerCase().replace(/[^a-z]/g, ''); // strip punctuation
-                const role = user.role || '';
-
-                // Check Admin
-                if (role === 'superadmin' || des.includes('executive')) {
-                    console.log('Redirecting to Admin Dash');
-                    window.location.href = 'admin_dashboard.html';
-                    return;
-                }
-                
-                // Check HR (matches 'hr', 'humanresource', 'human-resource', etc)
-                if (des.includes('hr') || des.includes('human') || des.includes('resource') || des.includes('talent')) {
-                     console.log('Redirecting to HR Dash');
-                    window.location.href = 'hr_dashboard.html';
-                    return;
-                }
-                
                 // Update UI
-                document.getElementById('user-name').textContent = user.name;
-                document.getElementById('user-role-badge').textContent = user.designation || user.role;
-                
-                // Show Manual Redirects if applicable
-                const fallbackDiv = document.getElementById('redirect-btns');
-                if (role === 'superadmin' || des.includes('executive')) {
-                    fallbackDiv.style.display = 'flex';
-                    fallbackDiv.children[1].style.display = 'block'; // Admin btn
-                    fallbackDiv.children[0].style.display = 'none';
-                } else if (des.includes('hr') || des.includes('human') || des.includes('resource') || des.includes('talent')) {
-                    fallbackDiv.style.display = 'flex';
-                    fallbackDiv.children[0].style.display = 'block'; // HR btn
-                    fallbackDiv.children[1].style.display = 'none';
-                }
+                document.getElementById('user-name').textContent = profile.name;
+                document.getElementById('user-role-badge').textContent = profile.designation || profile.role;
 
                 // Profile Card
                 document.getElementById('profile-details').innerHTML = `
@@ -254,12 +235,12 @@
                     </div>
                     <div class="profile-field">
                         <div class="profile-label">Designation</div>
-                        <div class="profile-value">${user.designation}</div>
+                        <div class="profile-value">${profile.designation || 'Staff'}</div>
                     </div>
                 `;
 
                 // Render Role-Specific Tools
-                renderRoleTools(user);
+                renderRoleTools(profile);
 
             } catch (err) {
                 console.error(err);
