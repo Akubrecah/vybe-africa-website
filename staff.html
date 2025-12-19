@@ -461,22 +461,26 @@
 
         window.openEditProfileModal = async function() {
             try {
+                // Get current user
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+
                 // Fetch latest user data
-                const { data: user, error } = await supabase
-                    .from('users')
+                const { data: profile, error } = await supabase
+                    .from('user_profiles')
                     .select('*')
-                    .eq('id', userId)
+                    .eq('id', user.id)
                     .single();
                 
-                if (error || !user) throw new Error('Failed to load profile');
+                if (error || !profile) throw new Error('Failed to load profile');
                 
-                currentUser = user;
+                currentUser = profile;
                 
                 // Populate form
-                document.getElementById('edit-name').value = user.name || '';
+                document.getElementById('edit-name').value = profile.name || '';
                 document.getElementById('edit-email').value = user.email || '';
-                document.getElementById('edit-phone').value = user.phone || '';
-                document.getElementById('edit-bio').value = user.bio || '';
+                document.getElementById('edit-phone').value = profile.phone || '';
+                document.getElementById('edit-bio').value = profile.bio || '';
                 
                 // Show modal
                 document.getElementById('edit-profile-modal').style.display = 'flex';
@@ -493,26 +497,26 @@
         window.saveProfile = async function(e) {
             e.preventDefault();
             
+            // Get current user
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+            
             const updatedData = {
                 name: document.getElementById('edit-name').value,
-                email: document.getElementById('edit-email').value,
                 phone: document.getElementById('edit-phone').value || null,
                 bio: document.getElementById('edit-bio').value || null
             };
 
             try {
                 const { error } = await supabase
-                    .from('users')
+                    .from('user_profiles')
                     .update(updatedData)
-                    .eq('id', userId);
+                    .eq('id', user.id);
                 
                 if (error) throw error;
                 
                 alert('Profile updated successfully!');
                 closeEditProfileModal();
-                
-                // Update local storage name
-                localStorage.setItem('name', updatedData.name);
                 
                 // Refresh profile display
                 fetchProfile();
