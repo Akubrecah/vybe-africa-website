@@ -36,7 +36,7 @@
         }
 
         .logo-section h1 {
-            color: #facc15;
+            color: #ec4899;
             font-size: 2rem;
             margin-bottom: 0.5rem;
         }
@@ -69,7 +69,7 @@
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #facc15;
+            border-color: #ec4899;
             background: rgba(255, 255, 255, 0.08);
         }
 
@@ -99,8 +99,8 @@
         .btn {
             width: 100%;
             padding: 14px;
-            background: var(--primary-brand, #facc15);
-            color: #000;
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            color: #fff;
             border: none;
             border-radius: 8px;
             font-weight: 600;
@@ -111,7 +111,7 @@
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(250, 204, 21, 0.3);
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
         }
 
         .login-link {
@@ -121,7 +121,7 @@
         }
 
         .login-link a {
-            color: #facc15;
+            color: #ec4899;
             text-decoration: none;
         }
 
@@ -302,10 +302,26 @@
                 }
 
                 // Show success message
-                alert('Registration successful! Please check your email to verify your account before logging in.');
+                const successDiv = document.createElement('div');
+                successDiv.style.cssText = 'background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; padding: 15px; border-radius: 8px; margin-bottom: 1rem; text-align: center;';
+                successDiv.innerHTML = `
+                    <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                    <strong>Registration Successful!</strong><br>
+                    <p style="margin: 10px 0;">We've sent a verification email to <strong>${email}</strong></p>
+                    <p style="margin: 0; font-size: 0.9rem;">Please check your inbox and click the verification link to activate your account.</p>
+                `;
                 
-                // Redirect to login page
-                window.location.href = 'member_login.html';
+                // Hide form and show success message
+                form.style.display = 'none';
+                form.parentElement.insertBefore(successDiv, form);
+                
+                // Add button to go to login
+                const loginBtn = document.createElement('a');
+                loginBtn.href = 'member_login.html';
+                loginBtn.className = 'btn';
+                loginBtn.style.marginTop = '20px';
+                loginBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Go to Login';
+                successDiv.appendChild(loginBtn);
                 
             } catch (err) {
                 console.error('Registration error:', err);
