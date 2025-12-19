@@ -642,11 +642,6 @@
                 if(viewName === 'reports') loadReports();
             };
 
-            // Initialize Supabase
-            const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
-            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
             // Load Projects
             async function loadProjects() {
                 try {
