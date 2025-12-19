@@ -116,16 +116,6 @@
             text-align: left;
         }
 
-        .success-msg {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            color: #34d399;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            display: none;
-        }
-
         .links {
             margin-top: 1.5rem;
         }
@@ -141,19 +131,6 @@
         .links a:hover {
             color: #facc15;
         }
-
-        .debug-log {
-            margin-top: 1rem;
-            text-align: left;
-            font-size: 0.75rem;
-            color: #6b7280;
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 6px;
-            max-height: 150px;
-            overflow-y: auto;
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -166,7 +143,6 @@
         <p class="subtitle">VYBE Africa Staff Portal</p>
 
         <div class="error-msg" id="error-msg"></div>
-        <div class="success-msg" id="success-msg"></div>
 
         <form id="login-form" onsubmit="handleLogin(event)">
             <div class="form-group">
@@ -185,67 +161,34 @@
         </form>
 
         <div class="links">
-            <a href="forgot-password.html"><i class="fas fa-key"></i> Forgot Password?</a>
             <a href="member_login.html"><i class="fas fa-users"></i> Member Login</a>
             <a href="homepage.html"><i class="fas fa-home"></i> Back to Home</a>
         </div>
-
-        <div class="debug-log" id="debug-log"></div>
     </div>
 
-    <!-- Supabase with explicit version -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+    <!-- Supabase for database & bcrypt for password -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     
     <script>
-        // Debug mode
-        const DEBUG = true;
-        
-        function log(msg) {
-            console.log('[LOGIN]', msg);
-            if (DEBUG) {
-                const debugDiv = document.getElementById('debug-log');
-                debugDiv.style.display = 'block';
-                debugDiv.innerHTML += msg + '<br>';
-            }
-        }
-
-        // Initialize Supabase
+        // Initialize Supabase (for database only, NOT auth)
         const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
-        
-        let supabase;
-        
-        try {
-            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-            log('✅ Supabase initialized');
-        } catch (err) {
-            log('❌ Supabase init error: ' + err.message);
-        }
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         function showError(msg) {
             const el = document.getElementById('error-msg');
             el.textContent = msg;
             el.style.display = 'block';
-            document.getElementById('success-msg').style.display = 'none';
-        }
-
-        function showSuccess(msg) {
-            const el = document.getElementById('success-msg');
-            el.textContent = msg;
-            el.style.display = 'block';
-            document.getElementById('error-msg').style.display = 'none';
         }
 
         async function handleLogin(event) {
             event.preventDefault();
-            log('Form submitted');
             
             const errorDiv = document.getElementById('error-msg');
-            const successDiv = document.getElementById('success-msg');
             const submitBtn = document.getElementById('submit-btn');
             
             errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
 
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
@@ -255,142 +198,76 @@
                 return;
             }
 
-            log('Attempting login for: ' + email);
-            
             // Disable button
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
 
             try {
-                // Check if Supabase is available
-                if (!supabase) {
-                    showError('Connection error. Please refresh page.');
-                    log('❌ Supabase not available');
-                    return;
-                }
-
-                // Sign in
-                log('Calling signInWithPassword...');
-                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (authError) {
-                    log('❌ Auth error: ' + authError.message);
-                    if (authError.message.includes('Invalid login credentials')) {
-                        showError('Invalid email or password. Please try again.');
-                    } else if (authError.message.includes('Email not confirmed')) {
-                        showError('Please verify your email first. Check your inbox.');
-                    } else {
-                        showError(authError.message);
-                    }
-                    return;
-                }
-
-                log('✅ Auth success! User: ' + authData.user.email);
-
-                // Check email confirmed
-                if (!authData.user.email_confirmed_at) {
-                    log('❌ Email not confirmed');
-                    showError('Please verify your email first.');
-                    await supabase.auth.signOut();
-                    return;
-                }
-
-                log('Email confirmed: Yes');
-                showSuccess('Login successful! Loading profile...');
-
-                // Fetch profile
-                log('Fetching profile...');
-                const { data: profile, error: profileError } = await supabase
-                    .from('user_profiles')
+                // Query users table directly
+                const { data: users, error } = await supabase
+                    .from('users')
                     .select('*')
-                    .eq('id', authData.user.id)
-                    .single();
+                    .eq('email', email)
+                    .limit(1);
 
-                if (profileError) {
-                    log('Profile error: ' + profileError.message);
-                    
-                    // Try to create profile from metadata
-                    const metadata = authData.user.user_metadata || {};
-                    log('Creating profile from metadata...');
-                    
-                    const newProfile = {
-                        id: authData.user.id,
-                        user_type: 'staff',
-                        name: metadata.name || email.split('@')[0],
-                        designation: metadata.designation || 'Staff',
-                        role: metadata.role || 'staff'
-                    };
-                    
-                    const { error: insertError } = await supabase
-                        .from('user_profiles')
-                        .insert([newProfile]);
-                    
-                    if (insertError) {
-                        log('❌ Could not create profile: ' + insertError.message);
-                        // Continue anyway - redirect to staff.html
-                    } else {
-                        log('✅ Profile created');
-                    }
+                if (error) {
+                    console.error('Database error:', error);
+                    showError('Login failed. Please try again.');
+                    return;
                 }
 
-                // Determine redirect
-                let redirectUrl = 'staff.html'; // Default
-                
-                if (profile) {
-                    log('Profile found: ' + JSON.stringify(profile));
-                    
-                    const role = (profile.role || '').toLowerCase();
-                    const designation = (profile.designation || '').toLowerCase();
-                    
-                    if (role === 'superadmin' || designation.includes('executive') || designation.includes('director')) {
-                        redirectUrl = 'admin_dashboard.html';
-                    } else if (designation.includes('hr') || designation.includes('human')) {
-                        redirectUrl = 'hr_dashboard.html';
-                    } else if (designation.includes('program')) {
-                        redirectUrl = 'programs_dashboard.html';
-                    }
+                if (!users || users.length === 0) {
+                    showError('Invalid email or password');
+                    return;
                 }
 
-                log('Redirecting to: ' + redirectUrl);
-                showSuccess('Success! Redirecting...');
-                
-                // Store session
-                localStorage.setItem('user_type', 'staff');
-                localStorage.setItem('user_id', authData.user.id);
-                
-                // Redirect
-                setTimeout(() => {
-                    window.location.href = redirectUrl;
-                }, 500);
+                const user = users[0];
+
+                // Check for bcrypt library
+                if (typeof dcodeIO === 'undefined' || !dcodeIO.bcrypt) {
+                    console.error('bcrypt library not loaded');
+                    showError('System error. Please refresh and try again.');
+                    return;
+                }
+
+                // Compare password with bcrypt
+                const passwordMatch = dcodeIO.bcrypt.compareSync(password, user.password);
+
+                if (!passwordMatch) {
+                    showError('Invalid email or password');
+                    return;
+                }
+
+                // Success! Store session
+                localStorage.setItem('token', 'session_' + Date.now());
+                localStorage.setItem('user_id', user.id);
+                localStorage.setItem('email', user.email);
+                localStorage.setItem('name', user.name);
+                localStorage.setItem('role', user.role || 'staff');
+                localStorage.setItem('designation', user.designation || '');
+
+                // Redirect based on role/designation
+                const designation = (user.designation || '').toLowerCase();
+                const role = (user.role || '').toLowerCase();
+
+                if (role === 'superadmin' || designation.includes('executive') || designation.includes('director')) {
+                    window.location.href = 'admin_dashboard.html';
+                } else if (designation.includes('hr') || designation.includes('human')) {
+                    window.location.href = 'hr_dashboard.html';
+                } else if (designation.includes('program')) {
+                    window.location.href = 'programs_dashboard.html';
+                } else {
+                    window.location.href = 'staff.html';
+                }
 
             } catch (err) {
-                log('❌ Unexpected error: ' + err.message);
-                console.error(err);
+                console.error('Login error:', err);
                 showError('An error occurred. Please try again.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
             }
         }
-
-        // Check for existing session on load
-        window.addEventListener('load', async () => {
-            log('Page loaded, checking session...');
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session) {
-                    log('Found existing session, redirecting...');
-                    window.location.href = 'staff.html';
-                } else {
-                    log('No session, ready for login');
-                }
-            } catch (err) {
-                log('Session check error: ' + err.message);
-            }
-        });
     </script>
 </body>
 </html>
