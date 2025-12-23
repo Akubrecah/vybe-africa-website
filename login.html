@@ -159,168 +159,156 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     
     <script>
-        console.log('Script loaded');
-        
-        // Initialize Supabase (for database only)
-        const supabaseUrl = 'https://mdjokagpejujfjfobdcs.supabase.co';
-        const supabaseKey = 'sb_publishable_Y9Wv-aZdMFVv55-CYgj2AA_6l3Iz31G';
-        
-        // Disable session persistence and auto-refresh for file:// protocol compatibility
-        let supabase;
-        try {
-            supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-                auth: {
-                    persistSession: false,
-                    autoRefreshToken: false,
-                    detectSessionInUrl: false
-                }
-            });
-            console.log('Supabase initialized');
-        } catch (e) {
-            console.error('Supabase init failed:', e);
-            document.getElementById('debug-info').style.display = 'block';
-            document.getElementById('debug-info').textContent = 'Error initializing app: ' + e.message;
-        }
-
-        // Robust bcrypt loader
-        const bcrypt = window.dcodeIO ? window.dcodeIO.bcrypt : window.bcrypt;
-
-        document.getElementById('login-btn').addEventListener('click', handleLogin);
-
-        function showError(msg) {
-            document.getElementById('error-msg').textContent = msg;
-            document.getElementById('error-msg').style.display = 'block';
-            document.getElementById('success-msg').style.display = 'none';
-        }
-
-        function showSuccess(msg) {
-            document.getElementById('success-msg').innerHTML = msg;
-            document.getElementById('success-msg').style.display = 'block';
-            document.getElementById('error-msg').style.display = 'none';
-        }
-
-        function debug(msg) {
-            console.log('[LOGIN]', msg);
-            const el = document.getElementById('debug-info');
-            el.style.display = 'block';
-            el.innerHTML += msg + '<br>';
-        }
-
-        async function handleLogin() {
-            console.log('handleLogin called');
-            // No event to preventDefault because we are using type="button"
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
             
-            const submitBtn = document.getElementById('login-btn');
-            document.getElementById('error-msg').style.display = 'none';
-            document.getElementById('success-msg').style.display = 'none';
-            document.getElementById('debug-info').innerHTML = '';
-
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) {
-                showError('Please fill in all fields');
-                return;
+            // Initialize Supabase
+            const supabaseUrl = 'https://mdjokagpejujfjfobdcs.supabase.co';
+            const supabaseKey = 'sb_publishable_Y9Wv-aZdMFVv55-CYgj2AA_6l3Iz31G';
+            
+            let supabase;
+            try {
+                // Simplified client creation
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                console.log('Supabase initialized');
+            } catch (e) {
+                console.error('Supabase init failed:', e);
+                alert('App Init Error: ' + e.message);
             }
 
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+            const bcrypt = window.dcodeIO ? window.dcodeIO.bcrypt : window.bcrypt;
+            const loginBtn = document.getElementById('login-btn');
+            
+            // Attach Click Listener explicitly
+            if (loginBtn) {
+                console.log('Login button found, attaching listener');
+                loginBtn.addEventListener('click', handleLogin);
+            } else {
+                console.error('Login button NOT found');
+            }
 
-            try {
-                debug('Connecting to database...');
+            function showError(msg) {
+                document.getElementById('error-msg').textContent = msg;
+                document.getElementById('error-msg').style.display = 'block';
+                document.getElementById('success-msg').style.display = 'none';
+            }
+
+            function showSuccess(msg) {
+                document.getElementById('success-msg').innerHTML = msg;
+                document.getElementById('success-msg').style.display = 'block';
+                document.getElementById('error-msg').style.display = 'none';
+            }
+
+            function debug(msg) {
+                console.log('[LOGIN]', msg);
+                const el = document.getElementById('debug-info');
+                el.style.display = 'block';
+                el.innerHTML += msg + '<br>';
+            }
+
+            async function handleLogin(e) {
+                if(e) e.preventDefault();
+                console.log('Handle login triggered');
                 
-                if (!supabase) throw new Error('Supabase client not initialized');
+                const submitBtn = document.getElementById('login-btn');
+                document.getElementById('error-msg').style.display = 'none';
+                document.getElementById('success-msg').style.display = 'none';
+                document.getElementById('debug-info').innerHTML = '';
 
-                // Query users table
-                const { data: users, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('email', email);
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
 
-                if (error) {
-                    throw error;
-                }
-
-                if (!users || users.length === 0) {
-                    showError('Account not found. Please check email.');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                if (!email || !password) {
+                    showError('Please fill in all fields');
                     return;
                 }
 
-                const user = users[0];
-                debug('User found: ' + user.role);
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
 
-                // Compare password
-                let passwordMatch = false;
-                if (bcrypt) {
-                    try {
-                        passwordMatch = bcrypt.compareSync(password, user.password);
-                    } catch (e) {
-                        debug('Bcrypt error, trying plain text fallback');
+                try {
+                    debug('Connecting to database...');
+                    if (!supabase) throw new Error('Supabase client not initialized');
+
+                    const { data: users, error } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('email', email);
+
+                    if (error) throw error;
+
+                    if (!users || users.length === 0) {
+                        showError('Account not found. Please check email.');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                        return;
+                    }
+
+                    const user = users[0];
+                    debug('User found: ' + user.role);
+
+                    let passwordMatch = false;
+                    if (bcrypt) {
+                        try {
+                            passwordMatch = bcrypt.compareSync(password, user.password);
+                        } catch (e) {
+                            if (password === user.password) passwordMatch = true;
+                        }
+                    } else {
                         if (password === user.password) passwordMatch = true;
                     }
-                } else {
-                    if (password === user.password) passwordMatch = true;
-                }
 
-                if (!passwordMatch) {
-                    showError('Incorrect password');
+                    if (!passwordMatch) {
+                        showError('Incorrect password');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                        return;
+                    }
+
+                    debug('Password verified!');
+                    
+                    localStorage.setItem('user_id', user.id);
+                    localStorage.setItem('email', user.email);
+                    localStorage.setItem('role', user.role || 'staff');
+                    localStorage.setItem('designation', user.designation || '');
+
+                    const role = (user.role || '').toLowerCase();
+                    const designation = (user.designation || '').toLowerCase();
+                    let redirectUrl = 'staff.html';
+
+                    if (role === 'superadmin' || role === 'admin' || designation.includes('executive')) {
+                        redirectUrl = 'admin_dashboard.html';
+                    } else if (role === 'hr' || designation.includes('hr')) {
+                        redirectUrl = 'hr_dashboard.html';
+                    } else if (role === 'programs' || designation.includes('program')) {
+                        redirectUrl = 'programs_dashboard.html';
+                    }
+
+                    debug('Routing to: ' + redirectUrl);
+                    
+                    const btnHtml = `
+                        <div style="margin-top:15px; padding:15px; border:2px solid #10b981; border-radius:10px; background:rgba(0,0,0,0.8);">
+                            <p style="color:#10b981; font-weight:bold; margin-bottom:10px;">✅ LOGIN SUCCESSFUL</p>
+                            <a href="${redirectUrl}" style="display:block; background:#10b981; color:white; padding:12px; border-radius:5px; text-decoration:none; font-weight:bold;">
+                                <i class="fas fa-arrow-right"></i> GO TO DASHBOARD
+                            </a>
+                        </div>
+                    `;
+                    
+                    showSuccess(btnHtml);
+                    submitBtn.style.display = 'none';
+
+                    // Attempt auto-redirect
+                    window.location.href = redirectUrl;
+
+                } catch (err) {
+                    console.error(err);
+                    showError('System Error: ' + err.message);
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
-                    return;
                 }
-
-                // LOGIN SUCCESS
-                debug('Password verified!');
-                
-                // Store minimal stateless session info
-                localStorage.setItem('user_id', user.id);
-                localStorage.setItem('email', user.email);
-                localStorage.setItem('name', user.name);
-                localStorage.setItem('role', user.role || 'staff');
-                localStorage.setItem('designation', user.designation || '');
-
-                // DETERMINE DASHBOARD
-                const role = (user.role || '').toLowerCase();
-                const designation = (user.designation || '').toLowerCase();
-                let redirectUrl = 'staff.html'; // Default
-
-                if (role === 'superadmin' || role === 'admin' || designation.includes('executive')) {
-                    redirectUrl = 'admin_dashboard.html';
-                } else if (role === 'hr' || designation.includes('hr')) {
-                    redirectUrl = 'hr_dashboard.html';
-                } else if (role === 'programs' || designation.includes('program')) {
-                    redirectUrl = 'programs_dashboard.html';
-                }
-
-                debug('Routing to: ' + redirectUrl);
-                
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
-                
-                // Create obvious manual link
-                const btnHtml = `
-                    <div style="margin-top:15px; padding:15px; border:2px solid #10b981; border-radius:10px; background:rgba(0,0,0,0.8);">
-                        <p style="color:#10b981; font-weight:bold; margin-bottom:10px;">✅ LOGIN SUCCESSFUL</p>
-                        <a href="${redirectUrl}" style="display:block; background:#10b981; color:white; padding:12px; border-radius:5px; text-decoration:none; font-weight:bold;">
-                            <i class="fas fa-arrow-right"></i> GO TO DASHBOARD
-                        </a>
-                    </div>
-                `;
-                
-                showSuccess(btnHtml);
-                submitBtn.style.display = 'none';
-
-                // Attempt auto-redirect
-                window.location.href = redirectUrl;
-
-            } catch (err) {
-                console.error(err);
-                showError('System Error: ' + err.message);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
             }
-        }
+        });
     </script>
 </body>
 </html>
