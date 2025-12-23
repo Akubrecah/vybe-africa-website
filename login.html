@@ -141,7 +141,7 @@
                 <input type="password" id="password" required placeholder="Enter your password">
             </div>
 
-            <button type="button" class="btn-login" id="submit-btn" onclick="handleLogin()">
+            <button type="button" class="btn-login" id="login-btn">
                 <i class="fas fa-sign-in-alt"></i> Sign In
             </button>
         </form>
@@ -185,6 +185,8 @@
         // Robust bcrypt loader
         const bcrypt = window.dcodeIO ? window.dcodeIO.bcrypt : window.bcrypt;
 
+        document.getElementById('login-btn').addEventListener('click', handleLogin);
+
         function showError(msg) {
             document.getElementById('error-msg').textContent = msg;
             document.getElementById('error-msg').style.display = 'block';
@@ -207,7 +209,7 @@
         async function handleLogin() {
             // No event to preventDefault because we are using type="button"
             
-            const submitBtn = document.getElementById('submit-btn');
+            const submitBtn = document.getElementById('login-btn');
             document.getElementById('error-msg').style.display = 'none';
             document.getElementById('success-msg').style.display = 'none';
             document.getElementById('debug-info').innerHTML = '';
