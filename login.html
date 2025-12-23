@@ -248,14 +248,20 @@
                     debug('User found: ' + user.role);
 
                     let passwordMatch = false;
+                    
+                    // 1. Try bcrypt if available
                     if (bcrypt) {
                         try {
                             passwordMatch = bcrypt.compareSync(password, user.password);
                         } catch (e) {
-                            if (password === user.password) passwordMatch = true;
+                            console.warn('Bcrypt check failed, trying plain text');
                         }
-                    } else {
-                        if (password === user.password) passwordMatch = true;
+                    }
+
+                    // 2. Fallback: Direct string comparison
+                    if (!passwordMatch && password === user.password) {
+                        console.log('Plain text password match');
+                        passwordMatch = true;
                     }
 
                     if (!passwordMatch) {
