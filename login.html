@@ -130,7 +130,7 @@
         <div class="error-msg" id="error-msg"></div>
         <div class="success-msg" id="success-msg"></div>
 
-        <form id="login-form" onsubmit="handleLogin(event)">
+        <form id="login-form">
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <input type="email" id="email" required autofocus placeholder="Enter your email">
@@ -141,7 +141,7 @@
                 <input type="password" id="password" required placeholder="Enter your password">
             </div>
 
-            <button type="submit" class="btn-login" id="submit-btn">
+            <button type="button" class="btn-login" id="submit-btn" onclick="handleLogin()">
                 <i class="fas fa-sign-in-alt"></i> Sign In
             </button>
         </form>
@@ -159,18 +159,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     
     <script>
+        console.log('Script loaded');
+        
         // Initialize Supabase (for database only)
         const supabaseUrl = 'https://mdjokagpejujfjfobdcs.supabase.co';
         const supabaseKey = 'sb_publishable_Y9Wv-aZdMFVv55-CYgj2AA_6l3Iz31G';
         
         // Disable session persistence and auto-refresh for file:// protocol compatibility
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-            auth: {
-                persistSession: false,
-                autoRefreshToken: false,
-                detectSessionInUrl: false
-            }
-        });
+        let supabase;
+        try {
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+                auth: {
+                    persistSession: false,
+                    autoRefreshToken: false,
+                    detectSessionInUrl: false
+                }
+            });
+            console.log('Supabase initialized');
+        } catch (e) {
+            console.error('Supabase init failed:', e);
+            document.getElementById('debug-info').style.display = 'block';
+            document.getElementById('debug-info').textContent = 'Error initializing app: ' + e.message;
+        }
 
         // Robust bcrypt loader
         const bcrypt = window.dcodeIO ? window.dcodeIO.bcrypt : window.bcrypt;
@@ -194,8 +204,8 @@
             el.innerHTML += msg + '<br>';
         }
 
-        async function handleLogin(event) {
-            event.preventDefault();
+        async function handleLogin() {
+            // No event to preventDefault because we are using type="button"
             
             const submitBtn = document.getElementById('submit-btn');
             document.getElementById('error-msg').style.display = 'none';
@@ -211,16 +221,12 @@
             }
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
 
             try {
-                if (!bcrypt) {
-                    debug('CRITICAL: bcrypt library not loaded!');
-                    // Fallback to naive check if bcrypt missing (only for emergency/testing if plain text used)
-                    debug('Proceeding with fallback check...');
-                }
-
-                debug('Querying database for: ' + email);
+                debug('Connecting to database...');
+                
+                if (!supabase) throw new Error('Supabase client not initialized');
 
                 // Query users table
                 const { data: users, error } = await supabase
@@ -229,63 +235,53 @@
                     .eq('email', email);
 
                 if (error) {
-                    debug('DB Error: ' + error.message);
-                    showError('Database connection failed: ' + error.message);
-                    return;
+                    throw error;
                 }
 
                 if (!users || users.length === 0) {
-                    debug('No user found with that email');
-                    showError('Invalid email or password');
+                    showError('Account not found. Please check email.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
                     return;
                 }
 
                 const user = users[0];
-                debug('User found: ' + user.name + ' (' + user.role + ')');
+                debug('User found: ' + user.role);
 
                 // Compare password
                 let passwordMatch = false;
-                
                 if (bcrypt) {
-                    debug('Verifying password with bcrypt...');
                     try {
                         passwordMatch = bcrypt.compareSync(password, user.password);
                     } catch (e) {
-                        debug('Bcrypt verify error: ' + e.message);
-                        // Try plain text match as fallback
+                        debug('Bcrypt error, trying plain text fallback');
                         if (password === user.password) passwordMatch = true;
                     }
                 } else {
-                    // Fallback plain text
                     if (password === user.password) passwordMatch = true;
                 }
 
                 if (!passwordMatch) {
-                    debug('Password mismatch');
-                    showError('Invalid email or password');
+                    showError('Incorrect password');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
                     return;
                 }
 
-                debug('Password correct!');
+                // LOGIN SUCCESS
+                debug('Password verified!');
                 
-                // Store session
-                try {
-                    localStorage.setItem('token', 'session_' + Date.now());
-                    localStorage.setItem('user_id', user.id);
-                    localStorage.setItem('email', user.email);
-                    localStorage.setItem('name', user.name);
-                    localStorage.setItem('role', user.role || 'staff');
-                    localStorage.setItem('designation', user.designation || '');
-                    debug('Session saved to localStorage');
-                } catch (e) {
-                    debug('Storage Error: ' + e.message);
-                    alert('Warning: Could not save session (Cookies/Storage blocked?)');
-                }
+                // Store minimal stateless session info
+                localStorage.setItem('user_id', user.id);
+                localStorage.setItem('email', user.email);
+                localStorage.setItem('name', user.name);
+                localStorage.setItem('role', user.role || 'staff');
+                localStorage.setItem('designation', user.designation || '');
 
-                // Redirect Logic
-                const role = (user.role || '').toLowerCase().trim();
-                const designation = (user.designation || '').toLowerCase().trim();
-                let redirectUrl = 'staff.html';
+                // DETERMINE DASHBOARD
+                const role = (user.role || '').toLowerCase();
+                const designation = (user.designation || '').toLowerCase();
+                let redirectUrl = 'staff.html'; // Default
 
                 if (role === 'superadmin' || role === 'admin' || designation.includes('executive')) {
                     redirectUrl = 'admin_dashboard.html';
@@ -295,35 +291,31 @@
                     redirectUrl = 'programs_dashboard.html';
                 }
 
-                debug('Redirecting to: ' + redirectUrl);
+                debug('Routing to: ' + redirectUrl);
                 
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 
-                // Show manual dashboard button which is reliable on file:// protocol
-                const dashboardButtonHtml = `
-                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.2); border-radius: 8px; border: 1px solid #10b981;">
-                        <p style="color: #34d399; margin-bottom: 0.5rem;">Login Verified!</p>
-                        <a href="${redirectUrl}" class="btn-login" style="display: block; text-decoration: none; background: #10b981; color: white;">
-                            <i class="fas fa-arrow-right"></i> Go to Dashboard
+                // Create obvious manual link
+                const btnHtml = `
+                    <div style="margin-top:15px; padding:15px; border:2px solid #10b981; border-radius:10px; background:rgba(0,0,0,0.8);">
+                        <p style="color:#10b981; font-weight:bold; margin-bottom:10px;">✅ LOGIN SUCCESSFUL</p>
+                        <a href="${redirectUrl}" style="display:block; background:#10b981; color:white; padding:12px; border-radius:5px; text-decoration:none; font-weight:bold;">
+                            <i class="fas fa-arrow-right"></i> GO TO DASHBOARD
                         </a>
                     </div>
                 `;
                 
-                showSuccess(dashboardButtonHtml);
-                submitBtn.style.display = 'none'; // Hide login button
+                showSuccess(btnHtml);
+                submitBtn.style.display = 'none';
 
-                // Try auto-redirect anyway
+                // Attempt auto-redirect
                 window.location.href = redirectUrl;
 
             } catch (err) {
-                debug('UNEXPECTED ERROR: ' + err.message);
                 console.error(err);
-                showError('Error: ' + err.message);
-            } finally {
-                if (!submitBtn.innerHTML.includes('Success')) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
-                }
+                showError('System Error: ' + err.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
             }
         }
     </script>
