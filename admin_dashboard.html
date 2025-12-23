@@ -244,10 +244,10 @@
         <a href="#" class="nav-link" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         
         <div style="margin-top: auto; display: flex; align-items: center; gap: 10px; padding-top: 1rem; border-top: 1px solid var(--border-glass);">
-            <div style="width: 32px; height: 32px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center;">SC</div>
+            <div id="admin-initials" style="width: 32px; height: 32px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center;">AD</div>
             <div>
-                <div style="font-size: 0.9rem; font-weight: 600;">Sharon C.</div>
-                <div style="font-size: 0.7rem; color: var(--text-secondary);">Super Admin</div>
+                <div id="admin-name-display" style="font-size: 0.9rem; font-weight: 600;">Admin User</div>
+                <div id="admin-role-display" style="font-size: 0.7rem; color: var(--text-secondary);">Super Admin</div>
             </div>
         </div>
     </aside>
@@ -413,17 +413,13 @@
             
             // Auth Check - localStorage
             const userId = localStorage.getItem('user_id');
-            const userName = localStorage.getItem('name');
+            // We'll fetch the name dynamically, but keep fallback
             
             if (!userId) {
                 window.location.href = 'login.html';
                 return;
             }
             
-            // Set user name
-            const adminNameEl = document.getElementById('admin-name');
-            if (adminNameEl) adminNameEl.textContent = userName || 'Admin';
-
             // Logout
             document.getElementById('logout-btn').addEventListener('click', () => {
                 localStorage.clear();
@@ -435,8 +431,11 @@
                 document.querySelectorAll('.content-view').forEach(el => el.style.display = 'none');
                 document.getElementById('view-' + viewName).style.display = 'block';
                 
+                // Dynamic Greeting
+                const userName = document.getElementById('admin-name-display').textContent || 'Admin';
+
                 const titles = {
-                    'dashboard': 'Welcome Back, Sharon! 👋',
+                    'dashboard': `Welcome Back, ${userName.split(' ')[0]}! 👋`,
                     'reports': 'System Reports',
                     'team': 'Team Management',
                     'history': 'Activity Log',
@@ -452,7 +451,7 @@
                 if(viewName === 'team') loadTeam();
             };
 
-            // --- DOWNLOAD MODAL LOGIC (Existing) ---
+            // --- DOWNLOAD MODAL LOGIC ---
             let currentFile = '';
             window.openDownloadModal = function(fileName) {
                 currentFile = fileName;
@@ -462,12 +461,12 @@
             window.closeDownloadModal = function() { document.getElementById('download-modal').style.display = 'none'; };
             window.downloadFile = function(format) {
                 closeDownloadModal();
-                alert(`Downloading: ${currentFile}.${format}`);
+                alert(`Downloading: ${currentFile || 'Report'}.${format}`);
                 if(format === 'csv') {
-                    const csvContent = "data:text/csv;charset=utf-8,ID,Report Name\\n1," + currentFile;
+                    const csvContent = "data:text/csv;charset=utf-8,ID,Report Name,Date,Status\\n1,Q3 Financial Audit,Dec 10 2024,Review\\n2,Security Log 4092,Dec 18 2024,Critical";
                     const link = document.createElement("a");
                     link.setAttribute("href", encodeURI(csvContent));
-                    link.setAttribute("download", "report.csv");
+                    link.setAttribute("download", (currentFile || "report") + ".csv");
                     document.body.appendChild(link);
                     link.click();
                 }
@@ -490,7 +489,6 @@
             // ----------------------------------------------------
             // DIRECT SUPABASE INTEGRATION (SERVERLESS)
             // ----------------------------------------------------
-            // Initialize Supabase - Disable session persistence for file:// compatibility
             const supabaseUrl = 'https://mdjokagpejujfjfobdcs.supabase.co';
             const supabaseKey = 'sb_publishable_Y9Wv-aZdMFVv55-CYgj2AA_6l3Iz31G';
             const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
@@ -500,6 +498,24 @@
             // Fetch Data (Dashboard View)
             async function loadData() {
                 try {
+                    // 0. Get Current User Profile
+                    const { data: userProfile, error: userError } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('id', userId)
+                        .single();
+                    
+                    if(!userError && userProfile) {
+                        // Update Sidebar
+                        const initials = userProfile.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+                        document.getElementById('admin-initials').textContent = initials;
+                        document.getElementById('admin-name-display').textContent = userProfile.name;
+                        document.getElementById('admin-role-display').textContent = userProfile.role || 'Admin';
+                        
+                        // Update Header
+                        document.getElementById('page-title').innerText = `Welcome Back, ${userProfile.name.split(' ')[0]}! 👋`;
+                    }
+
                     // 1. Get User Count
                     const { count, error } = await supabase
                         .from('users')
@@ -515,12 +531,14 @@
                         .limit(3);
 
                     const container = document.getElementById('recent-posts-list');
-                    if(posts) {
+                    if(posts && posts.length > 0) {
                         container.innerHTML = posts.map(post => `
                             <div class="report-item">
                                 <div><strong style="display:block;">${post.title}</strong><span style="font-size:0.8rem; color:var(--text-secondary);">${post.category}</span></div>
                             </div>
                         `).join('');
+                    } else {
+                         container.innerHTML = '<p style="color:var(--text-secondary); font-size:0.9rem;">No recent updates found.</p>';
                     }
                 } catch(e) { console.error(e); }
             }
