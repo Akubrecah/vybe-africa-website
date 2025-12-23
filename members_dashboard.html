@@ -259,34 +259,28 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Initialize Supabase
-        const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        // Initialize Supabase - Disable session persistence for file:// compatibility
+        const supabaseUrl = 'https://mdjokagpejujfjfobdcs.supabase.co';
+        const supabaseKey = 'sb_publishable_Y9Wv-aZdMFVv55-CYgj2AA_6l3Iz31G';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+        });
 
-        // Auth check - use Supabase session
-        async function checkAuth() {
-            const { data: { user }, error } = await supabase.auth.getUser();
-            
-            if (error || !user) {
-                // Not authenticated, redirect to login
-                window.location.href = 'member_login.html';
-                return null;
-            }
-            
-            return user;
+        // Auth check - localStorage
+        const userId = localStorage.getItem('member_id');
+        const userType = localStorage.getItem('user_type');
+
+        if (!userId || userType !== 'member') {
+            window.location.href = 'member_login.html';
         }
 
         // Load member data
         async function loadProfile() {
-            const user = await checkAuth();
-            if (!user) return;
-
             try {
                 const { data: profile, error } = await supabase
-                    .from('user_profiles')
+                    .from('members')
                     .select('*')
-                    .eq('id', user.id)
+                    .eq('id', userId)
                     .single();
 
                 if (error || !profile) {
@@ -305,8 +299,12 @@
                 // Profile info
                 document.getElementById('profile-info').innerHTML = `
                     <div class="profile-field">
+                        <label>Full Name</label>
+                        <div class="value">${profile.name}</div>
+                    </div>
+                    <div class="profile-field">
                         <label>Email</label>
-                        <div class="value">${user.email}</div>
+                        <div class="value">${profile.email}</div>
                     </div>
                     <div class="profile-field">
                         <label>Phone</label>
@@ -318,7 +316,7 @@
                     </div>
                     <div class="profile-field">
                         <label>Member Type</label>
-                        <div class="value" style="text-transform: capitalize;">${profile.member_type}</div>
+                        <div class="value" style="text-transform: capitalize;">${profile.member_type || 'Individual'}</div>
                     </div>
                     ${profile.organization ? `
                         <div class="profile-field">
@@ -329,21 +327,21 @@
                 `;
             } catch (err) {
                 console.error(err);
-                alert('Failed to load profile. Please login again.');
+                alert('Session expired. Please login again.');
                 localStorage.clear();
                 window.location.href = 'member_login.html';
             }
         }
 
         // Logout
-        document.getElementById('logout-btn').addEventListener('click', async () => {
-            await supabase.auth.signOut();
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.clear();
             window.location.href = 'member_login.html';
         });
 
         // Edit profile (placeholder)
         function editProfile() {
-            alert('Profile editing coming soon!');
+            alert('Profile editing feature coming next!');
         }
 
         // Load profile on page load
