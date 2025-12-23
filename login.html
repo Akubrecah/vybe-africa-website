@@ -305,6 +305,14 @@
                 if (window.location.href !== redirectUrl) {
                      window.open(redirectUrl, '_self'); // Fallback
                 }
+                
+                // Fallback for file:// protocol blocking redirects
+                setTimeout(() => {
+                    if (window.location.href.includes('login.html')) {
+                       showSuccess(`Login successful! If not redirected, <a href="${redirectUrl}" style="color:white;text-decoration:underline;">Click Here to Continue</a>`);
+                       submitBtn.style.display = 'none';
+                    }
+                }, 2000);
 
             } catch (err) {
                 debug('UNEXPECTED ERROR: ' + err.message);
