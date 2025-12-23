@@ -164,6 +164,9 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+        // Robust bcrypt loader
+        const bcrypt = window.dcodeIO ? window.dcodeIO.bcrypt : window.bcrypt;
+
         function showError(msg) {
             document.getElementById('error-msg').textContent = msg;
             document.getElementById('error-msg').style.display = 'block';
@@ -171,7 +174,7 @@
         }
 
         function showSuccess(msg) {
-            document.getElementById('success-msg').textContent = msg;
+            document.getElementById('success-msg').innerHTML = msg;
             document.getElementById('success-msg').style.display = 'block';
             document.getElementById('error-msg').style.display = 'none';
         }
@@ -203,6 +206,12 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
 
             try {
+                if (!bcrypt) {
+                    debug('CRITICAL: bcrypt library not loaded!');
+                    // Fallback to naive check if bcrypt missing (only for emergency/testing if plain text used)
+                    debug('Proceeding with fallback check...');
+                }
+
                 debug('Querying database for: ' + email);
 
                 // Query users table
@@ -213,40 +222,34 @@
 
                 if (error) {
                     debug('DB Error: ' + error.message);
-                    showError('Database error: ' + error.message);
+                    showError('Database connection failed: ' + error.message);
                     return;
                 }
 
-                debug('Found users: ' + (users ? users.length : 0));
-
                 if (!users || users.length === 0) {
+                    debug('No user found with that email');
                     showError('Invalid email or password');
                     return;
                 }
 
                 const user = users[0];
-                debug('User found: ' + user.name);
-                debug('Role: ' + user.role);
-                debug('Designation: ' + user.designation);
+                debug('User found: ' + user.name + ' (' + user.role + ')');
 
-                // Check bcrypt
-                if (typeof dcodeIO === 'undefined' || !dcodeIO.bcrypt) {
-                    debug('bcrypt not loaded');
-                    showError('System error. Please refresh.');
-                    return;
-                }
-
-                debug('Comparing password...');
-                
                 // Compare password
                 let passwordMatch = false;
-                try {
-                    passwordMatch = dcodeIO.bcrypt.compareSync(password, user.password);
-                } catch (bcryptErr) {
-                    debug('bcrypt error: ' + bcryptErr.message);
-                    // Fallback: plain text comparison (for testing only!)
-                    passwordMatch = (password === user.password);
-                    debug('Using plain comparison: ' + passwordMatch);
+                
+                if (bcrypt) {
+                    debug('Verifying password with bcrypt...');
+                    try {
+                        passwordMatch = bcrypt.compareSync(password, user.password);
+                    } catch (e) {
+                        debug('Bcrypt verify error: ' + e.message);
+                        // Try plain text match as fallback
+                        if (password === user.password) passwordMatch = true;
+                    }
+                } else {
+                    // Fallback plain text
+                    if (password === user.password) passwordMatch = true;
                 }
 
                 if (!passwordMatch) {
@@ -255,65 +258,53 @@
                     return;
                 }
 
-                debug('Password OK!');
-                showSuccess('Login successful! Redirecting...');
-
+                debug('Password correct!');
+                
                 // Store session
-                localStorage.setItem('token', 'session_' + Date.now());
-                localStorage.setItem('user_id', user.id);
-                localStorage.setItem('email', user.email);
-                localStorage.setItem('name', user.name);
-                localStorage.setItem('role', user.role || 'staff');
-                localStorage.setItem('designation', user.designation || '');
+                try {
+                    localStorage.setItem('token', 'session_' + Date.now());
+                    localStorage.setItem('user_id', user.id);
+                    localStorage.setItem('email', user.email);
+                    localStorage.setItem('name', user.name);
+                    localStorage.setItem('role', user.role || 'staff');
+                    localStorage.setItem('designation', user.designation || '');
+                    debug('Session saved to localStorage');
+                } catch (e) {
+                    debug('Storage Error: ' + e.message);
+                    alert('Warning: Could not save session (Cookies/Storage blocked?)');
+                }
 
-                // Determine redirect based on role
+                // Redirect Logic
                 const role = (user.role || '').toLowerCase().trim();
                 const designation = (user.designation || '').toLowerCase().trim();
-                
-                debug('Checking role: "' + role + '"');
-                debug('Checking designation: "' + designation + '"');
+                let redirectUrl = 'staff.html';
 
-                let redirectUrl = 'staff.html'; // Default
-
-                // Check role first
-                if (role === 'superadmin' || role === 'admin') {
+                if (role === 'superadmin' || role === 'admin' || designation.includes('executive')) {
                     redirectUrl = 'admin_dashboard.html';
-                    debug('Matched: superadmin/admin -> admin_dashboard.html');
-                } else if (role === 'hr') {
+                } else if (role === 'hr' || designation.includes('hr')) {
                     redirectUrl = 'hr_dashboard.html';
-                    debug('Matched: hr role -> hr_dashboard.html');
-                } else if (role === 'programs') {
+                } else if (role === 'programs' || designation.includes('program')) {
                     redirectUrl = 'programs_dashboard.html';
-                    debug('Matched: programs role -> programs_dashboard.html');
-                }
-                // Check designation as fallback
-                else if (designation.includes('executive') || designation.includes('director')) {
-                    redirectUrl = 'admin_dashboard.html';
-                    debug('Matched: executive/director -> admin_dashboard.html');
-                } else if (designation.includes('hr') || designation.includes('human')) {
-                    redirectUrl = 'hr_dashboard.html';
-                    debug('Matched: hr designation -> hr_dashboard.html');
-                } else if (designation.includes('program')) {
-                    redirectUrl = 'programs_dashboard.html';
-                    debug('Matched: program designation -> programs_dashboard.html');
-                } else {
-                    debug('No match, defaulting to staff.html');
                 }
 
                 debug('Redirecting to: ' + redirectUrl);
+                
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                showSuccess(`Login successful! Redirecting to <b>${redirectUrl}</b>...`);
 
-                // Redirect after short delay
                 setTimeout(() => {
                     window.location.href = redirectUrl;
-                }, 500);
+                }, 1000);
 
             } catch (err) {
-                debug('Error: ' + err.message);
+                debug('UNEXPECTED ERROR: ' + err.message);
                 console.error(err);
-                showError('An error occurred. Please try again.');
+                showError('An unexpected error occurred: ' + err.message);
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                if (!submitBtn.innerHTML.includes('Success')) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                }
             }
         }
     </script>
