@@ -300,9 +300,11 @@
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 showSuccess(`Login successful! Redirecting to <b>${redirectUrl}</b>...`);
 
-                setTimeout(() => {
-                    window.location.href = redirectUrl;
-                }, 1000);
+                // Force redirect immediately using likely robust method
+                window.location.href = redirectUrl;
+                if (window.location.href !== redirectUrl) {
+                     window.open(redirectUrl, '_self'); // Fallback
+                }
 
             } catch (err) {
                 debug('UNEXPECTED ERROR: ' + err.message);
