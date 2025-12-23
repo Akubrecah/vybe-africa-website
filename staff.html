@@ -277,24 +277,28 @@
             `;
 
             // Logic for Roles
+            if (designation.includes('admin') || designation.includes('director') || designation.includes('lead')) {
+                 document.getElementById('redirect-btns').style.display = 'flex';
+            }
+
             if (designation.includes('hr') || designation.includes('human resource')) {
                 toolTitle = 'HR Portal';
                 icon = 'fa-users-cog';
                 
-                // Fetch Apps (Trigger seed if empty first time in prod, but here we assume seed)
-                let appsHtml = '<p>Loading applicants...</p>';
-                try {
-                    const res = await fetch('/api/hr/applications', { headers: { 'x-auth-token': token } });
-                    const apps = await res.json();
-                    if(apps.length === 0) {
-                        await fetch('/api/hr/seed-applicants', { method: 'POST', headers: { 'x-auth-token': token } });
-                        const seedRes = await fetch('/api/hr/applications', { headers: { 'x-auth-token': token } });
-                        const seedApps = await seedRes.json();
-                        appsHtml = renderAppsList(seedApps);
-                    } else {
-                        appsHtml = renderAppsList(apps);
-                    }
-                } catch(e) { appsHtml = '<p class="error-msg">Error loading data</p>'; }
+                // Simulated Apps Data
+                let appsHtml = `
+                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <span><strong style="color:white;">John Doe</strong> <small>(Senior Dev)</small></span>
+                        <span class="role-tag">Pending</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <span><strong style="color:white;">Jane Smith</strong> <small>(Designer)</small></span>
+                        <span class="role-tag">Interview</span>
+                    </div>
+                `;
+
+                // Show Redirect Button
+                document.getElementById('redirect-btns').style.display = 'flex';
 
                 toolsHtml = `
                     ${cmsSection}
@@ -320,6 +324,8 @@
             } else if (designation.includes('program') || designation.includes('project')) {
                 toolTitle = 'Project Management';
                 icon = 'fa-project-diagram';
+                // Show Redirect Button
+                document.getElementById('redirect-btns').style.display = 'flex';
                 toolsHtml = `
                     ${cmsSection}
                     <h4 style="color:var(--primary-brand); margin-bottom:1rem;">Program Overview</h4>
@@ -458,17 +464,20 @@
         // Profile Editing Functions
         let currentUser = null;
 
+        // Profile Editing Functions
+        let currentUser = null;
+
         window.openEditProfileModal = async function() {
             try {
-                // Get current user
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) return;
+                // Get current user ID from localStorage since we are not using persistent sessions
+                const userId = localStorage.getItem('user_id');
+                if (!userId) return;
 
                 // Fetch latest user data
                 const { data: profile, error } = await supabase
-                    .from('user_profiles')
+                    .from('users')
                     .select('*')
-                    .eq('id', user.id)
+                    .eq('id', userId)
                     .single();
                 
                 if (error || !profile) throw new Error('Failed to load profile');
@@ -477,7 +486,7 @@
                 
                 // Populate form
                 document.getElementById('edit-name').value = profile.name || '';
-                document.getElementById('edit-email').value = user.email || '';
+                document.getElementById('edit-email').value = profile.email || '';
                 document.getElementById('edit-phone').value = profile.phone || '';
                 document.getElementById('edit-bio').value = profile.bio || '';
                 
@@ -496,21 +505,21 @@
         window.saveProfile = async function(e) {
             e.preventDefault();
             
-            // Get current user
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            const userId = localStorage.getItem('user_id');
+            if (!userId) return;
             
             const updatedData = {
                 name: document.getElementById('edit-name').value,
+                email: document.getElementById('edit-email').value,
                 phone: document.getElementById('edit-phone').value || null,
                 bio: document.getElementById('edit-bio').value || null
             };
 
             try {
                 const { error } = await supabase
-                    .from('user_profiles')
+                    .from('users')
                     .update(updatedData)
-                    .eq('id', user.id);
+                    .eq('id', userId);
                 
                 if (error) throw error;
                 
