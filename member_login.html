@@ -152,7 +152,7 @@
                 <input type="password" id="password" name="password" required placeholder="Enter your password">
             </div>
 
-            <button type="button" class="btn" id="submit-btn" onclick="handleLogin()">
+            <button type="button" class="btn" id="member-login-btn">
                 <i class="fas fa-sign-in-alt"></i> Login
             </button>
         </form>
@@ -177,139 +177,143 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     
     <script>
-        // Initialize Supabase - Disable session persistence for file:// compatibility
-        const supabaseUrl = 'https://mdjokagpejujfjfobdcs.supabase.co';
-        const supabaseKey = 'sb_publishable_Y9Wv-aZdMFVv55-CYgj2AA_6l3Iz31G';
-        
-        let supabase;
-        try {
-            supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-                auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
-            });
-        } catch (e) {
-            console.error('Supabase init failed:', e);
-            document.getElementById('error-message').style.display = 'block';
-            document.getElementById('error-message').textContent = 'Error initializing app: ' + e.message;
-        }
-
-        // Robust bcrypt loader
-        const bcrypt = window.dcodeIO ? window.dcodeIO.bcrypt : window.bcrypt;
-
-        function showError(msg) {
-            document.getElementById('error-message').innerHTML = msg;
-            document.getElementById('error-message').style.display = 'block';
-            document.getElementById('success-message').style.display = 'none';
-        }
-
-        function showSuccess(msg) {
-            document.getElementById('success-message').innerHTML = msg;
-            document.getElementById('success-message').style.display = 'block';
-            document.getElementById('error-message').style.display = 'none';
-        }
-
-        async function handleLogin() {
-            // No event to preventDefault needed if called from button onclick, 
-            // but form onsubmit handles Enter key
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Supabase - Disable session persistence for file:// compatibility
+            const supabaseUrl = 'https://mdjokagpejujfjfobdcs.supabase.co';
+            const supabaseKey = 'sb_publishable_Y9Wv-aZdMFVv55-CYgj2AA_6l3Iz31G';
             
-            const errorDiv = document.getElementById('error-message');
-            const submitBtn = document.getElementById('submit-btn');
-            
-            errorDiv.style.display = 'none';
-            document.getElementById('success-message').style.display = 'none';
-
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) {
-                showError('Please fill in all fields');
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
-
+            let supabase;
             try {
-                if (!supabase) throw new Error('Supabase not initialized');
-
-                // Query members table
-                const { data: members, error } = await supabase
-                    .from('members')
-                    .select('*')
-                    .eq('email', email)
-                    .limit(1);
-
-                if (error) {
-                    throw error;
-                }
-
-                if (!members || members.length === 0) {
-                    showError('Invalid email or password');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
-                    return;
-                }
-
-                const member = members[0];
-
-                // Check for bcrypt library
-                if (!bcrypt) {
-                    console.error('bcrypt library not loaded');
-                    showError('System config error (bcrypt missing).');
-                    return;
-                }
-
-                // Compare password
-                let passwordMatch = false;
-                try {
-                    passwordMatch = bcrypt.compareSync(password, member.password);
-                } catch (e) {
-                    console.error('Bcrypt error', e);
-                    if (password === member.password) passwordMatch = true; // Fallback
-                }
-
-                if (!passwordMatch) {
-                    showError('Invalid email or password');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
-                    return;
-                }
-
-                // Success! Store session
-                try {
-                    localStorage.setItem('member_id', member.id);
-                    localStorage.setItem('member_email', member.email);
-                    localStorage.setItem('member_name', member.name);
-                    localStorage.setItem('user_type', 'member');
-                } catch (e) {
-                    console.warn('Storage error:', e);
-                }
-
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
-
-                const redirectUrl = 'members_dashboard.html';
-
-                // Manual Button
-                const btnHtml = `
-                    <div style="text-align:center;">
-                        <p style="margin-bottom:10px;">Login Successful!</p>
-                        <a href="${redirectUrl}" style="display:block; padding:12px; background:#10b981; color:white; border-radius:8px; text-decoration:none; font-weight:bold;">
-                            Go to Member Dashboard <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                `;
-                showSuccess(btnHtml);
-                submitBtn.style.display = 'none';
-
-                // Attempt auto-redirect
-                window.location.href = redirectUrl;
-
-            } catch (err) {
-                console.error('Login error:', err);
-                showError('Login failed: ' + err.message);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            } catch (e) {
+                console.error('Supabase init failed:', e);
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('error-message').textContent = 'Error initializing app: ' + e.message;
             }
-        }
+
+            // Robust bcrypt loader
+            const bcrypt = window.dcodeIO ? window.dcodeIO.bcrypt : window.bcrypt;
+            const loginBtn = document.getElementById('member-login-btn');
+
+            if (loginBtn) {
+                loginBtn.addEventListener('click', handleLogin);
+            }
+
+            function showError(msg) {
+                document.getElementById('error-message').innerHTML = msg;
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('success-message').style.display = 'none';
+            }
+
+            function showSuccess(msg) {
+                document.getElementById('success-message').innerHTML = msg;
+                document.getElementById('success-message').style.display = 'block';
+                document.getElementById('error-message').style.display = 'none';
+            }
+
+            async function handleLogin(e) {
+                if(e) e.preventDefault();
+                
+                const errorDiv = document.getElementById('error-message');
+                const submitBtn = document.getElementById('member-login-btn');
+                
+                errorDiv.style.display = 'none';
+                document.getElementById('success-message').style.display = 'none';
+
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                if (!email || !password) {
+                    showError('Please fill in all fields');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+
+                try {
+                    if (!supabase) throw new Error('Supabase not initialized');
+
+                    // Query members table
+                    const { data: members, error } = await supabase
+                        .from('members')
+                        .select('*')
+                        .eq('email', email)
+                        .limit(1);
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    if (!members || members.length === 0) {
+                        showError('Invalid email or password');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                        return;
+                    }
+
+                    const member = members[0];
+
+                    // Check for bcrypt library
+                    if (!bcrypt) {
+                        console.error('bcrypt library not loaded');
+                        showError('System config error (bcrypt missing).');
+                        return;
+                    }
+
+                    // Compare password
+                    let passwordMatch = false;
+                    try {
+                        passwordMatch = bcrypt.compareSync(password, member.password);
+                    } catch (e) {
+                        console.error('Bcrypt error', e);
+                        if (password === member.password) passwordMatch = true; // Fallback
+                    }
+
+                    if (!passwordMatch) {
+                        showError('Invalid email or password');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                        return;
+                    }
+
+                    // Success! Store session
+                    try {
+                        localStorage.setItem('member_id', member.id);
+                        localStorage.setItem('member_email', member.email);
+                        localStorage.setItem('member_name', member.name);
+                        localStorage.setItem('user_type', 'member');
+                    } catch (e) {
+                        console.warn('Storage error:', e);
+                    }
+
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
+
+                    const redirectUrl = 'members_dashboard.html';
+
+                    // Manual Button
+                    const btnHtml = `
+                        <div style="text-align:center;">
+                            <p style="margin-bottom:10px;">Login Successful!</p>
+                            <a href="${redirectUrl}" style="display:block; padding:12px; background:#10b981; color:white; border-radius:8px; text-decoration:none; font-weight:bold;">
+                                Go to Member Dashboard <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    `;
+                    showSuccess(btnHtml);
+                    submitBtn.style.display = 'none';
+
+                    // Attempt auto-redirect
+                    window.location.href = redirectUrl;
+
+                } catch (err) {
+                    console.error('Login error:', err);
+                    showError('Login failed: ' + err.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                }
+            }
+        });
     </script>
 </body>
 </html>
