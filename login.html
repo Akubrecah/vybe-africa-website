@@ -141,7 +141,7 @@
                 <input type="password" id="password" required placeholder="Enter your password">
             </div>
 
-            <button type="button" class="btn-login" id="login-btn">
+            <button type="button" class="btn-login" id="login-btn" onclick="handleLogin()">
                 <i class="fas fa-sign-in-alt"></i> Sign In
             </button>
         </form>
@@ -207,6 +207,7 @@
         }
 
         async function handleLogin() {
+            console.log('handleLogin called');
             // No event to preventDefault because we are using type="button"
             
             const submitBtn = document.getElementById('login-btn');
