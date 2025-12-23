@@ -219,10 +219,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     
     <script>
-        // Initialize Supabase (for database only)
+        // Initialize Supabase - Disable session persistence for file:// compatibility
         const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+        });
+
+        // Robust bcrypt loader
+        const bcrypt = window.dcodeIO ? window.dcodeIO.bcrypt : window.bcrypt;
 
         function showError(msg) {
             const el = document.getElementById('error-message');
@@ -287,12 +292,12 @@
                 }
 
                 // Hash password
-                if (typeof dcodeIO === 'undefined' || !dcodeIO.bcrypt) {
-                    showError('System error. Please refresh and try again.');
+                if (!bcrypt) {
+                    showError('System error: Encryption library missing. Refresh page.');
                     return;
                 }
 
-                const hashedPassword = dcodeIO.bcrypt.hashSync(password, 10);
+                const hashedPassword = bcrypt.hashSync(password, 10);
 
                 // Insert member
                 const { data, error } = await supabase

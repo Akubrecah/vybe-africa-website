@@ -18,10 +18,10 @@
 2. **Run the Admin Creation Script**
    - Open the file: `create_admin_account.sql`
    - **EDIT THE FILE FIRST:**
-     - Line 35: Change `'yourname@gmail.com'` to YOUR email
-     - Line 36: Change `'YourSecurePassword123'` to YOUR password
-     - Line 39: Change `'Your Name'` to YOUR name
-     - Line 50: Change `'Your Name'` to YOUR name again
+     - Line 35: Change `'poweldayck@gmail.com'` to YOUR email
+     - Line 36: Change `'Akufamilia@254'` to YOUR password
+     - Line 39: Change `'Akubrecah'` to YOUR name
+     - Line 50: Change `'Akubrecah'` to YOUR name again
    
 3. **Copy & Paste Into Supabase**
    - Select ALL the edited SQL

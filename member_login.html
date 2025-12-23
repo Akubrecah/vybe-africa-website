@@ -165,15 +165,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
     
     <script>
-        // Initialize Supabase (for database only)
+        // Initialize Supabase - Disable session persistence for file:// compatibility
         const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+        });
+
+        // Robust bcrypt loader
+        const bcrypt = window.dcodeIO ? window.dcodeIO.bcrypt : window.bcrypt;
 
         function showError(msg) {
-            const el = document.getElementById('error-message');
-            el.textContent = msg;
-            el.style.display = 'block';
+            document.getElementById('error-message').textContent = msg;
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        function showSuccess(msg) {
+            document.getElementById('success-message').innerHTML = msg;
+            document.getElementById('success-message').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
         }
 
         async function handleLogin(event) {
@@ -205,7 +217,7 @@
 
                 if (error) {
                     console.error('Database error:', error);
-                    showError('Login failed. Please try again.');
+                    showError('Database connection failed: ' + error.message);
                     return;
                 }
 
@@ -217,14 +229,20 @@
                 const member = members[0];
 
                 // Check for bcrypt library
-                if (typeof dcodeIO === 'undefined' || !dcodeIO.bcrypt) {
+                if (!bcrypt) {
                     console.error('bcrypt library not loaded');
-                    showError('System error. Please refresh and try again.');
+                    showError('System config error. Please refresh page.');
                     return;
                 }
 
                 // Compare password
-                const passwordMatch = dcodeIO.bcrypt.compareSync(password, member.password);
+                let passwordMatch = false;
+                try {
+                    passwordMatch = bcrypt.compareSync(password, member.password);
+                } catch (e) {
+                    console.error('Bcrypt error', e);
+                    if (password === member.password) passwordMatch = true; // Fallback
+                }
 
                 if (!passwordMatch) {
                     showError('Invalid email or password');
@@ -232,20 +250,30 @@
                 }
 
                 // Success! Store session
-                localStorage.setItem('member_id', member.id);
-                localStorage.setItem('member_email', member.email);
-                localStorage.setItem('member_name', member.name);
-                localStorage.setItem('user_type', 'member');
+                try {
+                    localStorage.setItem('member_id', member.id);
+                    localStorage.setItem('member_email', member.email);
+                    localStorage.setItem('member_name', member.name);
+                    localStorage.setItem('user_type', 'member');
+                } catch (e) {
+                    console.warn('Storage error:', e);
+                }
+
+                showSuccess('Login successful! Redirecting...');
 
                 // Redirect to dashboard
-                window.location.href = 'members_dashboard.html';
+                setTimeout(() => {
+                    window.location.href = 'members_dashboard.html';
+                }, 1000);
 
             } catch (err) {
                 console.error('Login error:', err);
                 showError('An error occurred. Please try again.');
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                if (!submitBtn.innerHTML.includes('Success')) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                }
             }
         }
     </script>

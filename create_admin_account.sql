@@ -37,11 +37,11 @@ BEGIN
     ) VALUES (
         user_id,
         '00000000-0000-0000-0000-000000000000',
-        'yourname@gmail.com', -- ⚠️ CHANGE THIS TO YOUR EMAIL
-        crypt('YourSecurePassword123', gen_salt('bf')), -- ⚠️ CHANGE PASSWORD
+        'poweldayck@gmail.com', -- ⚠️ CHANGE THIS TO YOUR EMAIL
+        crypt('Akufamilia@254', gen_salt('bf')), -- ⚠️ CHANGE PASSWORD
         NOW(), -- Email already confirmed
         '{"provider":"email","providers":["email"]}',
-        '{"user_type":"staff","name":"Your Name"}', -- ⚠️ CHANGE YOUR NAME
+        '{"user_type":"staff","name":"Akubrecah Entertainment"}', -- ⚠️ CHANGE YOUR NAME
         NOW(),
         NOW(),
         '',
@@ -62,7 +62,7 @@ BEGIN
     ) VALUES (
         user_id,
         'staff',
-        'Your Name', -- ⚠️ CHANGE TO YOUR NAME
+        'Akubrecah Entertainment', -- ⚠️ CHANGE TO YOUR NAME
         'Executive Director',
         'superadmin',
         NOW(),
@@ -70,6 +70,6 @@ BEGIN
     );
     
     RAISE NOTICE 'Admin account created successfully!';
-    RAISE NOTICE 'Email: yourname@gmail.com';
+    RAISE NOTICE 'Email: poweldayck@gmail.com';
     RAISE NOTICE 'You can now login at login.html';
 END $$;
