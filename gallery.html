@@ -211,15 +211,31 @@
                     </a>
                 </div>
                  <!-- Video Thumb -->
+                <!-- Video 1 -->
                 <div class="masonry-item" data-category="video">
-                    <a href="assets/images/gallery/VYBE004878.mp4" data-lightbox="gallery-video">
+                    <a href="assets/images/gallery/VYBE004878.mp4" class="glightbox">
                         <div class="video-thumb">
                             <i class="fas fa-play-circle"></i>
-                            <img src="https://via.placeholder.com/400x300/050505/333?text=Video" alt="Video Thumb">
+                            <img src="assets/images/gallery/VYBE004867.jpg" alt="Video Thumb">
                         </div>
                          <div class="gallery-overlay">
                             <i class="fas fa-play"></i>
-                            <span>Watch Reel</span>
+                            <span>Watch Reel 1</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Video 2 -->
+                <div class="masonry-item" data-category="video">
+                    <a href="assets/images/gallery/VYBE004889.mp4" class="glightbox">
+                        <div class="video-thumb">
+                            <i class="fas fa-play-circle"></i>
+                            <!-- Using another image as thumb or same one -->
+                            <img src="assets/images/gallery/VYBE004825.jpg" alt="Video Thumb">
+                        </div>
+                         <div class="gallery-overlay">
+                            <i class="fas fa-play"></i>
+                            <span>Watch Reel 2</span>
                         </div>
                     </a>
                 </div>
@@ -441,7 +457,15 @@
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox-plus-jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/css/glightbox.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/js/glightbox.min.js"></script>
     <script>
+        const lightbox = GLightbox({
+            touchNavigation: true,
+            loop: true,
+            autoplayVideos: true
+        });
+
         function showTab(tabName) {
             document.querySelectorAll('.media-section').forEach(el => el.style.display = 'none');
             document.getElementById(tabName).style.display = 'block';

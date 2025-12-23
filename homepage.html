@@ -282,100 +282,14 @@
         </div>
     </section>
 
-    <!-- Impact Stats (Neon/Dark) -->
-    <section class="section-padding" style="background: var(--surface-dark); border-top: 1px solid var(--surface-hover);">
-        <div class="container">
-            <div class="stats-grid">
-                <div>
-                    <div class="stat-number" data-target="2540">0</div>
-                    <div class="stat-label">Youth Trained</div>
-                </div>
-                <div>
-                    <div class="stat-number" data-target="42">0</div>
-                    <div class="stat-label">Communities</div>
-                </div>
-                <div>
-                    <div class="stat-number" data-target="328">0</div>
-                    <div class="stat-label">Dialogues</div>
-                </div>
-                <div>
-                    <div class="stat-number" data-target="18">0</div>
-                    <div class="stat-label">Partners</div>
-                </div>
-            </div>
-            
-            <style>
-                .stats-grid {
-                    display: grid;
-                    grid-template-columns: repeat(4, 1fr);
-                    gap: 30px;
-                    text-align: center;
-                }
-                .stat-number {
-                    font-size: 4rem;
-                    font-family: var(--font-display);
-                    font-weight: 800;
-                    color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-                    text-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
-                    margin-bottom: 10px;
-                }
-                .stat-label {
-                    color: var(--text-secondary);
-                    text-transform: uppercase;
-                    letter-spacing: 2px;
-                    font-size: 0.9rem;
-                }
-                @media (max-width: 768px) {
-                    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; }
-                }
-            </style>
-        </div>
-    </section>
-
     <!-- Join Mission (Dark) -->
     <section class="section-padding" style="background: var(--background-dark);">
         <div class="container">
             <div class="join-mission-flex">
-                <div class="join-mission-item">
+                <div class="join-mission-item" style="width: 100%; text-align: center;">
                     <h2 style="font-size: 3rem; margin-bottom: 2rem;">JOIN OUR <br><span style="color: var(--primary-brand)">MISSION</span></h2>
-                    <p style="margin-bottom: 30px; color: var(--text-secondary); font-size: 1.2rem;">"Investing in youth is investing in the future of West Pokot. Partner with us today."</p>
+                    <p style="margin-bottom: 30px; color: var(--text-secondary); font-size: 1.2rem; max-width: 700px; margin-left: auto; margin-right: auto;">"Investing in youth is investing in the future of West Pokot. Partner with us today."</p>
                     <a href="contact.html" class="btn btn-primary">Establish Partnership</a>
-                </div>
-                <div class="join-mission-item">
-                     <!-- Partner Logos (Monochrome/Dark) -->
-                     <div class="partner-grid">
-                        <div class="partner-logo">LOGO</div>
-                        <div class="partner-logo">LOGO</div>
-                        <div class="partner-logo">LOGO</div>
-                        <div class="partner-logo">LOGO</div>
-                        <div class="partner-logo">LOGO</div>
-                        <div class="partner-logo">LOGO</div>
-                     </div>
-                     
-                     <style>
-                        .partner-grid {
-                            display: grid;
-                            grid-template-columns: repeat(3, 1fr);
-                            gap: 20px;
-                        }
-                        .partner-logo {
-                            background: var(--surface-hover);
-                            height: 100px;
-                            border-radius: var(--radius-sm);
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            color: var(--text-muted);
-                            font-weight: 700;
-                            transition: all 0.3s;
-                        }
-                        .partner-logo:hover {
-                            background: var(--primary-brand);
-                            color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-                            border: 1px solid var(--primary-brand);
-                            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                        }
-                     </style>
                 </div>
             </div>
         </div>
