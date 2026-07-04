@@ -12,6 +12,12 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '/'))); // Serve static files from root
 
+// API Routes
+const chatRouter = require('./routes/chat');
+const ingestRouter = require('./routes/ingest');
+app.use('/api/chat', chatRouter);
+app.use('/api/ingest', ingestRouter);
+
 // Database Connection (Supabase is handled in routes via config/supabase.js) - legacy
 // MongoDB connection removed.
 

@@ -1,485 +1,425 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gallery & Media - VYBE Africa</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
-    
-    <style>
-        .page-header {
-
-            background: url('assets/images/gallery/VYBE004867.jpg') center/cover no-repeat;
-            background-color: var(--primary-brand); /* Pink Fallback/Tint */
-            background-blend-mode: multiply; /* Blends color into image */
-            background-attachment: fixed;
-            color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            padding: 180px 0 80px;
-            text-align: center;
-        }
-        }
-
-        /* Modern Grid Layout */
-        .media-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 24px; /* Increased gap for better distribution */
-            margin-top: 2rem;
-        }
-
-        .media-item {
-            position: relative;
-            border-radius: 8px; /* Softer, modern radius */
-            overflow: hidden;
-            background: #f0f0f0;
-            aspect-ratio: 4/3; /* Consistent aspect ratio */
-            box-shadow: var(--shadow-sm);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-        .media-item:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .media-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .media-item:hover img {
-            transform: scale(1.05);
-        }
-        
-        /* Video specific styles */
-        .video-item {
-            aspect-ratio: 16/9;
-        }
-        
-        .video-item video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Tabs */
-        .tab-nav {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 3rem;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 1rem;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            font-family: var(--font-heading);
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: #888;
-            padding: 10px 20px;
-            cursor: pointer;
-            position: relative;
-            transition: color 0.3s;
-        }
-        
-        .tab-btn::after {
-            content: '';
-            position: absolute;
-            bottom: -17px; /* Align with border-bottom */
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--primary-color);
-            transform: scaleX(0);
-            transition: transform 0.3s;
-        }
-
-        .tab-btn.active {
-            color: var(--secondary-color);
-            font-weight: 700;
-        }
-        
-        .tab-btn.active::after {
-            transform: scaleX(1);
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Header -->
-    <header class="main-header">
-        <div class="container navbar">
-            <a href="homepage.html" class="logo">
-                <img src="assets/images/logo.png" alt="VYBE Africa">
-                <span>VYBE Africa</span>
-            </a>
-            
-            <button class="hamburger"><i class="fas fa-bars"></i></button>
-            
-            <nav class="nav-links">
-                <a href="homepage.html" class="nav-link">Home</a>
-                <a href="about.html" class="nav-link">About Us</a>
-                <a href="work.html" class="nav-link">Our Work</a>
-                <a href="gallery.html" class="nav-link active">Gallery</a>
-                <a href="contact.html" class="nav-link">Contact</a>
-                <div class="nav-cta">
-
-                    <a href="member_login.html" class="btn" style="margin-right:10px; border: 2px solid #facc15; color: #fff; font-weight:600;"><i class="fas fa-user"></i> Members Login</a>
-                    <a href="login.html" class="btn" style="margin-right:10px; border: 2px solid var(--primary-brand); color: #fff; font-weight:600;">Staff Login</a>
-                    <a href="get-involved.html" class="btn btn-primary">Get Involved</a>
-                </div>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Page Header (QClay Dark) -->
-    <!-- Page Header (Standard Layout) -->
-    <section class="page-header hero-header-style">
-        <div class="container">
-            <h1 class="animate-fade-up">CAPTURING <span class="text-gradient-brand">IMPACT</span></h1>
-            <p class="animate-fade-up delay-1">Visual stories of resilience, change, and youth empowerment in action.</p>
-        </div>
-    </section>
-
-    <!-- Gallery Filter & Grid -->
-    <section class="section-padding" style="background: var(--background-dark);">
-        <div class="container">
-            
-            <!-- Filter Nav -->
-            <div class="filter-nav animate-fade-up delay-2">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="srhr">SRHR</button>
-                <button class="filter-btn" data-filter="community">Community</button>
-                <button class="filter-btn" data-filter="events">Events</button>
-                <button class="filter-btn" data-filter="video">Videos</button>
-            </div>
-
-            <!-- Masonry Grid -->
-            <div class="masonry-grid">
-                <!-- Image 1 -->
-                <div class="masonry-item" data-category="community">
-                    <a href="assets/images/gallery/VYBE004867.jpg" data-lightbox="gallery" data-title="Community Engagement">
-                        <img src="assets/images/gallery/VYBE004867.jpg" alt="Gallery">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                            <span>Community Dialogue</span>
-                        </div>
-                    </a>
-                </div>
-                <!-- Image 2 -->
-                <div class="masonry-item" data-category="srhr">
-                    <a href="assets/images/gallery/VYBE004825.jpg" data-lightbox="gallery">
-                        <img src="assets/images/gallery/VYBE004825.jpg" alt="Gallery">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                            <span>SRHR Training</span>
-                        </div>
-                    </a>
-                </div>
-                <!-- Image Vertical -->
-                <div class="masonry-item" data-category="events">
-                    <a href="assets/images/gallery/VYBE004827.jpg" data-lightbox="gallery">
-                        <img src="assets/images/gallery/VYBE004827.jpg" alt="Gallery">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                            <span>Youth Event</span>
-                        </div>
-                    </a>
-                </div>
-                <!-- Image 3 -->
-                <div class="masonry-item" data-category="community">
-                    <a href="assets/images/gallery/VYBE004828.jpg" data-lightbox="gallery">
-                        <img src="assets/images/gallery/VYBE004828.jpg" alt="Gallery">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                            <span>Outreach</span>
-                        </div>
-                    </a>
-                </div>
-                 <!-- Video Thumb -->
-                <!-- Video 1 -->
-                <div class="masonry-item" data-category="video">
-                    <a href="assets/images/gallery/VYBE004878.mp4" class="glightbox" data-type="video">
-                        <div class="video-thumb">
-                            <i class="fas fa-play-circle"></i>
-                            <img src="assets/images/gallery/VYBE004867.jpg" alt="Video Thumb">
-                        </div>
-                         <div class="gallery-overlay">
-                            <i class="fas fa-play"></i>
-                            <span>Watch Reel 1</span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Video 2 -->
-                <div class="masonry-item" data-category="video">
-                    <a href="assets/images/gallery/VYBE004889.mp4" class="glightbox" data-type="video">
-                        <div class="video-thumb">
-                            <i class="fas fa-play-circle"></i>
-                            <!-- Using another image as thumb or same one -->
-                            <img src="assets/images/gallery/VYBE004825.jpg" alt="Video Thumb">
-                        </div>
-                         <div class="gallery-overlay">
-                            <i class="fas fa-play"></i>
-                            <span>Watch Reel 2</span>
-                        </div>
-                    </a>
-                </div>
-                 <!-- More Images -->
-                <div class="masonry-item" data-category="srhr">
-                    <a href="assets/images/gallery/VYBE004829.jpg" data-lightbox="gallery">
-                        <img src="assets/images/gallery/VYBE004829.jpg" alt="Gallery">
-                         <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                            <span>Workshop</span>
-                        </div>
-                    </a>
-                </div>
-                <div class="masonry-item" data-category="community">
-                    <a href="assets/images/gallery/VYBE004830.jpg" data-lightbox="gallery">
-                        <img src="assets/images/gallery/VYBE004830.jpg" alt="Gallery">
-                         <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                            <span>Field Work</span>
-                        </div>
-                    </a>
-                </div>
-                 <div class="masonry-item" data-category="events">
-                    <a href="assets/images/gallery/VYBE004838.jpg" data-lightbox="gallery">
-                        <img src="assets/images/gallery/VYBE004838.jpg" alt="Gallery">
-                         <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                            <span>Impact</span>
-                        </div>
-                    </a>
-                </div>
-                 <div class="masonry-item" data-category="srhr">
-                    <a href="assets/images/gallery/VYBE004839.jpg" data-lightbox="gallery">
-                        <img src="assets/images/gallery/VYBE004839.jpg" alt="Gallery">
-                         <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                            <span>Education</span>
-                        </div>
-                    </a>
-                </div>
-                 <div class="masonry-item" data-category="srhr">
-                    <a href="assets/images/gallery/VYBE.jpeg" data-lightbox="gallery">
-                        <img src="assets/images/gallery/VYBE.jpeg" alt="Gallery">
-                         <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                            <span>Highlights</span>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Styles for Gallery (Internal for now) -->
-            <style>
-                .page-header {
-                    padding: 120px 0 60px;
-                    text-align: center;
-                    background: var(--background-dark);
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Gallery - Vybe Africa</title>
+    <!-- Tailwind CSS CDN with Grassroots Premium Design Tokens -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-surface": "#313030", "on-secondary": "#ffffff",
+                        "outline": "#89726d", "on-error": "#ffffff", "tertiary": "#705d00",
+                        "surface-dim": "#dcd9d9", "on-primary-container": "#5a0d02",
+                        "primary-fixed-dim": "#ffb4a5", "secondary-fixed": "#d0e9d4",
+                        "on-primary-fixed-variant": "#802918", "on-secondary-fixed": "#0b2013",
+                        "on-background": "#1c1b1b", "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a", "on-secondary-container": "#516857",
+                        "secondary-container": "#cde6d1", "on-surface": "#1c1b1b",
+                        "surface-container-low": "#f6f3f2", "on-primary-fixed": "#3e0500",
+                        "on-secondary-fixed-variant": "#364c3c", "surface-tint": "#9f402d",
+                        "error-container": "#ffdad6", "tertiary-fixed-dim": "#e9c400",
+                        "inverse-on-surface": "#f3f0ef", "on-tertiary-fixed-variant": "#544600",
+                        "primary": "#9f402d", "outline-variant": "#ddc0ba", "secondary": "#4d6453",
+                        "surface-container-high": "#eae7e7", "primary-fixed": "#ffdad3",
+                        "surface-bright": "#fcf9f8", "inverse-primary": "#ffb4a5",
+                        "surface-variant": "#e5e2e1", "on-surface-variant": "#56423e",
+                        "primary-container": "#e2725b", "tertiary-container": "#c9a900",
+                        "secondary-fixed-dim": "#b4cdb8", "on-error-container": "#93000a",
+                        "background": "#fcf9f8", "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e5e2e1", "on-tertiary-fixed": "#221b00",
+                        "surface-container": "#f0eded", "tertiary-fixed": "#ffe16d",
+                        "surface": "#fcf9f8", "on-primary": "#ffffff", "on-tertiary-container": "#4c3f00"
+                    },
+                    borderRadius: {
+                        "sm": "0.125rem", "DEFAULT": "0.25rem", "md": "0.375rem",
+                        "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px",
+                        "4xl": "2rem"
+                    },
+                    spacing: {
+                        "margin-mobile": "20px", "stack-lg": "80px", "stack-md": "32px",
+                        "margin-desktop": "64px", "gutter": "24px", "base": "8px",
+                        "stack-sm": "16px", "container-max": "1280px"
+                    },
+                    fontFamily: {
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"], "body-lg": ["Inter"], "label-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    },
+                    fontSize: {
+                        "headline-lg-mobile": ["32px", { lineHeight: "1.2", fontWeight: "700" }],
+                        "headline-lg": ["40px", { lineHeight: "1.2", fontWeight: "700" }],
+                        "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+                        "body-md": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "label-sm": ["14px", { lineHeight: "1.0", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "display-lg": ["64px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "800" }]
+                    },
+                    maxWidth: { "container-max": "1280px" }
                 }
-                 .text-gradient {
-                    background: var(--gradient-brand);
-                    -webkit-background-clip: text;
-                    background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                }
-                .filter-nav {
-                    display: flex;
-                    justify-content: center;
-                    gap: 15px;
-                    margin-bottom: 50px;
-                    flex-wrap: wrap;
-                }
-                .filter-btn {
-                    background: transparent;
-                    color: var(--text-secondary);
-                    border: 1px solid var(--surface-hover);
-                    padding: 10px 25px;
-                    border-radius: 50px;
-                    cursor: pointer;
-                    font-family: var(--font-body);
-                    font-weight: 500;
-                    transition: all 0.3s;
-                }
-                .filter-btn:hover, .filter-btn.active {
-                    background: var(--primary-brand);
-                    color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-                    border-color: var(--primary-brand);
-                    box-shadow: var(--accent-glow);
-                }
-                
-                /* Masonry Grid */
-                .masonry-grid {
-                    column-count: 3;
-                    column-gap: 20px;
-                }
-                .masonry-item {
-                    break-inside: avoid;
-                    margin-bottom: 20px;
-                    position: relative;
-                    border-radius: 16px;
-                    overflow: hidden;
-                    background: var(--surface-dark);
-                }
-                .masonry-item img {
-                    width: 100%;
-                    display: block;
-                    transition: transform 0.5s ease;
-                }
-                
-                .gallery-overlay {
-                    position: absolute;
-                    top: 0; left: 0; right: 0; bottom: 0;
-                    background: rgba(0,0,0,0.6);
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    opacity: 0;
-                    transition: opacity 0.3s ease;
-                    gap: 10px;
-                }
-                .gallery-overlay i {
-                    font-size: 2rem;
-                    color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-                }
-                 .gallery-overlay span {
-                    color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-                    font-weight: 600;
-                    letter-spacing: 1px;
-                }
-                
-                .masonry-item:hover .gallery-overlay {
-                    opacity: 1;
-                }
-                .masonry-item:hover img {
-                    transform: scale(1.05);
-                }
-
-                @media (max-width: 991px) {
-                    .masonry-grid { column-count: 2; }
-                @media (max-width: 576px) {
-                    .masonry-grid { column-count: 1; }
-                }
-
-                .video-thumb {
-                    position: relative;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .video-thumb i {
-                    position: absolute;
-                    font-size: 3rem;
-                    color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-                    z-index: 2;
-                }
-            </style>
-            
-            <script>
-                // Simple Filter Logic
-                document.querySelectorAll('.filter-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        // Remove active class
-                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        
-                        const filter = btn.getAttribute('data-filter');
-                        const items = document.querySelectorAll('.masonry-item');
-                        
-                        items.forEach(item => {
-                            if (filter === 'all' || item.getAttribute('data-category') === filter) {
-                                item.style.display = 'block';
-                            } else {
-                                item.style.display = 'none';
-                            }
-                        });
-                    });
-                });
-            </script>
-            
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <h4>VYBE Africa</h4>
-                    <p style="color: #ccc;">West Pokot County, Kenya<br>info@vybeafrica.org</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Our Work</h4>
-                    <a href="srhr.html">SRHR & Maternal Health</a>
-                    <a href="climate.html">Climate Action</a>
-                    <a href="child-protection.html">Child Protection</a>
-                    <a href="inclusive-governance.html">Inclusive Governance</a>
-                </div>
-                <div class="footer-col">
-                    <h4>About</h4>
-                    <a href="about.html">Who We Are</a>
-                    <a href="gallery.html">Gallery</a>
-                    <a href="contact.html">Contact Us</a>
-                    <a href="get-involved.html">Get Involved</a>
-                </div>
-                <div class="footer-col">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        <a href="https://www.facebook.com/vybeafrica" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://x.com/VybeAfrica254" target="_blank" class="social-icon"><i class="fab fa-x-twitter"></i></a>
-                        <a href="https://www.instagram.com/vybeafrica254?igsh=MXVidHl3NjB4a2h2dQ==" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.tiktok.com/@vybe.africa254?_r=1&_t=ZS-92LtvzRRzw9" target="_blank" class="social-icon"><i class="fab fa-tiktok"></i></a>
-
-                    </div>
-                </div>
-            </div>
-            <div class="copyright">
-                &copy; <script>document.write(new Date().getFullYear())</script> VYBE Africa. All Rights Reserved.
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox-plus-jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/css/glightbox.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/js/glightbox.min.js"></script>
-    <script>
-        const lightbox = GLightbox({
-            touchNavigation: true,
-            loop: true,
-            autoplayVideos: true
-        });
-
-        function showTab(tabName) {
-            document.querySelectorAll('.media-section').forEach(el => el.style.display = 'none');
-            document.getElementById(tabName).style.display = 'block';
-            
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            // Use event.target logic in real app, simplistic approach here:
-            if(tabName === 'photos') document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
-            else document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+            }
         }
     </script>
-    <script src="js/main.js"></script>
+    <style>
+        .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.4); }
+        .soft-shadow { box-shadow: 0 12px 40px rgba(28, 27, 27, 0.06); }
+        .elegant-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.03); }
+        .text-gradient { background: linear-gradient(135deg, #e2725b 0%, #9f402d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-clip { clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%); }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+
+<!-- Top Utility Bar -->
+<div class="bg-primary text-on-primary py-2 text-xs font-label-sm w-full z-50 relative border-b border-white/10">
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
+        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="member_login.html">Members Login</a>
+        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="login.html">Staff Login</a>
+        <a class="text-white font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
+    </div>
+</div>
+
+<!-- Unified Header Navigation -->
+<header class="bg-surface/95 backdrop-blur-md text-primary sticky top-0 shadow-sm z-50 w-full transition-all duration-300">
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+        <div class="flex items-center justify-between h-16 gap-6">
+            <!-- Brand -->
+            <a href="homepage.html" class="flex items-center gap-2.5 shrink-0 text-primary hover:opacity-80 transition-opacity">
+                <img src="assets/images/logo.png" alt="VYBE Africa" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+                <span class="font-display text-lg font-extrabold tracking-tight leading-none">Vybe Africa</span>
+            </a>
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-1 flex-1 justify-center">
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="homepage.html">Ecosystem</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="west_pokot.html">County Chapter</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="impact_registry.html">Impact Registry</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="about.html">About Us</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="work.html">Our Work</a>
+                <a class="relative py-2 px-3 text-sm font-bold rounded text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-primary after:rounded-full" href="gallery.html">Gallery</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="contact.html">Contact</a>
+            </nav>
+            <!-- Right Actions -->
+            <div class="flex items-center gap-2 shrink-0">
+                <div class="hidden xl:flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest mr-1">
+                    <span class="text-primary border-b-2 border-primary cursor-pointer pb-0.5">EN</span>
+                    <span class="text-on-surface-variant cursor-pointer hover:text-primary transition-colors">FR</span>
+                    <span class="text-on-surface-variant cursor-pointer hover:text-primary transition-colors">SW</span>
+                </div>
+                <a href="impact_registry.html" title="Impact Map" class="hidden sm:flex items-center justify-center p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">public</span>
+                </a>
+                <a href="gallery.html" title="Gallery" class="hidden sm:flex items-center justify-center p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">photo_library</span>
+                </a>
+                <a href="get-involved.html" class="ml-1 bg-primary text-on-primary px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">Donate Now</a>
+                <button id="mobile-menu-toggle" aria-label="Toggle menu" class="md:hidden flex items-center justify-center p-2 rounded-lg text-primary hover:bg-primary-container/10 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">menu</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Mobile dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-outline-variant/30 bg-surface shadow-lg">
+        <nav class="max-w-container-max mx-auto px-margin-mobile py-3 flex flex-col gap-1">
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="homepage.html">Ecosystem</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="west_pokot.html">County Chapter</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="impact_registry.html">Impact Registry</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="about.html">About Us</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="work.html">Our Work</a>
+            <a class="block py-2 px-3 rounded text-sm font-bold text-primary bg-primary-container/10" href="gallery.html">Gallery</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="contact.html">Contact</a>
+        </nav>
+        <div class="max-w-container-max mx-auto px-margin-mobile pb-4 flex flex-col gap-2 border-t border-outline-variant/20 pt-3">
+            <a href="member_login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-outline-variant hover:border-primary hover:text-primary transition-colors">Member Login</a>
+            <a href="login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">Staff Login</a>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content Canvas -->
+<main class="flex-grow">
+    <!-- Hero Section -->
+    <section class="relative w-full h-[614px] min-h-[400px] flex items-center justify-center bg-surface-container-high overflow-hidden">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('assets/images/hero-bg.jpg')"></div>
+        <div class="absolute inset-0 bg-black/50"></div> <!-- Overlay for text legibility -->
+        <div class="relative z-10 text-center px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+            <h1 class="font-display-lg text-display-lg text-white mb-stack-sm drop-shadow-lg">Vybe in Action</h1>
+            <p class="font-body-lg text-body-lg text-white/90 max-w-2xl mx-auto drop-shadow-md">Witness the movement. High-impact moments captured from our grassroots initiatives across the continent.</p>
+        </div>
+    </section>
+
+    <!-- Gallery Controls -->
+    <section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-stack-md gap-stack-sm border-b border-outline-variant pb-6">
+            <h2 class="font-headline-lg text-headline-lg text-on-surface">Our Impact</h2>
+            <div class="flex flex-wrap gap-base" id="filter-buttons">
+                <button data-filter="all" class="filter-btn px-5 py-2.5 rounded-full bg-secondary text-on-secondary font-label-sm text-label-sm shadow-sm transition-all">All</button>
+                <button data-filter="outreach" class="filter-btn px-5 py-2.5 rounded-full border border-outline text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high hover:border-secondary transition-all">Community Outreach</button>
+                <button data-filter="workshops" class="filter-btn px-5 py-2.5 rounded-full border border-outline text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high hover:border-secondary transition-all">Youth Workshops</button>
+                <button data-filter="climate" class="filter-btn px-5 py-2.5 rounded-full border border-outline text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high hover:border-secondary transition-all">Climate Action</button>
+                <button data-filter="health" class="filter-btn px-5 py-2.5 rounded-full border border-outline text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high hover:border-secondary transition-all">Health Clinics</button>
+            </div>
+        </div>
+
+        <!-- Bento Grid Gallery -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter auto-rows-[350px]" id="gallery-grid">
+            <!-- Initial items will be loaded dynamically via Javascript -->
+        </div>
+
+        <!-- Load More Action -->
+        <div class="mt-stack-lg text-center" id="load-more-container">
+            <button id="load-more-btn" class="border-2 border-secondary text-secondary font-label-sm text-label-sm px-8 py-4 rounded-full hover:bg-secondary hover:text-on-secondary transition-colors duration-300 shadow-sm">Load More Imagery</button>
+        </div>
+    </section>
+</main>
+
+<!-- Footer - Robust & Professional -->
+<footer class="bg-[#1a1a1a] text-surface-variant font-body-md text-body-md full-width mt-auto">
+    <div class="w-full px-margin-mobile md:px-margin-desktop pt-20 pb-10 max-w-container-max mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8 mb-16 text-left">
+            <!-- Brand Col -->
+            <div class="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
+                <a class="font-display-lg text-headline-md text-white tracking-tight flex items-center gap-2" href="homepage.html">
+                    <span class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold text-xl leading-none">V</span>
+                    <span>VYBE Africa</span>
+                </a>
+                <p class="text-surface-variant/70 text-sm leading-relaxed max-w-xs">
+                    Elevating youth voices and empowering the next generation of changemakers in West Pokot through innovation, advocacy, and action.
+                </p>
+                <div class="flex gap-4 mt-2">
+                    <a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary text-white transition-colors" href="https://www.facebook.com/vybeafrica" target="_blank"><i class="fab fa-facebook-f text-xs"></i></a>
+                    <a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary text-white transition-colors" href="https://x.com/VybeAfrica254" target="_blank"><i class="fab fa-x-twitter text-xs"></i></a>
+                    <a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary text-white transition-colors" href="https://www.instagram.com/vybeafrica254" target="_blank"><i class="fab fa-instagram text-xs"></i></a>
+                </div>
+            </div>
+            <!-- Links Col 1 -->
+            <div class="md:col-span-4 lg:col-span-2 flex flex-col gap-4">
+                <h4 class="font-bold text-white mb-2 uppercase tracking-wider text-xs">Our Work</h4>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="srhr.html">SRHR &amp; Health</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="climate.html">Climate Action</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="child-protection.html">Child Protection</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="inclusive-governance.html">Governance</a>
+            </div>
+            <!-- Links Col 2 -->
+            <div class="md:col-span-4 lg:col-span-2 flex flex-col gap-4">
+                <h4 class="font-bold text-white mb-2 uppercase tracking-wider text-xs">Organization</h4>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="about.html">About Us</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="work.html">Team</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="about.html">Careers</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="contact.html">Contact</a>
+            </div>
+            <!-- Newsletter -->
+            <div class="md:col-span-4 lg:col-span-4 flex flex-col gap-4">
+                <h4 class="font-bold text-white mb-2 uppercase tracking-wider text-xs">Stay Updated</h4>
+                <p class="text-surface-variant/70 text-sm mb-2">Subscribe to our newsletter for the latest field reports and impact stories.</p>
+                <form class="flex w-full mt-2" onsubmit="event.preventDefault();">
+                    <input class="w-full px-4 py-3 rounded-l-lg bg-white/5 border border-white/10 text-white focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none placeholder-surface-variant/50 text-sm" placeholder="Email address" type="email"/>
+                    <button class="bg-primary text-on-primary px-6 py-3 rounded-r-lg hover:bg-primary-container transition-colors font-bold text-sm" type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-xs text-surface-variant/50">
+                © 2026 VYBE Africa. All Rights Reserved. West Pokot County, Kenya.
+            </div>
+            <div class="flex gap-6 text-xs text-surface-variant/50">
+                <a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+                <a class="hover:text-white transition-colors" href="#">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Local image assets list with categories for real interactivity
+    const GALLERY_ITEMS = [
+        // Batch 1 (Initial bento layout items)
+        {
+            src: "assets/images/gallery/VYBE004847.jpg",
+            alt: "A young African community leader passionately explaining something to a group of residents",
+            category: "outreach",
+            tagLabel: "Community Outreach",
+            title: "Local Organizing Initiative",
+            description: "Empowering local leaders to take charge of community development projects through comprehensive training and support networks. Over 50 communities reached this year.",
+            colSpan: "md:col-span-2 md:row-span-2"
+        },
+        {
+            src: "assets/images/gallery/VYBE004841.jpg",
+            alt: "Youth workshop in progress showing collaborative learning",
+            category: "workshops",
+            tagLabel: "Youth Workshops",
+            title: "Tech Empowerment",
+            description: "Equipping the next generation with vital digital skills for the modern economy.",
+            colSpan: "md:col-span-2"
+        },
+        {
+            src: "assets/images/gallery/VYBE004827.jpg",
+            alt: "Community volunteers planting trees under a clear sky",
+            category: "climate",
+            tagLabel: "Climate Action",
+            title: "Reforestation Drive",
+            description: "Planting 10,000 trees to combat desertification.",
+            colSpan: "md:col-span-1"
+        },
+        {
+            src: "assets/images/gallery/VYBE004825.jpg",
+            alt: "Documentary photo inside a mobile health clinic in West Pokot",
+            category: "health",
+            tagLabel: "Health Clinics",
+            title: "Mobile Care Units",
+            description: "Bringing essential healthcare directly to remote areas.",
+            colSpan: "md:col-span-1"
+        },
+        
+        // Batch 2 (Loaded when "Load More" clicked)
+        {
+            src: "assets/images/gallery/VYBE004848.jpg",
+            alt: "Youth climate group planning tree planting locations",
+            category: "climate",
+            tagLabel: "Climate Action",
+            title: "Youth Environmental Forum",
+            description: "Young champions designing long-term community forestry programs in rural wards.",
+            colSpan: "md:col-span-1"
+        },
+        {
+            src: "assets/images/gallery/VYBE004838.jpg",
+            alt: "Volunteers during a health education clinic session",
+            category: "health",
+            tagLabel: "Health Clinics",
+            title: "Maternal Health Dialogues",
+            description: "Breaking stigma and building reliable clinics with regional volunteers.",
+            colSpan: "md:col-span-1"
+        },
+        {
+            src: "assets/images/gallery/VYBE004834.jpeg",
+            alt: "A group photo of students at a local workshop in West Pokot",
+            category: "workshops",
+            tagLabel: "Youth Workshops",
+            title: "Leadership Camp",
+            description: "Providing public speaking and advocacy training to high school and college youth.",
+            colSpan: "md:col-span-2"
+        },
+        {
+            src: "assets/images/gallery/VYBE004845.jpg",
+            alt: "Grassroots community gathering planning county budget advocacy",
+            category: "outreach",
+            tagLabel: "Community Outreach",
+            title: "Citizen Budget Audits",
+            description: "Training citizens on tracking local public resource allocations and holding leadership accountable.",
+            colSpan: "md:col-span-2 md:row-span-1"
+        },
+        {
+            src: "assets/images/gallery/VYBE004829.jpg",
+            alt: "Eco-tourism path construction in Cherang'any hills",
+            category: "climate",
+            tagLabel: "Climate Action",
+            title: "Ecotourism Development",
+            description: "Mapping hiking trails to foster community-based conservation initiatives.",
+            colSpan: "md:col-span-2"
+        }
+    ];
+
+    let currentFilter = "all";
+    let visibleCount = 4; // Start with 4 items shown
+
+    const galleryGrid = document.getElementById("gallery-grid");
+    const loadMoreBtn = document.getElementById("load-more-btn");
+    const loadMoreContainer = document.getElementById("load-more-container");
+    const filterButtonsContainer = document.getElementById("filter-buttons");
+
+    function renderGallery() {
+        // Filter items
+        const filteredItems = GALLERY_ITEMS.filter(item => {
+            return currentFilter === "all" || item.category === currentFilter;
+        });
+
+        // Slice to current visible count
+        const itemsToRender = filteredItems.slice(0, visibleCount);
+
+        // Generate HTML
+        galleryGrid.innerHTML = itemsToRender.map(item => {
+            const isLarge = item.colSpan.includes("md:row-span-2");
+            const detailOverlay = isLarge ? 
+                `<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90 transition-opacity duration-300 flex flex-col justify-end p-stack-md">
+                    <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <span class="inline-block bg-primary text-on-primary font-label-sm text-label-sm px-3 py-1.5 rounded-full w-fit mb-3">${item.tagLabel}</span>
+                        <h3 class="font-headline-lg-mobile text-headline-lg-mobile text-white mb-2">${item.title}</h3>
+                        <p class="font-body-md text-body-md text-white/90 line-clamp-3">${item.description}</p>
+                    </div>
+                </div>` :
+                `<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-stack-sm md:p-stack-md">
+                    <div class="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                        <span class="inline-block bg-surface-container/20 backdrop-blur-sm border border-white/30 text-white font-label-sm text-label-sm px-3 py-1.5 rounded-full w-fit mb-2">${item.tagLabel}</span>
+                        <h3 class="font-headline-md text-headline-md text-white font-bold mb-1">${item.title}</h3>
+                        <p class="font-body-md text-body-md text-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 h-0 group-hover:h-auto overflow-hidden">${item.description}</p>
+                    </div>
+                </div>`;
+
+            return `
+                <article class="${item.colSpan} relative group rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-surface-container-lowest">
+                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="${item.alt}" src="${item.src}"/>
+                    ${detailOverlay}
+                </article>
+            `;
+        }).join('');
+
+        // Show/hide load more button
+        if (visibleCount >= filteredItems.length) {
+            loadMoreContainer.classList.add("hidden");
+        } else {
+            loadMoreContainer.classList.remove("hidden");
+        }
+    }
+
+    // Load More click handler
+    loadMoreBtn.addEventListener("click", () => {
+        visibleCount += 4; // Add another batch of 4 items
+        renderGallery();
+    });
+
+    // Filter Buttons click handler
+    filterButtonsContainer.addEventListener("click", (e) => {
+        const btn = e.target.closest(".filter-btn");
+        if (!btn) return;
+
+        // Reset active state
+        document.querySelectorAll(".filter-btn").forEach(button => {
+            button.className = "filter-btn px-5 py-2.5 rounded-full border border-outline text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high hover:border-secondary transition-all";
+        });
+
+        // Set active state on clicked button
+        btn.className = "filter-btn px-5 py-2.5 rounded-full bg-secondary text-on-secondary font-label-sm text-label-sm shadow-sm transition-all";
+
+        currentFilter = btn.getAttribute("data-filter");
+        visibleCount = 4; // Reset count back to initial view limit
+        renderGallery();
+    });
+
+    // Initial render
+    renderGallery();
+
+    // Mobile menu toggle drawer
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (toggleBtn && mobileMenu) {
+        toggleBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+</script>
+
+<!-- Bonga na Vybe Chatbot Widget -->
+<script src="js/chatbot.js"></script>
+    <script src="js/site-shell.js"></script>
 </body>
 </html>

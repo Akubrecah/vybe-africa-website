@@ -2,8 +2,10 @@
   "name": "vybe-africa",
   "version": "1.0.0",
   "description": "**Live Demo**: [https://vybe-africa-website.vercel.app/index.html](https://vybe-africa-website.vercel.app/index.html)",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +22,7 @@
   "homepage": "https://github.com/Akubrecah/vybe-africa-website#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.88.0",
+    "@google/generative-ai": "^0.21.0",
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.1",
     "cors": "^2.8.5",

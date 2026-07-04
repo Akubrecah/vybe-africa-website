@@ -1,157 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Login - VYBE Africa</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Staff Login - Vybe Africa</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: #050505;
-            background-image: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050505 100%);
-            font-family: 'Space Grotesk', sans-serif;
-            padding: 1rem;
+    <!-- Tailwind CSS with Stitch MCP Tokens -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#9f402d",
+                        "primary-container": "#e2725b",
+                        "on-primary": "#ffffff",
+                        "secondary": "#4d6453",
+                        "secondary-container": "#cde6d1",
+                        "tertiary": "#705d00",
+                        "background": "#fcf9f8",
+                        "on-background": "#1c1b1b",
+                        "surface": "#fcf9f8",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "on-surface": "#1c1b1b",
+                        "on-surface-variant": "#56423e",
+                        "outline": "#89726d",
+                        "outline-variant": "#ddc0ba",
+                        "inverse-surface": "#313030"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    }
+                }
+            }
         }
-
-        .login-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 3rem;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-
-        .login-logo i {
-            font-size: 3rem;
-            color: #facc15;
-            margin-bottom: 1.5rem;
-        }
-
-        h1 { color: white; font-size: 2rem; margin-bottom: 0.5rem; }
-        .subtitle { color: #9ca3af; margin-bottom: 2rem; }
-
-        .form-group { margin-bottom: 1.5rem; text-align: left; }
-        label { display: block; color: #9ca3af; margin-bottom: 0.5rem; font-size: 0.9rem; }
-
-        input {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: white;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: 0.3s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #facc15;
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
-            border: none;
-            border-radius: 8px;
-            color: #000;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: inherit;
-        }
-
-        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(250, 204, 21, 0.3); }
-        .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        .error-msg {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            color: #f87171;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            display: none;
-            text-align: left;
-        }
-
-        .success-msg {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            color: #34d399;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            display: none;
-        }
-
-        .links { margin-top: 1.5rem; }
-        .links a { color: #9ca3af; text-decoration: none; font-size: 0.9rem; display: block; margin: 0.5rem 0; }
-        .links a:hover { color: #facc15; }
-
-        .debug-info {
-            margin-top: 1rem;
-            font-size: 0.7rem;
-            color: #6b7280;
-            text-align: left;
-            background: rgba(0,0,0,0.3);
-            padding: 8px;
-            border-radius: 6px;
-            display: none;
-        }
-    </style>
+    </script>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-    <div class="login-card">
-        <div class="login-logo">
-            <i class="fas fa-user-shield"></i>
+<body class="bg-background text-on-background font-body min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/40 soft-shadow text-center">
+        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary mx-auto mb-4">
+            <span class="material-symbols-outlined text-3xl">admin_panel_settings</span>
         </div>
-        
-        <h1>Staff Login</h1>
-        <p class="subtitle">VYBE Africa Staff Portal</p>
 
-        <div class="error-msg" id="error-msg"></div>
-        <div class="success-msg" id="success-msg"></div>
+        <h1 class="font-display text-2xl font-bold text-on-background">Staff Login</h1>
+        <p class="text-on-surface-variant text-sm mt-1 mb-6">VYBE Africa Internal Staff Portal</p>
 
-        <form id="login-form" onsubmit="event.preventDefault(); handleLogin();">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" required autofocus placeholder="Enter your email">
+        <div class="bg-red-50 text-red-700 p-3 rounded-lg text-sm text-left mb-4 hidden border border-red-200" id="error-msg"></div>
+        <div class="bg-green-50 text-green-700 p-3 rounded-lg text-sm text-left mb-4 hidden border border-green-200" id="success-msg"></div>
+
+        <form id="login-form" onsubmit="event.preventDefault(); handleLogin();" class="space-y-4 text-left">
+            <div>
+                <label for="email" class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Email Address</label>
+                <input type="email" id="email" required autofocus placeholder="Enter staff email" class="w-full p-3 border border-outline-variant rounded-lg bg-surface focus:border-primary">
             </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required placeholder="Enter your password">
+            <div>
+                <label for="password" class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Password</label>
+                <input type="password" id="password" required placeholder="Enter password" class="w-full p-3 border border-outline-variant rounded-lg bg-surface focus:border-primary">
             </div>
 
-            <button type="button" class="btn-login" id="login-btn" onclick="handleLogin()">
-                <i class="fas fa-sign-in-alt"></i> Sign In
+            <button type="button" class="w-full py-3 bg-primary text-on-primary font-bold text-sm uppercase tracking-wider rounded-lg hover:bg-primary-container transition-all shadow-sm flex items-center justify-center gap-2 mt-2" id="login-btn" onclick="handleLogin()">
+                <span class="material-symbols-outlined text-lg">login</span> Sign In
             </button>
         </form>
 
-        <div class="links">
-            <a href="member_login.html"><i class="fas fa-users"></i> Member Login</a>
-            <a href="homepage.html"><i class="fas fa-home"></i> Back to Home</a>
+        <div class="mt-6 pt-4 border-t border-outline-variant/30 text-xs text-on-surface-variant flex justify-between">
+            <a href="member_login.html" class="hover:text-primary font-semibold flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">group</span> Member Login
+            </a>
+            <a href="homepage.html" class="hover:text-primary font-semibold flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">home</span> Home
+            </a>
         </div>
 
-        <div class="debug-info" id="debug-info"></div>
+        <div class="mt-4 text-left text-xs font-mono text-outline bg-surface-container-low p-2 rounded hidden" id="debug-info"></div>
     </div>
 
     <!-- Supabase for database & bcrypt for password -->
@@ -160,59 +98,50 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM fully loaded');
-            
-            // Initialize Supabase
             const supabaseUrl = 'https://mdjokagpejujfjfobdcs.supabase.co';
             const supabaseKey = 'sb_publishable_Y9Wv-aZdMFVv55-CYgj2AA_6l3Iz31G';
             
             let supabase;
             try {
-                // Simplified client creation
                 supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-                console.log('Supabase initialized');
             } catch (e) {
                 console.error('Supabase init failed:', e);
-                alert('App Init Error: ' + e.message);
             }
 
             const bcrypt = window.dcodeIO ? window.dcodeIO.bcrypt : window.bcrypt;
             const loginBtn = document.getElementById('login-btn');
             
-            // Attach Click Listener explicitly
             if (loginBtn) {
-                console.log('Login button found, attaching listener');
                 loginBtn.addEventListener('click', handleLogin);
-            } else {
-                console.error('Login button NOT found');
             }
 
             function showError(msg) {
-                document.getElementById('error-msg').textContent = msg;
-                document.getElementById('error-msg').style.display = 'block';
-                document.getElementById('success-msg').style.display = 'none';
+                const el = document.getElementById('error-msg');
+                el.textContent = msg;
+                el.classList.remove('hidden');
+                document.getElementById('success-msg').classList.add('hidden');
             }
 
             function showSuccess(msg) {
-                document.getElementById('success-msg').innerHTML = msg;
-                document.getElementById('success-msg').style.display = 'block';
-                document.getElementById('error-msg').style.display = 'none';
+                const el = document.getElementById('success-msg');
+                el.innerHTML = msg;
+                el.classList.remove('hidden');
+                document.getElementById('error-msg').classList.add('hidden');
             }
 
             function debug(msg) {
                 console.log('[LOGIN]', msg);
                 const el = document.getElementById('debug-info');
-                el.style.display = 'block';
+                el.classList.remove('hidden');
                 el.innerHTML += msg + '<br>';
             }
 
             async function handleLogin(e) {
                 if(e) e.preventDefault();
-                console.log('Handle login triggered');
                 
                 const submitBtn = document.getElementById('login-btn');
-                document.getElementById('error-msg').style.display = 'none';
-                document.getElementById('success-msg').style.display = 'none';
+                document.getElementById('error-msg').classList.add('hidden');
+                document.getElementById('success-msg').classList.add('hidden');
                 document.getElementById('debug-info').innerHTML = '';
 
                 const email = document.getElementById('email').value.trim();
@@ -224,7 +153,7 @@
                 }
 
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+                submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-lg">sync</span> Checking...';
 
                 try {
                     debug('Connecting to database...');
@@ -240,7 +169,7 @@
                     if (!users || users.length === 0) {
                         showError('Account not found. Please check email.');
                         submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                        submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg">login</span> Sign In';
                         return;
                     }
 
@@ -248,26 +177,20 @@
                     debug('User found: ' + user.role);
 
                     let passwordMatch = false;
-                    
-                    // 1. Try bcrypt if available
                     if (bcrypt) {
                         try {
                             passwordMatch = bcrypt.compareSync(password, user.password);
-                        } catch (e) {
-                            console.warn('Bcrypt check failed, trying plain text');
-                        }
+                        } catch (e) {}
                     }
 
-                    // 2. Fallback: Direct string comparison
                     if (!passwordMatch && password === user.password) {
-                        console.log('Plain text password match');
                         passwordMatch = true;
                     }
 
                     if (!passwordMatch) {
                         showError('Incorrect password');
                         submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                        submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg">login</span> Sign In';
                         return;
                     }
 
@@ -293,10 +216,10 @@
                     debug('Routing to: ' + redirectUrl);
                     
                     const btnHtml = `
-                        <div style="margin-top:15px; padding:15px; border:2px solid #10b981; border-radius:10px; background:rgba(0,0,0,0.8);">
-                            <p style="color:#10b981; font-weight:bold; margin-bottom:10px;">✅ LOGIN SUCCESSFUL</p>
-                            <a href="${redirectUrl}" style="display:block; background:#10b981; color:white; padding:12px; border-radius:5px; text-decoration:none; font-weight:bold;">
-                                <i class="fas fa-arrow-right"></i> GO TO DASHBOARD
+                        <div class="p-3 bg-green-100 text-green-800 rounded-lg border border-green-300 text-center space-y-2">
+                            <p class="font-bold">✅ LOGIN SUCCESSFUL</p>
+                            <a href="${redirectUrl}" class="inline-block w-full bg-secondary text-on-secondary py-2 rounded font-bold text-xs uppercase">
+                                Go to Dashboard →
                             </a>
                         </div>
                     `;
@@ -304,14 +227,13 @@
                     showSuccess(btnHtml);
                     submitBtn.style.display = 'none';
 
-                    // Attempt auto-redirect
                     window.location.href = redirectUrl;
 
                 } catch (err) {
                     console.error(err);
                     showError('System Error: ' + err.message);
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                    submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg">login</span> Sign In';
                 }
             }
         });

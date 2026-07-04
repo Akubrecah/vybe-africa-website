@@ -1,260 +1,343 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - VYBE Africa</title>
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        .page-header {
-            background: linear-gradient(rgba(5,5,5,0.8), rgba(5,5,5,0.8)), url('assets/images/hero-bg.jpg') center/cover no-repeat;
-            background-attachment: fixed;
-            color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            padding: 180px 0 80px;
-            text-align: center;
-        }
-        
 
-        .contact-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-        }
-
-        @media (max-width: 768px) {
-            .contact-container {
-                grid-template-columns: 1fr;
+<html class="scroll-smooth" lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Contact Us - Vybe Africa</title>
+    <meta name="description" content="Empowering youth across West Pokot, Kenya."/>
+    <!-- Tailwind CSS CDN with Grassroots Premium Design Tokens -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-surface": "#313030", "on-secondary": "#ffffff",
+                        "outline": "#89726d", "on-error": "#ffffff", "tertiary": "#705d00",
+                        "surface-dim": "#dcd9d9", "on-primary-container": "#5a0d02",
+                        "primary-fixed-dim": "#ffb4a5", "secondary-fixed": "#d0e9d4",
+                        "on-primary-fixed-variant": "#802918", "on-secondary-fixed": "#0b2013",
+                        "on-background": "#1c1b1b", "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a", "on-secondary-container": "#516857",
+                        "secondary-container": "#cde6d1", "on-surface": "#1c1b1b",
+                        "surface-container-low": "#f6f3f2", "on-primary-fixed": "#3e0500",
+                        "on-secondary-fixed-variant": "#364c3c", "surface-tint": "#9f402d",
+                        "error-container": "#ffdad6", "tertiary-fixed-dim": "#e9c400",
+                        "inverse-on-surface": "#f3f0ef", "on-tertiary-fixed-variant": "#544600",
+                        "primary": "#9f402d", "outline-variant": "#ddc0ba", "secondary": "#4d6453",
+                        "surface-container-high": "#eae7e7", "primary-fixed": "#ffdad3",
+                        "surface-bright": "#fcf9f8", "inverse-primary": "#ffb4a5",
+                        "surface-variant": "#e5e2e1", "on-surface-variant": "#56423e",
+                        "primary-container": "#e2725b", "tertiary-container": "#c9a900",
+                        "secondary-fixed-dim": "#b4cdb8", "on-error-container": "#93000a",
+                        "background": "#fcf9f8", "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e5e2e1", "on-tertiary-fixed": "#221b00",
+                        "surface-container": "#f0eded", "tertiary-fixed": "#ffe16d",
+                        "surface": "#fcf9f8", "on-primary": "#ffffff", "on-tertiary-container": "#4c3f00"
+                    },
+                    borderRadius: {
+                        "sm": "0.125rem", "DEFAULT": "0.25rem", "md": "0.375rem",
+                        "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px",
+                        "4xl": "2rem"
+                    },
+                    spacing: {
+                        "margin-mobile": "20px", "stack-lg": "80px", "stack-md": "32px",
+                        "margin-desktop": "64px", "gutter": "24px", "base": "8px",
+                        "stack-sm": "16px", "container-max": "1280px"
+                    },
+                    fontFamily: {
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"], "body-lg": ["Inter"], "label-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    },
+                    fontSize: {
+                        "headline-lg-mobile": ["32px", { lineHeight: "1.2", fontWeight: "700" }],
+                        "headline-lg": ["40px", { lineHeight: "1.2", fontWeight: "700" }],
+                        "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+                        "body-md": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "label-sm": ["14px", { lineHeight: "1.0", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "display-lg": ["64px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "800" }]
+                    },
+                    maxWidth: { "container-max": "1280px" }
+                }
             }
         }
-
-        .contact-info-item {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            background: var(--surface-dark);
-            padding: 20px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--surface-hover);
-            transition: all 0.3s;
-        }
-        
-        .contact-info-item:hover {
-            border-color: var(--primary-brand);
-            transform: translateX(5px);
-        }
-
-        .contact-icon {
-            font-size: 1.5rem;
-            color: var(--primary-brand);
-            background: rgba(255, 0, 85, 0.1);
-            padding: 15px;
-            border-radius: 50%;
-        }
-        
-        .contact-info-item p { margin: 0; color: var(--text-secondary); font-size: 1.1rem; }
-        .contact-info-item strong { display: block; color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5); margin-bottom: 5px; }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 15px;
-            background: var(--surface-dark);
-            border: 1px solid var(--surface-hover);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-body);
-            font-size: 1rem;
-            color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transition: all 0.3s;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-brand);
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 150px;
-        }
-
-        .map-container {
-            width: 100%;
-            height: 400px;
-            background-color: var(--surface-dark);
-            margin-top: 4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--surface-hover);
-        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/css/glightbox.min.css"/>
+    <style>
+        .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.4); }
+        .soft-shadow { box-shadow: 0 12px 40px rgba(28, 27, 27, 0.06); }
+        .elegant-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.03); }
+        .text-gradient { background: linear-gradient(135deg, #e2725b 0%, #9f402d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-clip { clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%); }
     </style>
 </head>
-<body>
 
-    <!-- Header -->
-    <header class="main-header">
-        <div class="container navbar">
-            <a href="homepage.html" class="logo">
-                <img src="assets/images/logo.png" alt="VYBE Africa">
-                <span>VYBE Africa</span>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col pt-[80px]">
+
+
+<!-- Unified Header Navigation -->
+<!-- Top Utility Bar -->
+<div class="bg-primary text-on-primary py-2 text-xs font-label-sm w-full z-50 relative border-b border-white/10">
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
+        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="member_login.html">Members Login</a>
+        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="login.html">Staff Login</a>
+        <a class="text-white font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
+    </div>
+</div>
+
+<!-- Unified Header Navigation -->
+<header class="bg-surface/95 backdrop-blur-md text-primary sticky top-0 shadow-sm z-50 w-full transition-all duration-300">
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+        <div class="flex items-center justify-between h-16 gap-6">
+            <!-- Brand -->
+            <a href="homepage.html" class="flex items-center gap-2.5 shrink-0 text-primary hover:opacity-80 transition-opacity">
+                <img src="assets/images/logo.png" alt="VYBE Africa" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+                <span class="font-display text-lg font-extrabold tracking-tight leading-none">Vybe Africa</span>
             </a>
-            
-            <button class="hamburger"><i class="fas fa-bars"></i></button>
-            
-            <nav class="nav-links">
-                <a href="homepage.html" class="nav-link">Home</a>
-                <a href="about.html" class="nav-link">About Us</a>
-                <a href="work.html" class="nav-link">Our Work</a>
-                <a href="gallery.html" class="nav-link">Gallery</a>
-                <a href="contact.html" class="nav-link active">Contact</a>
-                <div class="nav-cta">
-
-                    <a href="member_login.html" class="btn" style="margin-right:10px; border: 2px solid #facc15; color: #fff; font-weight:600;"><i class="fas fa-user"></i> Members Login</a>
-                    <a href="login.html" class="btn" style="margin-right:10px; border: 2px solid var(--primary-brand); color: #fff; font-weight:600;">Staff Login</a>
-                    <a href="get-involved.html" class="btn btn-primary">Get Involved</a>
-                </div>
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-1 flex-1 justify-center">
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="homepage.html">Ecosystem</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="west_pokot.html">County Chapter</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="impact_registry.html">Impact Registry</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="about.html">About Us</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="work.html">Our Work</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="gallery.html">Gallery</a>
+                <a class="relative py-2 px-3 text-sm font-bold rounded text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-primary after:rounded-full" href="contact.html">Contact</a>
             </nav>
-        </div>
-    </header>
-
-    <!-- Page Header -->
-    <!-- Page Header -->
-    <section class="page-header hero-header-style">
-        <div class="container">
-            <h1 class="animate-fade-up">CONTACT <span class="text-gradient">US</span></h1>
-            <p class="animate-fade-up delay-1">Get in touch with us to learn more or support our work.</p>
-        </div>
-    </section>
-
-    <!-- Contact Content -->
-    <section class="section-padding">
-        <div class="container">
-            <div class="contact-container">
-                <!-- Info -->
-                <div>
-                    <h2 class="text-primary" style="margin-bottom: 2rem;">Get In Touch</h2>
-                    
-                    <div class="contact-info-item">
-                        <i class="fas fa-map-marker-alt contact-icon"></i>
-                        <div>
-                            <h4>Visit Us</h4>
-                            <p>West Pokot County, Kenya</p>
-                        </div>
-                    </div>
-
-                    <div class="contact-info-item">
-                        <i class="fas fa-envelope contact-icon"></i>
-                        <div>
-                            <h4>Email Us</h4>
-                            <p>vybeafrica254@gmail.com</p>
-                        </div>
-                    </div>
-
-                    <div class="contact-info-item">
-                        <i class="fas fa-phone contact-icon"></i>
-                        <div>
-                            <h4>Call Us</h4>
-                            <p>+254 717 648 457</p>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 3rem;">
-                        <h4>Follow Us</h4>
-                        <div class="social-links" style="margin-top: 1rem;">
-                            <a href="https://www.tiktok.com/@vybe.africa254?_r=1<div class="social-links" style="margin-top: 1rem;">_t=ZS-92LtvzRRzw9" target="_blank" class="social-icon" style="background:#ddd; color:var(--primary-color)"><i class="fab fa-tiktok"></i></a>
-                            <a href="https://www.facebook.com/vybeafrica" target="_blank" class="social-icon" style="background:#ddd; color:var(--primary-color)"><i class="fab fa-facebook-f"></i></a>
-                            <a href="https://x.com/VybeAfrica254" target="_blank" class="social-icon" style="background:#ddd; color:var(--primary-color)"><i class="fab fa-x-twitter"></i></a>
-                            <a href="https://www.instagram.com/vybeafrica254?igsh=MXVidHl3NjB4a2h2dQ==" target="_blank" class="social-icon" style="background:#ddd; color:var(--primary-color)"><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
+            <!-- Right Actions -->
+            <div class="flex items-center gap-2 shrink-0">
+                <div class="hidden xl:flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest mr-1">
+                    <span class="text-primary border-b-2 border-primary cursor-pointer pb-0.5">EN</span>
+                    <span class="text-on-surface-variant cursor-pointer hover:text-primary transition-colors">FR</span>
+                    <span class="text-on-surface-variant cursor-pointer hover:text-primary transition-colors">SW</span>
                 </div>
-
-                <!-- Form -->
-                <div>
-                    <h2 class="text-primary" style="margin-bottom: 2rem;">Send a Message</h2>
-                    <form action="#" method="POST">
-                        <div class="form-group">
-                            <label for="name" style="display:block; margin-bottom:0.5rem; font-weight:500;">Your Name</label>
-                            <input type="text" id="name" class="form-control" placeholder="John Doe" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email" style="display:block; margin-bottom:0.5rem; font-weight:500;">Email Address</label>
-                            <input type="email" id="email" class="form-control" placeholder="john@example.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="subject" style="display:block; margin-bottom:0.5rem; font-weight:500;">Subject</label>
-                            <input type="text" id="subject" class="form-control" placeholder="How can we help?" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="message" style="display:block; margin-bottom:0.5rem; font-weight:500;">Message</label>
-                            <textarea id="message" class="form-control" placeholder="Your message here..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
-                    </form>
-                </div>
-            </div>
-            
-            <!-- Map Placeholder -->
-            <div class="map-container">
-                <p><i class="fas fa-map"></i> Google Maps Embed Placeholder (West Pokot County)</p>
+                <a href="impact_registry.html" title="Impact Map" class="hidden sm:flex items-center justify-center p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">public</span>
+                </a>
+                <a href="gallery.html" title="Gallery" class="hidden sm:flex items-center justify-center p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">photo_library</span>
+                </a>
+                <a href="get-involved.html" class="ml-1 bg-primary text-on-primary px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">Donate Now</a>
+                <button id="mobile-menu-toggle" aria-label="Toggle menu" class="md:hidden flex items-center justify-center p-2 rounded-lg text-primary hover:bg-primary-container/10 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">menu</span>
+                </button>
             </div>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <h4>VYBE Africa</h4>
-                    <p style="color: #ccc;">West Pokot County, Kenya<br>info@vybeafrica.org</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Our Work</h4>
-                    <a href="srhr.html">SRHR & Maternal Health</a>
-                    <a href="climate.html">Climate Action</a>
-                    <a href="child-protection.html">Child Protection</a>
-                    <a href="inclusive-governance.html">Inclusive Governance</a>
-                </div>
-                <div class="footer-col">
-                    <h4>About</h4>
-                    <a href="about.html">Who We Are</a>
-                    <a href="gallery.html">Gallery</a>
-                    <a href="contact.html">Contact Us</a>
-                    <a href="get-involved.html">Get Involved</a>
-                </div>
-                <div class="footer-col">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        
-                        <a href="https://www.facebook.com/vybeafrica" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://x.com/VybeAfrica254" target="_blank" class="social-icon"><i class="fab fa-x-twitter"></i></a>
-                        <a href="https://www.instagram.com/vybeafrica254?igsh=MXVidHl3NjB4a2h2dQ==" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.tiktok.com/@vybe.africa254?_r=1&_t=ZS-92LtvzRRzw9" target="_blank" class="social-icon"><i class="fab fa-tiktok"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="copyright">
-                &copy; <script>document.write(new Date().getFullYear())</script> VYBE Africa. All Rights Reserved.
-            </div>
+    </div>
+    <!-- Mobile dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-outline-variant/30 bg-surface shadow-lg">
+        <nav class="max-w-container-max mx-auto px-margin-mobile py-3 flex flex-col gap-1">
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="homepage.html">Ecosystem</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="west_pokot.html">County Chapter</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="impact_registry.html">Impact Registry</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="about.html">About Us</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="work.html">Our Work</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="gallery.html">Gallery</a>
+            <a class="block py-2 px-3 rounded text-sm font-bold text-primary bg-primary-container/10" href="contact.html">Contact</a>
+        </nav>
+        <div class="max-w-container-max mx-auto px-margin-mobile pb-4 flex flex-col gap-2 border-t border-outline-variant/20 pt-3">
+            <a href="member_login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-outline-variant hover:border-primary hover:text-primary transition-colors">Member Login</a>
+            <a href="login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">Staff Login</a>
         </div>
-    </footer>
+    </div>
+</header>
 
-    <script src="js/main.js"></script>
+
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative bg-surface-container-low pt-stack-lg pb-stack-lg md:pt-[120px] md:pb-[100px] overflow-hidden">
+<div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#9f402d 1px, transparent 1px); background-size: 30px 30px;"></div>
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10 text-center">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-display-lg md:text-display-lg text-on-surface mb-stack-sm">Get in Touch</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">We'd love to hear from you. Whether you have a question about our grassroots initiatives, want to partner with us, or just want to say hello, our team is ready to answer all your questions.</p>
+</div>
+</section>
+<!-- Contact Content Section -->
+<section class="py-stack-lg relative">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-stretch">
+<!-- Contact Form (Bento Style Left) -->
+<div class="lg:col-span-7 bg-surface-container-lowest rounded-xl shadow-sm p-stack-sm md:p-stack-md relative overflow-hidden border border-outline-variant/40 flex flex-col">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container rounded-full blur-[80px] -mr-16 -mt-16 opacity-20 pointer-events-none"></div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-stack-md">Send us a message</h2>
+<form class="space-y-stack-sm flex-grow flex flex-col">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-sm">
+<div class="space-y-base group">
+<label class="block font-label-sm text-label-sm text-on-surface-variant group-focus-within:text-primary transition-colors" for="name">Name <span class="text-error">*</span></label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border border-outline-variant/60 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all text-on-surface font-body-md" id="name" placeholder="Your Name" required="" type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-error hidden validation-icon" data-icon="error">error</span>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-secondary hidden success-icon" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<div class="space-y-base group">
+<label class="block font-label-sm text-label-sm text-on-surface-variant group-focus-within:text-primary transition-colors" for="email">Email <span class="text-error">*</span></label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border border-outline-variant/60 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all text-on-surface font-body-md" id="email" placeholder="your@email.com" required="" type="email"/>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-error hidden validation-icon" data-icon="error">error</span>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-secondary hidden success-icon" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+</div>
+<div class="space-y-base group">
+<label class="block font-label-sm text-label-sm text-on-surface-variant group-focus-within:text-primary transition-colors" for="subject">Subject</label>
+<input class="w-full bg-surface-container-low border border-outline-variant/60 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all text-on-surface font-body-md" id="subject" placeholder="How can we help?" type="text"/>
+</div>
+<div class="space-y-base group flex-grow flex flex-col">
+<label class="block font-label-sm text-label-sm text-on-surface-variant group-focus-within:text-primary transition-colors" for="message">Message <span class="text-error">*</span></label>
+<div class="relative flex-grow">
+<textarea class="w-full h-full min-h-[150px] bg-surface-container-low border border-outline-variant/60 rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all text-on-surface font-body-md resize-none" id="message" placeholder="Write your message here..." required=""></textarea>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-error hidden validation-icon" data-icon="error">error</span>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-secondary hidden success-icon" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<div class="pt-2">
+<button class="w-full md:w-auto bg-primary text-on-primary px-8 py-4 rounded-lg font-label-sm text-label-sm hover:bg-on-primary-fixed-variant transition-colors flex items-center justify-center gap-2 group shadow-sm active:scale-[0.98]" type="button">
+                                Send Message
+                                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+<!-- Contact Details (Bento Style Right) -->
+<div class="lg:col-span-5 flex flex-col gap-gutter">
+<!-- Direct Contact Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-stack-sm md:p-stack-md border border-outline-variant/40 relative overflow-hidden flex-grow">
+<div class="absolute bottom-0 right-0 w-48 h-48 bg-surface-container-high rounded-full blur-[80px] -mr-10 -mb-10 opacity-50 pointer-events-none"></div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-sm">Contact Information</h3>
+<div class="space-y-8 relative z-10">
+<div class="flex items-start gap-4 group">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center flex-shrink-0 text-on-surface-variant group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Physical Office</p>
+<p class="font-body-md text-body-md text-on-surface">Makutano Town, West Pokot<br/>Kenya</p>
+</div>
+</div>
+<div class="flex items-start gap-4 group">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center flex-shrink-0 text-on-surface-variant group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Email Us</p>
+<a class="font-body-md text-body-md text-on-surface hover:text-primary transition-colors underline decoration-outline-variant/50 underline-offset-4" href="mailto:hello@vybeafrica.org">hello@vybeafrica.org</a>
+</div>
+</div>
+<div class="flex items-start gap-4 group">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center flex-shrink-0 text-on-surface-variant group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="phone">phone</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Call Us</p>
+<a class="font-body-md text-body-md text-on-surface hover:text-primary transition-colors" href="tel:+254700000000">+254 700 000 000</a>
+</div>
+</div>
+</div>
+<div class="mt-stack-md pt-stack-sm border-t border-outline-variant/40 flex gap-3 relative z-10">
+<a class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-primary hover:text-on-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="public">public</span>
+</a>
+<a class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-primary hover:text-on-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</a>
+<a class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-primary hover:text-on-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+</a>
+</div>
+</div>
+<!-- Map Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/40 h-48 relative group cursor-pointer">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="A detailed map visualization focusing on Makutano Town in West Pokot, Kenya. The map design uses the light mode brand color palette, featuring off-white surface tones, subtle green pathways, and a prominent terracotta orange marker pinpointing the Vybe Africa office location. The style is clean, modern corporate with tactile topographic lines providing subtle depth. High-key lighting aesthetic." data-location="West Pokot" style="background-image: url('assets/images/hero-bg.jpg')"></div>
+<div class="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors"></div>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg transform -translate-y-2 group-hover:-translate-y-4 transition-transform duration-300">
+<span class="material-symbols-outlined text-on-primary" data-icon="pin_drop">pin_drop</span>
+</div>
+</div>
+<div class="absolute bottom-3 left-3 right-3 bg-surface/95 backdrop-blur-md px-4 py-2 rounded-lg flex items-center justify-between border border-outline-variant/20 shadow-sm">
+<span class="font-label-sm text-label-sm text-on-surface">View Location on Map</span>
+<span class="material-symbols-outlined text-primary text-xl" data-icon="open_in_new">open_in_new</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-stack-lg bg-surface-container-lowest border-t border-outline-variant/20 pt-stack-lg pb-stack-sm">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-stack-lg">
+<div class="col-span-1 md:col-span-1 flex flex-col gap-stack-sm">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">Vybe Africa</span>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs">Empowering grassroots movements across Africa with premium resources and deep community connection.</p>
+</div>
+<div class="col-span-1 flex flex-col gap-4 mt-2 md:mt-0">
+<h4 class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Links</h4>
+<div class="flex flex-col gap-3">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Programs</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Impact Reports</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Join the Movement</a>
+</div>
+</div>
+<div class="col-span-1 flex flex-col gap-4 mt-2 md:mt-0">
+<h4 class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Legal</h4>
+<div class="flex flex-col gap-3">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Volunteer Terms</a>
+</div>
+</div>
+<div class="col-span-1 flex flex-col gap-4 mt-2 md:mt-0">
+<h4 class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Action</h4>
+<div class="flex flex-col gap-3">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors text-left" href="#">Volunteer</a>
+</div>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop border-t border-outline-variant/20 pt-6">
+<p class="font-body-md text-body-md text-on-surface-variant">© 2024 Vybe Africa. All rights reserved.</p>
+</div>
+</footer>
+
+
+<script>
+    // Mobile menu toggle drawer
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (toggleBtn && mobileMenu) {
+        toggleBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+</script>
+
+
+
+<script>
+    // Mobile menu toggle drawer
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (toggleBtn && mobileMenu) {
+        toggleBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+</script>
+
+<!-- Bonga na Vybe Chatbot Widget -->
+<script src="js/chatbot.js"></script>
+    <script src="js/site-shell.js"></script>
 </body>
+
 </html>

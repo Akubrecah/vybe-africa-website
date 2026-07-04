@@ -1,270 +1,357 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Child Protection - VYBE Africa</title>
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Child Protection Program | Vybe Africa</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#5a0d02",
+                        "inverse-surface": "#313030",
+                        "surface": "#fcf9f8",
+                        "primary-fixed-dim": "#ffb4a5",
+                        "outline-variant": "#ddc0ba",
+                        "surface-container": "#f0eded",
+                        "secondary-container": "#cde6d1",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "tertiary": "#705d00",
+                        "error": "#ba1a1a",
+                        "primary-container": "#e2725b",
+                        "surface-variant": "#e5e2e1",
+                        "surface-bright": "#fcf9f8",
+                        "secondary": "#4d6453",
+                        "on-tertiary-fixed": "#221b00",
+                        "on-secondary-fixed-variant": "#364c3c",
+                        "on-background": "#1c1b1b",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "inverse-primary": "#ffb4a5",
+                        "tertiary-fixed": "#ffe16d",
+                        "on-primary-fixed": "#3e0500",
+                        "on-tertiary-container": "#4c3f00",
+                        "tertiary-container": "#c9a900",
+                        "surface-container-high": "#eae7e7",
+                        "on-primary-fixed-variant": "#802918",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-surface": "#1c1b1b",
+                        "surface-dim": "#dcd9d9",
+                        "secondary-fixed": "#d0e9d4",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#56423e",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#b4cdb8",
+                        "background": "#fcf9f8",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#0b2013",
+                        "outline": "#89726d",
+                        "surface-tint": "#9f402d",
+                        "surface-container-highest": "#e5e2e1",
+                        "primary-fixed": "#ffdad3",
+                        "error-container": "#ffdad6",
+                        "primary": "#9f402d",
+                        "on-secondary-container": "#516857"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "64px",
+                        "stack-sm": "16px",
+                        "stack-lg": "80px",
+                        "stack-md": "32px",
+                        "container-max": "1280px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-sm": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        .page-header {
-            background: linear-gradient(rgba(5,5,5,0.7), rgba(5,5,5,0.7)), url('assets/images/work-child.jpg') center/cover no-repeat;
-            background-attachment: fixed;
-            color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            padding: 180px 0 80px;
-            text-align: center;
+        .shadow-floating {
+            box-shadow: 0 10px 30px -5px rgba(28, 27, 27, 0.04);
         }
-        
-        .page-header h1 {
-            font-family: var(--font-display);
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-        }
-
-        .content-block {
-            margin-bottom: 60px;
-        }
-
-        .content-block h2 {
-            color: var(--primary-brand);
-            margin-bottom: 20px;
-            font-family: var(--font-display);
-            font-size: 2rem;
-        }
-        
-        .content-block p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            line-height: 1.8;
-        }
-
-        .stat-box {
-            background: var(--surface-dark);
-            padding: 30px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--surface-hover);
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .stat-box h3 {
-            font-size: 3rem;
-            color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            font-family: var(--font-display);
-            margin-bottom: 10px;
-        }
-        
-        .stat-box p { font-size: 1rem; color: var(--text-muted); }
-        
-        .sidebar-card {
-            background: var(--surface-dark);
-            padding: 30px;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--surface-hover);
-            margin-bottom: 30px;
-        }
-        
-        .sidebar-card h4 {
-            color: #ffffff; text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            font-family: var(--font-display);
-            border-bottom: 1px solid var(--surface-hover);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .sidebar-menu a {
-            display: block;
-            padding: 12px 15px;
-            border-radius: var(--radius-sm);
-            color: var(--text-secondary);
-            transition: all 0.3s;
-            margin-bottom: 5px;
-        }
-        
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background: var(--surface-hover);
-            color: var(--primary-brand);
-            padding-left: 20px;
+        .text-shadow-sm {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
     </style>
 </head>
-<body>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
 
-    <!-- Header -->
-    <header class="main-header">
-        <div class="container navbar">
-            <a href="homepage.html" class="logo">
-                <img src="assets/images/logo.png" alt="VYBE Africa">
-                <span>VYBE Africa</span>
+<!-- Top Utility Bar -->
+<div class="bg-primary text-on-primary py-2 text-xs font-label-sm w-full z-50 relative border-b border-white/10">
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
+        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="member_login.html">Members Login</a>
+        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="login.html">Staff Login</a>
+        <a class="text-white font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
+    </div>
+</div>
+
+<!-- Unified Header Navigation -->
+<header class="bg-surface/95 backdrop-blur-md text-primary sticky top-0 shadow-sm z-50 w-full transition-all duration-300">
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+        <div class="flex items-center justify-between h-16 gap-6">
+            <!-- Brand -->
+            <a href="homepage.html" class="flex items-center gap-2.5 shrink-0 text-primary hover:opacity-80 transition-opacity">
+                <img src="assets/images/logo.png" alt="VYBE Africa" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+                <span class="font-display text-lg font-extrabold tracking-tight leading-none">Vybe Africa</span>
             </a>
-            
-            <button class="hamburger"><i class="fas fa-bars"></i></button>
-            
-            <nav class="nav-links">
-                <a href="homepage.html" class="nav-link">Home</a>
-                <a href="about.html" class="nav-link">About Us</a>
-                <a href="work.html" class="nav-link active">Our Work</a>
-                <a href="gallery.html" class="nav-link">Gallery</a>
-                <a href="contact.html" class="nav-link">Contact</a>
-                <div class="nav-cta">
-
-                    <a href="member_login.html" class="btn" style="margin-right:10px; border: 2px solid #facc15; color: #fff; font-weight:600;"><i class="fas fa-user"></i> Members Login</a>
-                    <a href="login.html" class="btn" style="margin-right:10px; border: 2px solid var(--primary-brand); color: #fff; font-weight:600;">Staff Login</a>
-                    <a href="get-involved.html" class="btn btn-primary">Get Involved</a>
-                </div>
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-1 flex-1 justify-center">
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="homepage.html">Ecosystem</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="west_pokot.html">County Chapter</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="impact_registry.html">Impact Registry</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="about.html">About Us</a>
+                <a class="relative py-2 px-3 text-sm font-bold rounded text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-primary after:rounded-full" href="work.html">Our Work</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="gallery.html">Gallery</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="contact.html">Contact</a>
             </nav>
+            <!-- Right Actions -->
+            <div class="flex items-center gap-2 shrink-0">
+                <div class="hidden xl:flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest mr-1">
+                    <span class="text-primary border-b-2 border-primary cursor-pointer pb-0.5">EN</span>
+                    <span class="text-on-surface-variant cursor-pointer hover:text-primary transition-colors">FR</span>
+                    <span class="text-on-surface-variant cursor-pointer hover:text-primary transition-colors">SW</span>
+                </div>
+                <a href="impact_registry.html" title="Impact Map" class="hidden sm:flex items-center justify-center p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">public</span>
+                </a>
+                <a href="gallery.html" title="Gallery" class="hidden sm:flex items-center justify-center p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">photo_library</span>
+                </a>
+                <a href="get-involved.html" class="ml-1 bg-primary text-on-primary px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">Donate Now</a>
+                <button id="mobile-menu-toggle" aria-label="Toggle menu" class="md:hidden flex items-center justify-center p-2 rounded-lg text-primary hover:bg-primary-container/10 transition-colors">
+                    <span class="material-symbols-outlined text-[24px]">menu</span>
+                </button>
+            </div>
         </div>
-    </header>
+    </div>
+    <!-- Mobile dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-outline-variant/30 bg-surface shadow-lg">
+        <nav class="max-w-container-max mx-auto px-margin-mobile py-3 flex flex-col gap-1">
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="homepage.html">Ecosystem</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="west_pokot.html">County Chapter</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="impact_registry.html">Impact Registry</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="about.html">About Us</a>
+            <a class="block py-2 px-3 rounded text-sm font-bold text-primary bg-primary-container/10" href="work.html">Our Work</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="gallery.html">Gallery</a>
+            <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="contact.html">Contact</a>
+        </nav>
+        <div class="max-w-container-max mx-auto px-margin-mobile pb-4 flex flex-col gap-2 border-t border-outline-variant/20 pt-3">
+            <a href="member_login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-outline-variant hover:border-primary hover:text-primary transition-colors">Member Login</a>
+            <a href="login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">Staff Login</a>
+        </div>
+    </div>
+</header>
 
-    <!-- Page Header -->
-    <section class="page-header">
-        <div class="container">
-            <h1>Child Protection</h1>
-            <p>Every child deserves a safe, violence-free childhood.</p>
+<main class="flex-grow">
+    <!-- Hero Section -->
+    <section class="relative w-full h-[716px] min-h-[600px] flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img class="w-full h-full object-cover" alt="African community schoolyard with children reading books" src="assets/images/work-child.jpg"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/40 to-transparent"></div>
+        </div>
+        <div class="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop w-full text-center md:text-left flex flex-col md:items-start items-center gap-stack-md mt-20">
+            <span class="inline-block px-4 py-1.5 bg-primary-container/20 text-primary-container backdrop-blur-sm rounded-full font-label-sm text-label-sm border border-primary-container/30 uppercase tracking-widest">Our Mission</span>
+            <h1 class="font-display-lg text-headline-lg-mobile md:text-display-lg text-on-tertiary text-shadow-sm max-w-3xl leading-tight">Shielding the Future, Empowering the Present.</h1>
+            <p class="font-body-lg text-body-lg text-surface-container-highest max-w-2xl text-shadow-sm opacity-90 font-medium">Every child deserves a safe harbor. We are building a robust ecosystem of protection, legal advocacy, and education across communities to ensure no child is left vulnerable.</p>
+            <div class="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
+                <a class="inline-flex items-center justify-center px-8 py-4 bg-primary text-on-primary font-label-sm text-label-sm rounded-lg hover:opacity-90 transition-opacity w-full sm:w-auto shadow-lg shadow-primary/20" href="get-involved.html">Sponsor a Protection Hub</a>
+                <a class="inline-flex items-center justify-center px-8 py-4 bg-surface/10 backdrop-blur-md border border-surface/30 text-on-tertiary font-label-sm text-label-sm rounded-lg hover:bg-surface/20 transition-colors w-full sm:w-auto" href="#learn-more">Explore Our Approach</a>
+            </div>
         </div>
     </section>
 
-    <!-- Definition & Context -->
-    <section class="section-padding">
-        <div class="container">
-            <img src="assets/images/work-child.jpg" alt="Child Protection Featured" class="featured-image">
-            
-            <div style="max-width: 800px; margin: 0 auto; text-align: center;">
-                <h2 style="color: #dc3545;">Preventing Violence & Exploitation</h2>
-                <p style="font-size: 1.1rem; margin-bottom: 2rem;">
-                    Child Protection is about preventing and responding to violence, exploitation, abuse, and neglect against children.
-                    In West Pokot, unique challenges such as poverty, droughts, and harmful cultural practices exacerbate these risks.
+    <!-- The Ecosystem of Protection (Bento Grid) -->
+    <section class="py-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="learn-more">
+        <div class="text-center mb-stack-lg max-w-3xl mx-auto">
+            <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background mb-4">An Ecosystem of Care</h2>
+            <p class="text-on-surface-variant">We tackle child protection from multiple angles, combining grassroots community vigilance with high-level legal advocacy to create an impenetrable safety net.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[400px]">
+            <!-- Safe Spaces (Spans 2 columns on desktop) -->
+            <div class="md:col-span-2 relative rounded-xl overflow-hidden shadow-floating group bg-surface-container-lowest border border-outline-variant/30 flex flex-col justify-end">
+                <div class="absolute inset-0 z-0 overflow-hidden">
+                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Nurturing, secure community center for children" src="assets/images/IMG-20251211-WA0038.jpg"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-on-background/90 via-on-background/50 to-transparent"></div>
+                </div>
+                <div class="relative z-10 p-8 flex flex-col gap-3">
+                    <div class="w-12 h-12 bg-tertiary-container text-on-tertiary-container rounded-full flex items-center justify-center mb-2 shadow-lg">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">foundation</span>
+                    </div>
+                    <h3 class="font-headline-md text-headline-md text-on-tertiary">Safe Spaces Development</h3>
+                    <p class="text-surface-container-highest opacity-90 max-w-lg">Building physically and emotionally secure hubs within communities where children can learn, play, and heal under expert supervision.</p>
+                </div>
+            </div>
+            <!-- Community Watch -->
+            <div class="relative rounded-xl overflow-hidden shadow-floating group bg-surface-container-lowest border border-outline-variant/30 flex flex-col justify-end p-8">
+                <div class="absolute top-0 right-0 p-8 opacity-10">
+                    <span class="material-symbols-outlined text-[120px] text-secondary">visibility</span>
+                </div>
+                <div class="relative z-10 flex flex-col gap-3 h-full justify-between">
+                    <div>
+                        <div class="w-10 h-10 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined">groups</span>
+                        </div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Community Watch</h3>
+                        <p class="text-on-surface-variant">Training local leaders, teachers, and parents to identify early signs of abuse and establishing clear reporting protocols.</p>
+                    </div>
+                    <a class="inline-flex items-center gap-2 text-secondary font-label-sm text-label-sm hover:underline mt-4 group-hover:text-primary transition-colors" href="assets/documents/constitution.pdf" download>
+                        Read the Guidelines <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+            <!-- Legal Advocacy -->
+            <div class="relative rounded-xl overflow-hidden shadow-floating group bg-surface-container-lowest border border-outline-variant/30 flex flex-col justify-end p-8">
+                <div class="relative z-10 flex flex-col gap-3 h-full justify-between">
+                    <div>
+                        <div class="w-10 h-10 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined">gavel</span>
+                        </div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Legal Advocacy</h3>
+                        <p class="text-on-surface-variant">Providing pro-bono legal representation for child victims and lobbying for stricter child protection policies at the national level.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Impact Highlight (Spans 2 columns) -->
+            <div class="md:col-span-2 relative rounded-xl overflow-hidden shadow-floating bg-secondary text-on-secondary flex flex-col md:flex-row items-center">
+                <div class="p-8 md:p-12 flex-1 flex flex-col justify-center h-full z-10">
+                    <span class="font-label-sm text-label-sm text-secondary-container uppercase tracking-widest mb-2">Our Impact</span>
+                    <div class="font-display-lg text-[80px] leading-none font-bold text-tertiary-fixed mb-4">120+</div>
+                    <h3 class="font-headline-md text-headline-md mb-2">Safe Centers Supported</h3>
+                    <p class="opacity-90 max-w-md">Across the region, providing daily refuge, meals, and education to over 15,000 vulnerable children.</p>
+                </div>
+                <div class="w-full md:w-[40%] h-64 md:h-full relative overflow-hidden">
+                    <img class="absolute inset-0 w-full h-full object-cover" alt="Smiling African child holding a notebook" src="assets/images/IMG-20251211-WA0030.jpg"/>
+                    <div class="absolute inset-0 bg-gradient-to-r from-secondary to-transparent md:block hidden"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-secondary to-transparent block md:hidden"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-stack-lg px-margin-mobile md:px-margin-desktop bg-surface-container" id="sponsor">
+        <div class="max-w-4xl mx-auto bg-surface-container-lowest rounded-xl shadow-floating border border-outline-variant/20 p-8 md:p-16 text-center flex flex-col items-center">
+            <div class="w-16 h-16 bg-primary-fixed text-on-primary-fixed rounded-full flex items-center justify-center mb-6">
+                <span class="material-symbols-outlined text-[32px]">favorite</span>
+            </div>
+            <h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background mb-4">Sponsor a Protection Hub</h2>
+            <p class="text-on-surface-variant max-w-2xl mb-8">Your partnership can construct a new safe space, fund legal advocacy, or train a community watch team. Join the movement to shield the next generation.</p>
+            <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                <a href="get-involved.html" class="inline-flex items-center justify-center px-8 py-4 bg-primary text-on-primary font-label-sm text-label-sm rounded-lg hover:opacity-90 transition-opacity w-full sm:w-auto">
+                    Make a Donation
+                </a>
+                <a href="contact.html?subject=Corporate+Partnership" class="inline-flex items-center justify-center px-8 py-4 border-2 border-secondary text-secondary font-label-sm text-label-sm rounded-lg hover:bg-secondary hover:text-on-secondary transition-colors w-full sm:w-auto">
+                    Corporate Partnership
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer - Robust & Professional -->
+<footer class="bg-[#1a1a1a] text-surface-variant font-body-md text-body-md full-width mt-auto">
+    <div class="w-full px-margin-mobile md:px-margin-desktop pt-20 pb-10 max-w-container-max mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8 mb-16 text-left">
+            <!-- Brand Col -->
+            <div class="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
+                <a class="font-display-lg text-headline-md text-white tracking-tight flex items-center gap-2" href="homepage.html">
+                    <span class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold text-xl leading-none">V</span>
+                    <span>VYBE Africa</span>
+                </a>
+                <p class="text-surface-variant/70 text-sm leading-relaxed max-w-xs">
+                    Elevating youth voices and empowering the next generation of changemakers in West Pokot through innovation, advocacy, and action.
                 </p>
-            </div>
-
-            <h3 class="text-center">Types of Abuse We Combat</h3>
-            <div class="abuse-grid">
-                <div class="abuse-type">Sexual Abuse & Exploitation</div>
-                <div class="abuse-type">Emotional Abuse</div>
-                <div class="abuse-type">Neglect</div>
-                <div class="abuse-type">Child Labor & Trafficking</div>
-                <div class="abuse-type">Harmful Cultural Practices</div>
-            </div>
-        </div>
-        
-            <h3 class="text-center" style="margin-bottom: 30px;">Areas of Intervention</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-                <div style="background: var(--surface-dark); padding: 25px; border-radius: var(--radius-md); border-left: 4px solid #dc3545;">
-                    <h4 style="color:white; margin-bottom:10px;"><i class="fas fa-gavel"></i> Policy Advocacy</h4>
-                    <p style="color:var(--text-secondary);">Working with the County Government to implement and enforce the Children Act and develop localized child protection policies.</p>
-                </div>
-                <div style="background: var(--surface-dark); padding: 25px; border-radius: var(--radius-md); border-left: 4px solid #dc3545;">
-                    <h4 style="color:white; margin-bottom:10px;"><i class="fas fa-home"></i> Safe Spaces</h4>
-                    <p style="color:var(--text-secondary);">Establishing rescue centers and safe spaces in schools where children can report abuse and access psychosocial support.</p>
-                </div>
-                <div style="background: var(--surface-dark); padding: 25px; border-radius: var(--radius-md); border-left: 4px solid #dc3545;">
-                    <h4 style="color:white; margin-bottom:10px;"><i class="fas fa-users"></i> Community Sensitization</h4>
-                    <p style="color:var(--text-secondary);">Engaging elders (Council of Elders) and parents to shift cultural norms that perpetuate FGM and early marriage.</p>
+                <div class="flex gap-4 mt-2">
+                    <a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary text-white transition-colors" href="https://www.facebook.com/vybeafrica" target="_blank"><i class="fab fa-facebook-f text-xs"></i></a>
+                    <a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary text-white transition-colors" href="https://x.com/VybeAfrica254" target="_blank"><i class="fab fa-x-twitter text-xs"></i></a>
+                    <a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary text-white transition-colors" href="https://www.instagram.com/vybeafrica254" target="_blank"><i class="fab fa-instagram text-xs"></i></a>
                 </div>
             </div>
-            
-            <hr class="section-divider">
-    </section>
-
-    <!-- Critical Statistics -->
-    <section class="section-padding bg-light">
-        <div class="container">
-            <h2 class="text-center" style="margin-bottom: 2rem;">Critical Statistics in West Pokot</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                <div class="stat-box">
-                    <h3>36%</h3>
-                    <p>Of girls aged 15-19 are pregnant or mothers (KDHS 2022), ranking 2nd nationally.</p>
-                </div>
-                <div class="stat-box">
-                    <h3>FGM</h3>
-                    <p>Remains persistent despite being outlawed, endangering young girls.</p>
-                </div>
-                <!-- Additional invisible wrapper for alignment on mobile if needed -->
+            <!-- Links Col 1 -->
+            <div class="md:col-span-4 lg:col-span-2 flex flex-col gap-4">
+                <h4 class="font-bold text-white mb-2 uppercase tracking-wider text-xs">Our Work</h4>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="srhr.html">SRHR &amp; Health</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="climate.html">Climate Action</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="child-protection.html">Child Protection</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="inclusive-governance.html">Governance</a>
             </div>
-            <div style="margin-top: 2rem;">
-                <div class="stat-box">
-                    <h3>Child Labor & Neglect</h3>
-                    <p>Poverty and recurrent drought often lead to school withdrawals and child labor.</p>
-                </div>
+            <!-- Links Col 2 -->
+            <div class="md:col-span-4 lg:col-span-2 flex flex-col gap-4">
+                <h4 class="font-bold text-white mb-2 uppercase tracking-wider text-xs">Organization</h4>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="about.html">About Us</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="work.html">Team</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="about.html">Careers</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="contact.html">Contact</a>
+            </div>
+            <!-- Newsletter -->
+            <div class="md:col-span-4 lg:col-span-4 flex flex-col gap-4">
+                <h4 class="font-bold text-white mb-2 uppercase tracking-wider text-xs">Stay Updated</h4>
+                <p class="text-surface-variant/70 text-sm mb-2">Subscribe to our newsletter for the latest field reports and impact stories.</p>
+                <form class="flex w-full mt-2" onsubmit="event.preventDefault();">
+                    <input class="w-full px-4 py-3 rounded-l-lg bg-white/5 border border-white/10 text-white focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none placeholder-surface-variant/50 text-sm" placeholder="Email address" type="email"/>
+                    <button class="bg-primary text-on-primary px-6 py-3 rounded-r-lg hover:bg-primary-container transition-colors font-bold text-sm" type="submit">Subscribe</button>
+                </form>
             </div>
         </div>
-    </section>
-
-    <!-- Reporting / Action -->
-    <section class="section-padding">
-        <div class="container">
-            <div class="emergency-contact">
-                <h2>Break the Silence</h2>
-                <p style="margin-bottom: 1.5rem;">If you suspect a child is at risk, report it immediately.</p>
-                
-                <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-                    <div>
-                        <i class="fas fa-user-shield" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
-                        Local Children's Officer
-                    </div>
-                    <div>
-                        <i class="fas fa-building-shield" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
-                        Police Station (Child Protection Unit)
-                    </div>
-                    <div>
-                        <i class="fas fa-users" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
-                        Trusted Community Leaders
-                    </div>
-                </div>
-
-                 <blockquote style="margin-top: 2rem; font-style: italic; opacity: 0.8;">
-                    "When we protect our children today, we are investing in a healthier, safer, stronger, and more engaged West Pokot for tomorrow."
-                </blockquote>
+        <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-xs text-surface-variant/50">
+                © 2026 VYBE Africa. All Rights Reserved. West Pokot County, Kenya.
+            </div>
+            <div class="flex gap-6 text-xs text-surface-variant/50">
+                <a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+                <a class="hover:text-white transition-colors" href="#">Terms of Service</a>
             </div>
         </div>
-    </section>
+    </div>
+</footer>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <h4>VYBE Africa</h4>
-                    <p style="color: #ccc;">West Pokot County, Kenya<br>info@vybeafrica.org</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Our Work</h4>
-                    <a href="srhr.html">SRHR & Maternal Health</a>
-                    <a href="climate.html">Climate Action</a>
-                    <a href="child-protection.html">Child Protection</a>
-                    <a href="inclusive-governance.html">Inclusive Governance</a>
-                </div>
-                <div class="footer-col">
-                    <h4>About</h4>
-                    <a href="about.html">Who We Are</a>
-                    <a href="gallery.html">Gallery</a>
-                    <a href="contact.html">Contact Us</a>
-                    <a href="get-involved.html">Get Involved</a>
-                </div>
-                <div class="footer-col">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        
-                        <a href="https://www.facebook.com/vybeafrica" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://x.com/VybeAfrica254" target="_blank" class="social-icon"><i class="fab fa-x-twitter"></i></a>
-                        <a href="https://www.instagram.com/vybeafrica254?igsh=MXVidHl3NjB4a2h2dQ==" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.tiktok.com/@vybe.africa254?_r=1&_t=ZS-92LtvzRRzw9" target="_blank" class="social-icon"><i class="fab fa-tiktok"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="copyright">
-                &copy; <script>document.write(new Date().getFullYear())</script> VYBE Africa. All Rights Reserved.
-            </div>
-        </div>
-    </footer>
+<script>
+    // Mobile menu toggle drawer
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (toggleBtn && mobileMenu) {
+        toggleBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+</script>
 
-    <script src="js/main.js"></script>
+<!-- Bonga na Vybe Chatbot Widget -->
+<script src="js/chatbot.js"></script>
+    <script src="js/site-shell.js"></script>
 </body>
 </html>

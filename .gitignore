@@ -1,4 +1,40 @@
+# Dependencies
 node_modules/
-.DS_Store
-node_modules/
+package-lock.json
+
+# Environment variables (secrets)
 .env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Logs
+server.log
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test/Debug files
+test_*.js
+diagnose_*.js
+find_*.js
+list_*.js
+
+# Large binary files
+*.pptx
+*.xlsx
+*.pdf
+
+# Temporary files
+~$*
+.tmp/
