@@ -107,13 +107,15 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
     </style>
+    <!-- Supabase & CMS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/cms-client.js"></script>
 </head>
 <body class="bg-background text-on-background font-body-md text-body-md antialiased overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
 
 <!-- Top Utility Bar -->
 <div class="bg-primary text-on-primary py-2 text-xs font-label-sm w-full z-50 relative border-b border-white/10">
     <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
-        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="member_login.html">Members Login</a>
         <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="login.html">Staff Login</a>
         <a class="text-white font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
     </div>
@@ -170,7 +172,6 @@
             <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="contact.html">Contact</a>
         </nav>
         <div class="max-w-container-max mx-auto px-margin-mobile pb-4 flex flex-col gap-2 border-t border-outline-variant/20 pt-3">
-            <a href="member_login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-outline-variant hover:border-primary hover:text-primary transition-colors">Member Login</a>
             <a href="login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">Staff Login</a>
         </div>
     </div>
@@ -185,8 +186,8 @@
         </div>
         <div class="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop w-full text-center md:text-left flex flex-col md:items-start items-center gap-stack-md mt-20">
             <span class="inline-block px-4 py-1.5 bg-primary-container/20 text-primary-container backdrop-blur-sm rounded-full font-label-sm text-label-sm border border-primary-container/30 uppercase tracking-widest">Our Mission</span>
-            <h1 class="font-display-lg text-headline-lg-mobile md:text-display-lg text-on-tertiary text-shadow-sm max-w-3xl leading-tight">Shielding the Future, Empowering the Present.</h1>
-            <p class="font-body-lg text-body-lg text-surface-container-highest max-w-2xl text-shadow-sm opacity-90 font-medium">Every child deserves a safe harbor. We are building a robust ecosystem of protection, legal advocacy, and education across communities to ensure no child is left vulnerable.</p>
+            <h1 data-cms-page="child-protection" data-cms-section="hero" data-cms-key="title" class="font-display-lg text-headline-lg-mobile md:text-display-lg text-on-tertiary text-shadow-sm max-w-3xl leading-tight">Shielding the Future, Empowering the Present.</h1>
+            <p data-cms-page="child-protection" data-cms-section="hero" data-cms-key="subtitle" class="font-body-lg text-body-lg text-surface-container-highest max-w-2xl text-shadow-sm opacity-90 font-medium">Every child deserves a safe harbor. We are building a robust ecosystem of protection, legal advocacy, and education across communities to ensure no child is left vulnerable.</p>
             <div class="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
                 <a class="inline-flex items-center justify-center px-8 py-4 bg-primary text-on-primary font-label-sm text-label-sm rounded-lg hover:opacity-90 transition-opacity w-full sm:w-auto shadow-lg shadow-primary/20" href="get-involved.html">Sponsor a Protection Hub</a>
                 <a class="inline-flex items-center justify-center px-8 py-4 bg-surface/10 backdrop-blur-md border border-surface/30 text-on-tertiary font-label-sm text-label-sm rounded-lg hover:bg-surface/20 transition-colors w-full sm:w-auto" href="#learn-more">Explore Our Approach</a>

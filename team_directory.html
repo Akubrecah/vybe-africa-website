@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Team Directory | Vybe Africa Staff Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Auth Guard & Role Router -->
+<script src="assets/js/auth-guard.js"></script>
+<script src="assets/js/cms-client.js"></script>
+
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#802918",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f3f0ef",
+                        "secondary-container": "#cde6d1",
+                        "primary": "#9f402d",
+                        "on-primary-fixed": "#3e0500",
+                        "secondary": "#4d6453",
+                        "surface-variant": "#e5e2e1",
+                        "surface-tint": "#9f402d",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "on-primary-container": "#5a0d02",
+                        "surface": "#fcf9f8",
+                        "background": "#fcf9f8",
+                        "on-surface": "#1c1b1b",
+                        "on-secondary-fixed-variant": "#364c3c",
+                        "on-background": "#1c1b1b",
+                        "primary-fixed-dim": "#ffb4a5",
+                        "on-surface-variant": "#56423e",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed": "#ffdad3",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#c9a900",
+                        "on-tertiary-container": "#4c3f00",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-container-high": "#eae7e7",
+                        "surface-dim": "#dcd9d9",
+                        "tertiary-fixed": "#ffe16d",
+                        "tertiary": "#705d00",
+                        "secondary-fixed": "#d0e9d4",
+                        "outline-variant": "#ddc0ba",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b4cdb8",
+                        "outline": "#89726d",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "inverse-primary": "#ffb4a5",
+                        "primary-container": "#e2725b",
+                        "on-secondary-fixed": "#0b2013",
+                        "on-tertiary-fixed": "#221b00",
+                        "on-secondary-container": "#516857",
+                        "surface-bright": "#fcf9f8",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem",
+                        "card": "16px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "gutter": "24px",
+                        "margin-mobile": "20px",
+                        "stack-sm": "16px",
+                        "stack-lg": "80px",
+                        "margin-desktop": "64px",
+                        "container-max": "1280px",
+                        "stack-md": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "label-sm": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-filter {
+            background-color: #9f402d;
+            color: white !important;
+        }
+        .staff-card-shadow {
+            box-shadow: 0 20px 30px rgba(28,27,27,0.04);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f6f3f2;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ddc0ba;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary/20 flex min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant/10 p-stack-sm z-50">
+<div class="flex items-center gap-3 px-4 py-6">
+<a href="homepage.html" class="flex items-center gap-2.5">
+<img src="assets/images/logo.png" alt="VYBE Africa" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+<div>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary leading-tight">Vybe Africa</h1>
+<p class="text-[12px] font-label-sm text-on-surface-variant uppercase tracking-wider">Staff Portal</p>
+</div>
+</a>
+</div>
+<nav class="mt-8 flex-grow space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded-lg transition-all duration-200" href="staff.html">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded-lg transition-all duration-200" href="programs_dashboard.html">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-body-md">Programs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded-lg transition-all duration-200" href="impact_registry.html">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-body-md">Impact Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-bold bg-secondary-container/30 rounded-lg transition-all duration-200" href="team_directory.html">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md">Team Management</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant/10 pt-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded-lg transition-all duration-200" href="edit_profile.html">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Edit Profile</span>
+</a>
+<button id="logout-btn" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded-lg transition-all duration-200 w-full text-left">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</button>
+</div>
+</aside>
+
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="flex justify-between items-center px-6 md:px-margin-desktop w-full h-16 bg-surface shadow-sm border-b border-outline-variant/20 sticky top-0 z-40">
+<div class="flex items-center gap-8">
+<span class="md:hidden material-symbols-outlined cursor-pointer">menu</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="font-body-md text-on-surface-variant font-medium hover:text-primary transition-colors" href="staff.html">Dashboard</a>
+<a class="font-body-md text-on-surface-variant font-medium hover:text-primary transition-colors" href="me_dashboard.html">Analytics</a>
+<a class="font-body-md text-primary border-b-2 border-primary font-bold" href="team_directory.html">Directory</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-2">
+<a href="staff_register.html" class="px-4 py-2 bg-primary text-on-primary rounded-full font-label-sm hover:opacity-90 transition-opacity">Add Staff</a>
+<a href="contact.html" class="px-4 py-2 border border-outline text-on-surface-variant rounded-full font-label-sm hover:bg-surface-container-low transition-colors">Support</a>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary" aria-label="Notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary" aria-label="Language">translate</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant/30 overflow-hidden cursor-pointer">
+<img class="w-full h-full object-cover" src="assets/images/IMG-20251211-WA0053.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDipHCj5lTwI9qxrgptwxx_kKS1as52r6vyYXpZQ0WNq-XR8LyNaX_X0UhO-vYgeAdYGdQLr4DWB2BRZhU3lBCEmbWx-JBLritpWFdwTA8YfMJyw3A-_OP_B0MbUbVllhE_N2TOxAsQuHzxAaw-TNZap9rYj_9jWNrpMP4v7OpU9Jb5elTnUBdYDyCHZPH0mr1dOy8PLLfgFSdXqr5_LXf09-a8LKI2M_SgbJHEOhEVSj79BVxtzBNkJWOunz58epfrNj5YKmLsFpo'"/>
+</div>
+</div>
+</div>
+</header>
+
+<!-- Page Header -->
+<section class="px-6 md:px-margin-desktop py-stack-md mt-4">
+<div class="max-w-container-max mx-auto">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Team Directory</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-2xl">Connect with the changemakers across the movement. Empowering communities across the continent through dedicated leadership and field expertise.</p>
+</div>
+</section>
+
+<!-- Search & Filter Bar -->
+<section class="px-6 md:px-margin-desktop pb-stack-md sticky top-[64px] bg-background/95 backdrop-blur-md z-30 pt-2">
+<div class="max-w-container-max mx-auto flex flex-col lg:flex-row gap-gutter items-start lg:items-center justify-between">
+<!-- Search Input -->
+<div class="relative w-full lg:max-w-md">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input id="search-input" onkeyup="filterStaff()" class="w-full pl-12 pr-4 py-3 bg-white border border-outline-variant/30 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-body-md shadow-sm text-sm" placeholder="Search staff by name, role or department..." type="text"/>
+</div>
+<!-- Filters -->
+<div class="w-full lg:w-auto overflow-x-auto no-scrollbar">
+<div class="flex items-center gap-2 whitespace-nowrap pb-2 lg:pb-0">
+<button onclick="setDepartmentFilter('all', this)" class="filter-btn px-5 py-2.5 rounded-full font-label-sm bg-white text-on-surface-variant border border-outline-variant/30 hover:border-primary active-filter transition-all">All</button>
+<button onclick="setDepartmentFilter('Executive', this)" class="filter-btn px-5 py-2.5 rounded-full font-label-sm bg-white text-on-surface-variant border border-outline-variant/30 hover:border-primary transition-all">Leadership</button>
+<button onclick="setDepartmentFilter('Programs', this)" class="filter-btn px-5 py-2.5 rounded-full font-label-sm bg-white text-on-surface-variant border border-outline-variant/30 hover:border-primary transition-all">Programs</button>
+<button onclick="setDepartmentFilter('Finance', this)" class="filter-btn px-5 py-2.5 rounded-full font-label-sm bg-white text-on-surface-variant border border-outline-variant/30 hover:border-primary transition-all">Finance</button>
+<button onclick="setDepartmentFilter('Human Resources', this)" class="filter-btn px-5 py-2.5 rounded-full font-label-sm bg-white text-on-surface-variant border border-outline-variant/30 hover:border-primary transition-all">HR</button>
+<button onclick="setDepartmentFilter('Communications', this)" class="filter-btn px-5 py-2.5 rounded-full font-label-sm bg-white text-on-surface-variant border border-outline-variant/30 hover:border-primary transition-all">Communications</button>
+<button onclick="setDepartmentFilter('Monitoring & Eval', this)" class="filter-btn px-5 py-2.5 rounded-full font-label-sm bg-white text-on-surface-variant border border-outline-variant/30 hover:border-primary transition-all">M&E</button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Directory Grid -->
+<section class="px-6 md:px-margin-desktop pb-stack-lg">
+<div class="max-w-container-max mx-auto">
+<div id="staff-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-gutter">
+
+<!-- Sharon Chepkite Card -->
+<div class="staff-card group bg-white rounded-card staff-card-shadow p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300 border border-transparent hover:border-tertiary/20" data-name="Sharon Chepkite" data-role="Executive Director" data-dept="Executive">
+<div class="relative mb-6">
+<div class="w-24 h-24 rounded-full border-[3px] border-tertiary-fixed p-1">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" src="assets/images/IMG-20251211-WA0053.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDBC6dkj-59bO0Hvkg0ii6I54Ty5nnFAHXQloskRPpIFjYEqeGElBpso2rPKeVhgZhyzBMNP4YF0m1J48T19lt3cldhQDGtpOjG27DS_j-L6TQG7umweJZx_ou8se5xXxxbxSWwOYlauOq5_Wp30oTJNSxDchZkMcqo1ky79Bms7v47mhr0MAtFGojC-oZU9XBb8DNRqt0pltHu9kTfPx8jS6UvoDuTQQYbhDLv8szasNx_ZVAdsmi25i5Fbp6D7s2u7tfrUESA0Pg'"/>
+</div>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-secondary text-white p-1.5 rounded-full leading-none shadow-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Sharon Chepkite</h3>
+<p class="font-body-md text-on-surface-variant mt-1">Executive Director</p>
+<div class="mt-4 px-3 py-1 bg-primary/10 text-primary font-label-sm rounded-full text-[12px] uppercase tracking-wide font-bold">Executive</div>
+<div class="mt-8 w-full flex items-center justify-center gap-3">
+<button onclick="alert('Message sent to Sharon Chepkite');" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">forum</span>
+</button>
+<a href="mailto:sharon.c@vybeafrica.org" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">mail</span>
+</a>
+</div>
+</div>
+
+<!-- Moses Kibet Card -->
+<div class="staff-card group bg-white rounded-card staff-card-shadow p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300 border border-transparent hover:border-tertiary/20" data-name="Moses Kibet" data-role="Programs Manager" data-dept="Programs">
+<div class="relative mb-6">
+<div class="w-24 h-24 rounded-full border-[3px] border-tertiary-fixed p-1">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" src="assets/images/IMG-20251211-WA0024.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuBGBLM1L56ymI6bPS6ygEOToTZ03ujavTKy3x8A1wUAC3Ol3q5St1mmHY30fupZET0Hh91dj8N9Yek8iKT7QprislCFp2NJa5eHl0IDQcv9vnH98OEyHw1_p4782_QF1MoFTXmez5kLZUkZeOVutlh9_TekVRzC0-YZn3VeCt2OTcPVM7oX93_rxqcCFm7hqQndHs_-dUN-P8EkPaNoW-jBlwAsoiCF1yEq2LsZQSonhycFM-MIcFXgTLBRP6w1rJab4rgpjIC6-dE'"/>
+</div>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Moses Kibet</h3>
+<p class="font-body-md text-on-surface-variant mt-1">Programs Manager</p>
+<div class="mt-4 px-3 py-1 bg-secondary/10 text-secondary font-label-sm rounded-full text-[12px] uppercase tracking-wide font-bold">Programs</div>
+<div class="mt-8 w-full flex items-center justify-center gap-3">
+<button onclick="alert('Message sent to Moses Kibet');" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">forum</span>
+</button>
+<a href="mailto:moses.k@vybeafrica.org" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">mail</span>
+</a>
+</div>
+</div>
+
+<!-- Marcellina Cherubia Card -->
+<div class="staff-card group bg-white rounded-card staff-card-shadow p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300 border border-transparent hover:border-tertiary/20" data-name="Marcellina Cherubia" data-role="Communications Officer" data-dept="Communications">
+<div class="relative mb-6">
+<div class="w-24 h-24 rounded-full border-[3px] border-tertiary-fixed p-1">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" src="assets/images/team/Marcellina Cherubia.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuATsk6mlmtqCM80Ws7K1o64jf0NRoNW1jkte_XStk1oLRl9IMAcHrJKWK5JRLTafV5qfSNxETJlE_2LGFudwTd_BqMO5f8zahcmSy9xGU5yuoCz9T6rby27krZXvRph8PPGxL0xC4jQZ-2tiioNSb6K4Y0v3141eNTN3IN9N8yclINSB42tTDYBrgbNJGMYem2GZr8GLFt39avqNE5VDX49MveYbDdX395vNCOG_hmifriPiMN_rjeP8sKgcsqZ2Sn2ouzOSF8q5qk'"/>
+</div>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Marcellina Cherubia</h3>
+<p class="font-body-md text-on-surface-variant mt-1">Communications Officer</p>
+<div class="mt-4 px-3 py-1 bg-tertiary/10 text-tertiary font-label-sm rounded-full text-[12px] uppercase tracking-wide font-bold">Communications</div>
+<div class="mt-8 w-full flex items-center justify-center gap-3">
+<button onclick="alert('Message sent to Marcellina Cherubia');" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">forum</span>
+</button>
+<a href="mailto:marcellina.c@vybeafrica.org" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">mail</span>
+</a>
+</div>
+</div>
+
+<!-- Farex Nandwa Card -->
+<div class="staff-card group bg-white rounded-card staff-card-shadow p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300 border border-transparent hover:border-tertiary/20" data-name="Farex Nandwa" data-role="HR Director" data-dept="Human Resources">
+<div class="relative mb-6">
+<div class="w-24 h-24 rounded-full border-[3px] border-tertiary-fixed p-1">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" src="assets/images/IMG-20251211-WA0030.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDpPEJa9I6dsSvhWC6eujZMOzLAgms_UPRcpzRZMc_m5D2hXFbNOvO-tUp7BJrnuZDT_bFBS3peY9YtM9WITAMunvw0KWF5L5k30b_QqojlSjKK5B-Mjg6PYAOgxAN1Nfv67Dtv0t3B4DQHDC4hIVEiQcXltmCoqu5W4VUpF_l9NoJimmVrEEClIjOzA0Wbhn0B9jEEH6cVDZyaCK3ertA6qvpgYHO365IYnXjHycWJVmYMJnq73VyMDCAU3Woyq1waW00kMJ11vMg'"/>
+</div>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Farex Nandwa</h3>
+<p class="font-body-md text-on-surface-variant mt-1">HR Director</p>
+<div class="mt-4 px-3 py-1 bg-on-secondary-fixed-variant/10 text-on-secondary-fixed-variant font-label-sm rounded-full text-[12px] uppercase tracking-wide font-bold">Human Resources</div>
+<div class="mt-8 w-full flex items-center justify-center gap-3">
+<button onclick="alert('Message sent to Farex Nandwa');" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">forum</span>
+</button>
+<a href="mailto:farex.n@vybeafrica.org" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">mail</span>
+</a>
+</div>
+</div>
+
+<!-- Tony Barasa Card -->
+<div class="staff-card group bg-white rounded-card staff-card-shadow p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300 border border-transparent hover:border-tertiary/20" data-name="Tony Barasa" data-role="M&E Lead" data-dept="Monitoring & Eval">
+<div class="relative mb-6">
+<div class="w-24 h-24 rounded-full border-[3px] border-tertiary-fixed p-1">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" src="assets/images/team/Tony Barasa.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuBGUXVYK3zdNAyVLxYB571iwuSRZ9hUh4a8_oS56SQcC6R3Bx606pj7Tmda0YLJhyzoW-y6QYlzyhyB2MzRnNNnnZZ_VyDVicu-rWwOMdbh9Oea2kSBqlU5kubCng4R0cq51YE5OLwPyOQE1epbcX6SNGCgUFZGgAPswT5Ww6vyHl-_LmDuKeI_gEEMeO0ZVCWBlOP2ud-cbM4bIXgb9djRM4oFRD9pyAob7PAPFKN9fQqj5bOfdbIczbCNlSZqjAVpBhz9Y-BpaPc'"/>
+</div>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Tony Barasa</h3>
+<p class="font-body-md text-on-surface-variant mt-1">M&E Lead</p>
+<div class="mt-4 px-3 py-1 bg-error/10 text-error font-label-sm rounded-full text-[12px] uppercase tracking-wide font-bold">Monitoring & Eval</div>
+<div class="mt-8 w-full flex items-center justify-center gap-3">
+<button onclick="alert('Message sent to Tony Barasa');" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">forum</span>
+</button>
+<a href="mailto:tony.b@vybeafrica.org" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">mail</span>
+</a>
+</div>
+</div>
+
+<!-- Joe Junior Card -->
+<div class="staff-card group bg-white rounded-card staff-card-shadow p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300 border border-transparent hover:border-tertiary/20" data-name="Joe Junior" data-role="Finance Manager" data-dept="Finance">
+<div class="relative mb-6">
+<div class="w-24 h-24 rounded-full border-[3px] border-tertiary-fixed p-1">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" src="assets/images/team/Joe Junior.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDG3KO7E6_pGtgb-1TNjv-o1wVpN1E5yrM7tWRIUjVHkvrsQ9jxIezlEz7Sx4JGW4mYFZc8lRmuT1eKIJWy9DMJvH2m_ysVGMjZv5gRcsfUojsTxhPzk9WSjeuvpAFHqx00IT_SOzmb-8ktM_wT3J6Zfp6j9E3pR8OFNNsNEtnTLUkJ03UwfdaKzJ6HT9b4b-bVmZ3fWBJ19By55LHNazi514BlnX2_PAOvnF2ZVm3AY1eLeFU6KZ3UsmYo1OS28oOm5Ue26dtHxhU'"/>
+</div>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Joe Junior</h3>
+<p class="font-body-md text-on-surface-variant mt-1">Finance Manager</p>
+<div class="mt-4 px-3 py-1 bg-secondary-container text-on-secondary-container font-label-sm rounded-full text-[12px] uppercase tracking-wide font-bold">Finance</div>
+<div class="mt-8 w-full flex items-center justify-center gap-3">
+<button onclick="alert('Message sent to Joe Junior');" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">forum</span>
+</button>
+<a href="mailto:joe.j@vybeafrica.org" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">mail</span>
+</a>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- Footer -->
+<footer class="w-full py-stack-sm mt-auto bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant/20 flex flex-col md:flex-row gap-4 justify-between items-center px-margin-desktop">
+<div class="font-label-sm text-label-sm font-bold text-on-surface">© 2026 Vybe Africa NGO. All rights reserved.</div>
+<div class="flex gap-stack-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-opacity duration-200" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-opacity duration-200" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-opacity duration-200" href="contact.html">Contact Support</a>
+</div>
+</footer>
+</main>
+
+<script>
+    let currentDept = 'all';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            });
+        }
+        await renderDynamicTeam();
+    });
+
+    async function renderDynamicTeam() {
+        const grid = document.getElementById('staff-grid');
+        if (!grid || !window.cmsClient) return;
+
+        const members = await window.cmsClient.fetchTeamMembers();
+        if (members.length === 0) return; // Keep static fallback
+
+        grid.innerHTML = members.map(member => `
+            <div class="staff-card group bg-white rounded-card staff-card-shadow p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300 border border-transparent hover:border-tertiary/20" data-name="${member.name}" data-role="${member.role}" data-dept="${member.department}">
+                <div class="relative mb-6">
+                    <div class="w-24 h-24 rounded-full border-[3px] border-tertiary-fixed p-1">
+                        <div class="w-full h-full rounded-full overflow-hidden bg-surface-container-highest">
+                            <img class="w-full h-full object-cover" src="${member.image_url || 'assets/images/logo.png'}" onerror="this.src='assets/images/logo.png'">
+                        </div>
+                    </div>
+                    ${member.is_verified ? `
+                    <div class="absolute -bottom-1 -right-1 bg-secondary text-white p-1.5 rounded-full leading-none shadow-md">
+                        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                    </div>
+                    ` : ''}
+                </div>
+                <h3 class="font-headline-md text-headline-md text-on-surface">${member.name}</h3>
+                <p class="font-body-md text-on-surface-variant mt-1">${member.role}</p>
+                <div class="mt-4 px-3 py-1 bg-primary/10 text-primary font-label-sm rounded-full text-[12px] uppercase tracking-wide font-bold">${member.department}</div>
+                <div class="mt-8 w-full flex items-center justify-center gap-3">
+                    <button onclick="alert('Message sent to ${member.name}');" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+                        <span class="material-symbols-outlined">forum</span>
+                    </button>
+                    ${member.email ? `
+                    <a href="mailto:${member.email}" class="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+                        <span class="material-symbols-outlined">mail</span>
+                    </a>
+                    ` : ''}
+                </div>
+            </div>
+        `).join('');
+
+        filterStaff();
+    }
+
+    function setDepartmentFilter(dept, btn) {
+        currentDept = dept;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
+        btn.classList.add('active-filter');
+        filterStaff();
+    }
+
+    function filterStaff() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        const cards = document.querySelectorAll('.staff-card');
+
+        cards.forEach(card => {
+            const name = (card.getAttribute('data-name') || '').toLowerCase();
+            const role = (card.getAttribute('data-role') || '').toLowerCase();
+            const dept = card.getAttribute('data-dept') || '';
+
+            const matchesQuery = name.includes(query) || role.includes(query) || dept.toLowerCase().includes(query);
+            const matchesDept = (currentDept === 'all') || (dept === currentDept);
+
+            if (matchesQuery && matchesDept) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+</script>
+</body>
+</html>

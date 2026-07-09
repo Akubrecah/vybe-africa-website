@@ -9,7 +9,16 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
+// Handle payload-too-large errors explicitly
+app.use((err, req, res, next) => {
+    if (err.type === 'entity.too.large') {
+        return res.status(413).json({ error: 'PDF text payload is too large. Try uploading a smaller PDF.' });
+    }
+    next(err);
+});
 app.use(express.static(path.join(__dirname, '/'))); // Serve static files from root
 
 // API Routes

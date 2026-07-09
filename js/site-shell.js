@@ -2,6 +2,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentPage = window.location.pathname.split('/').pop() || 'homepage.html';
   const pageKey = currentPage.replace(/\.html$/i, '') || 'homepage';
 
+  const userId = localStorage.getItem('user_id');
+  const role = (localStorage.getItem('role') || '').toLowerCase();
+  const designation = (localStorage.getItem('designation') || '').toLowerCase();
+
+  function getPrimaryDashboard() {
+    if (role === 'superadmin' || role === 'admin' || designation.includes('executive') || designation.includes('director')) {
+      return 'admin_dashboard.html';
+    }
+    if (role === 'hr' || designation.includes('hr') || designation.includes('human resource')) {
+      return 'hr_dashboard.html';
+    }
+    if (role === 'programs' || designation.includes('program')) {
+      return 'programs_dashboard.html';
+    }
+    if (role === 'communications' || designation.includes('communication') || designation.includes('media')) {
+      return 'communications_dashboard.html';
+    }
+    if (role === 'me' || designation.includes('m&e') || designation.includes('monitoring') || designation.includes('evaluation')) {
+      return 'me_dashboard.html';
+    }
+    if (role === 'finance' || designation.includes('finance') || designation.includes('account')) {
+      return 'finance_dashboard.html';
+    }
+    return 'staff.html';
+  }
+
+  const primaryDashboard = userId ? getPrimaryDashboard() : 'login.html';
+  const loginText = userId ? 'My Dashboard' : 'Staff Login';
+
   const navLinks = [
     { href: 'homepage.html', label: 'Ecosystem', key: 'homepage' },
     { href: 'west_pokot.html', label: 'County Chapter', key: 'west_pokot' },
@@ -15,8 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const headerMarkup = `
     <div class="bg-primary text-on-primary py-2 text-xs font-semibold w-full border-b border-white/10">
       <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
-        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="member_login.html">Members Login</a>
-        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="login.html">Staff Login</a>
+        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="${primaryDashboard}">${loginText}</a>
         <a class="font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
       </div>
     </div>
@@ -55,8 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${navLinks.map((link) => `<a class="block py-2 px-3 rounded text-sm ${pageKey === link.key ? 'font-bold text-primary bg-primary-container/10' : 'font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors'}" href="${link.href}">${link.label}</a>`).join('')}
         </nav>
         <div class="max-w-container-max mx-auto px-margin-mobile pb-4 flex flex-col gap-2 border-t border-outline-variant/20 pt-3">
-          <a href="member_login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-outline-variant hover:border-primary hover:text-primary transition-colors">Member Login</a>
-          <a href="login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">Staff Login</a>
+          <a href="${primaryDashboard}" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">${loginText}</a>
         </div>
       </div>
     </header>`;
@@ -110,8 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     </footer>`;
 
-  const topUtilityBar = document.querySelector('body > div');
-  if (topUtilityBar && /Members Login|Staff Login/.test(topUtilityBar.innerHTML)) {
+  const topUtilityBar = document.querySelector('body > div.bg-primary') || document.querySelector('body > div');
+  if (topUtilityBar && (topUtilityBar.classList.contains('bg-primary') || /Members Login|Staff Login|My Dashboard/.test(topUtilityBar.innerHTML))) {
     topUtilityBar.remove();
   }
 

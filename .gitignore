@@ -38,3 +38,6 @@ list_*.js
 # Temporary files
 ~$*
 .tmp/
+
+# MCP and Agent keys
+.agents/

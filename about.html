@@ -4,6 +4,8 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>About Us | Vybe Africa</title>
+    <!-- Auth Guard & Persistent Session Manager -->
+    <script src="assets/js/auth-guard.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -116,13 +118,15 @@
         },
       }
     </script>
+    <!-- Supabase & CMS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/cms-client.js"></script>
 </head>
 <body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden min-h-screen flex flex-col">
 
 <!-- Top Utility Bar -->
 <div class="bg-primary text-on-primary py-2 text-xs font-label-sm w-full z-50 relative border-b border-white/10">
     <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
-        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="member_login.html">Members Login</a>
         <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="login.html">Staff Login</a>
         <a class="text-white font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
     </div>
@@ -179,7 +183,6 @@
             <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="contact.html">Contact</a>
         </nav>
         <div class="max-w-container-max mx-auto px-margin-mobile pb-4 flex flex-col gap-2 border-t border-outline-variant/20 pt-3">
-            <a href="member_login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-outline-variant hover:border-primary hover:text-primary transition-colors">Member Login</a>
             <a href="login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">Staff Login</a>
         </div>
     </div>
@@ -193,11 +196,11 @@
             <div class="absolute inset-0 bg-on-background/60 mix-blend-multiply"></div>
         </div>
         <div class="relative z-10 max-w-container-max mx-auto text-center">
-            <h1 class="font-display-lg text-display-lg text-on-primary mb-stack-sm drop-shadow-md">ABOUT US</h1>
-            <p class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-primary drop-shadow-md max-w-3xl mx-auto mb-stack-sm">
+            <h1 data-cms-page="about" data-cms-section="hero" data-cms-key="title" class="font-display-lg text-display-lg text-on-primary mb-stack-sm drop-shadow-md">ABOUT US</h1>
+            <p data-cms-page="about" data-cms-section="hero" data-cms-key="subtitle" class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-primary drop-shadow-md max-w-3xl mx-auto mb-stack-sm">
                 Voices of Youth for Better Engagement Africa
             </p>
-            <p class="font-body-lg text-body-lg text-primary-container font-semibold tracking-wide uppercase drop-shadow-md">
+            <p data-cms-page="about" data-cms-section="hero" data-cms-key="tagline" class="font-body-lg text-body-lg text-primary-container font-semibold tracking-wide uppercase drop-shadow-md">
                 Rooted in West Pokot, Empowering a Generation
             </p>
         </div>
@@ -209,12 +212,12 @@
             <!-- The Spark -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter items-center">
                 <div>
-                    <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-stack-sm">The Spark</h2>
-                    <p class="font-label-sm text-label-sm text-primary-container mb-stack-sm uppercase tracking-widest">Our Origins in West Pokot</p>
-                    <p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-sm">
+                    <h2 data-cms-page="about" data-cms-section="spark" data-cms-key="title" class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-stack-sm">The Spark</h2>
+                    <p data-cms-page="about" data-cms-section="spark" data-cms-key="subtitle" class="font-label-sm text-label-sm text-primary-container mb-stack-sm uppercase tracking-widest">Our Origins in West Pokot</p>
+                    <p data-cms-page="about" data-cms-section="spark" data-cms-key="intro" class="font-body-lg text-body-lg text-on-surface-variant mb-stack-sm">
                         VYBE Africa began as a small, passionate group of young individuals in West Pokot County, Kenya. We saw firsthand the challenges our peers faced and decided it was time to change the narrative.
                     </p>
-                    <p class="font-body-md text-body-md text-on-surface-variant mb-stack-sm">
+                    <p data-cms-page="about" data-cms-section="spark" data-cms-key="body" class="font-body-md text-body-md text-on-surface-variant mb-stack-sm">
                         Founded on the belief that young people are active architects of their own future, we started by tackling the most immediate issues: Sexual and Reproductive Health rights and access to education. Our early days were defined by grassroots organizing, listening to community needs, and building trust.
                     </p>
                 </div>
@@ -228,12 +231,12 @@
                     <img class="w-full h-full object-cover" alt="VYBE Africa youth rally and outreach action" src="assets/images/IMG-20251211-WA0047.jpg"/>
                 </div>
                 <div class="order-1 md:order-2">
-                    <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-stack-sm">The Movement</h2>
-                    <p class="font-label-sm text-label-sm text-primary-container mb-stack-sm uppercase tracking-widest">Growing to a Regional CBO</p>
-                    <p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-sm">
+                    <h2 data-cms-page="about" data-cms-section="movement" data-cms-key="title" class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-stack-sm">The Movement</h2>
+                    <p data-cms-page="about" data-cms-section="movement" data-cms-key="subtitle" class="font-label-sm text-label-sm text-primary-container mb-stack-sm uppercase tracking-widest">Growing to a Regional CBO</p>
+                    <p data-cms-page="about" data-cms-section="movement" data-cms-key="intro" class="font-body-lg text-body-lg text-on-surface-variant mb-stack-sm">
                         What started as a local initiative quickly gained momentum. Driven by our tagline 'Dream. Dare. Do.', our programs expanded to encompass Climate Action and Inclusive Governance.
                     </p>
-                    <p class="font-body-md text-body-md text-on-surface-variant mb-stack-sm">
+                    <p data-cms-page="about" data-cms-section="movement" data-cms-key="body" class="font-body-md text-body-md text-on-surface-variant mb-stack-sm">
                         Today, VYBE Africa is a recognized regional Community-Based Organization. We empower thousands of youths across the region to advocate for their rights, engage in sustainable practices, and demand accountable leadership. We are not just a charity; we are a movement for systemic change.
                     </p>
                 </div>
@@ -359,7 +362,7 @@
                 <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-stack-sm">Meet Our Team</h2>
                 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">The passionate individuals driving the vision of Vybe Africa.</p>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-gutter">
+            <div id="team-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-gutter">
                 <!-- Sharon Chepkite -->
                 <div class="bg-surface rounded-xl overflow-hidden shadow-[0_20px_30px_rgba(49,48,48,0.04)] border border-outline-variant/20">
                     <div class="aspect-[4/5] relative">
@@ -541,6 +544,49 @@
             mobileMenu.classList.toggle('hidden');
         });
     }
+</script>
+
+<script>
+    // Dynamically load team members from Supabase CMS
+    async function loadDynamicTeam() {
+        if (!window.cmsClient) return;
+        const container = document.getElementById('team-container');
+        if (!container) return;
+
+        const team = await window.cmsClient.fetchTeamMembers();
+        if (team && team.length > 0) {
+            const FALLBACK_QUOTES = {
+                'sharon chepkite': 'Empowering one youth empowers a whole village.',
+                'moses kibet': 'Building sustainable programs for lasting impact.',
+                'farex nandwa': 'Nurturing the talent that drives our mission.',
+                'marcellina cherubia': 'Amplifying our voice to change the narrative.',
+                'tony barasa': 'Data-driven insights for real community change.',
+                'joe junior': 'Ensuring integrity in every resource managed.'
+            };
+
+            container.innerHTML = team.map(member => {
+                const lowerName = (member.name || '').toLowerCase();
+                const quote = FALLBACK_QUOTES[lowerName] || 'Empowering youth across Africa.';
+                return `
+                    <div class="bg-surface rounded-xl overflow-hidden shadow-[0_20px_30px_rgba(49,48,48,0.04)] border border-outline-variant/20">
+                        <div class="aspect-[4/5] relative">
+                            <img class="w-full h-full object-cover" alt="${member.name}, ${member.role}" src="${member.image_url || 'assets/images/logo.png'}" onerror="this.src='assets/images/logo.png'"/>
+                        </div>
+                        <div class="p-stack-sm text-center">
+                            <h4 class="font-headline-md text-headline-md text-on-surface">${member.name}</h4>
+                            <p class="font-label-sm text-label-sm text-primary-container uppercase mt-2 mb-3">${member.role}</p>
+                            <p class="font-body-sm text-sm text-on-surface-variant italic mb-4">"${quote}"</p>
+                            <div class="flex justify-center space-x-4">
+                                <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined text-xl">share</span></a>
+                                <a class="text-on-surface-variant hover:text-primary transition-colors" href="${member.email ? 'mailto:' + member.email : '#'}"><span class="material-symbols-outlined text-xl">mail</span></a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+    document.addEventListener('DOMContentLoaded', loadDynamicTeam);
 </script>
 
 <!-- Bonga na Vybe Chatbot Widget -->

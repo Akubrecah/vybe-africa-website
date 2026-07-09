@@ -1,655 +1,718 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Executive Portal - VYBE Africa</title>
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Map (Leaflet) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Supabase & Bcrypt -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Executive Director Dashboard - Vybe Africa</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <style>
-        :root {
-            --bg-deep: #050505;
-            --card-glass: rgba(20, 20, 20, 0.6);
-            --accent-green: #10b981;
-            --accent-green-glass: rgba(16, 185, 129, 0.2);
-            --text-primary: #ffffff;
-            --text-secondary: #9ca3af;
-            --border-glass: rgba(255, 255, 255, 0.08);
-        }
+<!-- Auth Guard & Role Router -->
+<script src="assets/js/auth-guard.js"></script>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background: var(--bg-deep);
-            color: var(--text-primary);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-            background-image: radial-gradient(circle at top right, #0a2e1e 0%, transparent 40%);
+<!-- PDF.js CDN for client-side PDF parsing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs" type="module" id="pdfjs-script"></script>
+<script>
+  // Shim: load pdfjs as a module and expose it globally for the inline script below
+  (async function() {
+    try {
+      const mod = await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs');
+      window.pdfjsLib = mod;
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';
+      console.log('PDF.js loaded successfully, version:', mod.version || '4.x');
+    } catch(e) {
+      console.warn('PDF.js module import failed, falling back to legacy CDN:', e.message);
+      // Fallback: load v3 legacy build
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      script.onload = () => {
+        window.pdfjsLib = window['pdfjs-dist/build/pdf'];
+        if (window.pdfjsLib) {
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          console.log('PDF.js v3 fallback loaded');
         }
+      };
+      document.head.appendChild(script);
+    }
+  })();
+</script>
 
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            padding: 2rem 1.5rem;
-            border-right: 1px solid var(--border-glass);
-            display: flex;
-            flex-direction: column;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#56423e",
+                        "primary-fixed-dim": "#ffb4a5",
+                        "outline-variant": "#ddc0ba",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1c1b1b",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "surface-dim": "#dcd9d9",
+                        "secondary-fixed": "#d0e9d4",
+                        "primary": "#9f402d",
+                        "on-primary-container": "#5a0d02",
+                        "surface-container-low": "#f6f3f2",
+                        "on-surface": "#1c1b1b",
+                        "on-secondary-container": "#516857",
+                        "surface": "#fcf9f8",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f3f0ef",
+                        "inverse-surface": "#313030",
+                        "primary-fixed": "#ffdad3",
+                        "error": "#ba1a1a",
+                        "background": "#fcf9f8",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-fixed": "#3e0500",
+                        "surface-tint": "#9f402d",
+                        "outline": "#89726d",
+                        "on-tertiary-fixed": "#221b00",
+                        "inverse-primary": "#ffb4a5",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#802918",
+                        "on-error": "#ffffff",
+                        "tertiary": "#705d00",
+                        "on-secondary-fixed-variant": "#364c3c",
+                        "surface-container": "#f0eded",
+                        "secondary-container": "#cde6d1",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fcf9f8",
+                        "secondary": "#4d6453",
+                        "on-secondary-fixed": "#0b2013",
+                        "tertiary-fixed": "#ffe16d",
+                        "on-tertiary-container": "#4c3f00",
+                        "tertiary-container": "#c9a900",
+                        "secondary-fixed-dim": "#b4cdb8",
+                        "primary-container": "#e2725b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-lg": "80px",
+                        "stack-md": "32px",
+                        "container-max": "1280px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "64px",
+                        "stack-sm": "16px",
+                        "gutter": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Inter"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-sm": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
         }
-
-        .logo {
-            font-size: 1.4rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 3rem;
-            color: var(--accent-green);
-        }
-
-        .cta-btn {
-            background: var(--accent-green);
-            color: black;
-            font-weight: 600;
-            padding: 12px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 2rem;
-            cursor: pointer;
-            text-decoration: none;
-            transition: 0.3s;
-        }
-        .cta-btn:hover { opacity: 0.9; transform: translateY(-2px); }
-
-        .nav-group-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: 0.8rem;
-            letter-spacing: 1px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            margin-bottom: 0.5rem;
-            border-radius: 8px;
-            transition: 0.3s;
-        }
-        .nav-link:hover, .nav-link.active {
-            color: var(--text-primary);
-            background: rgba(255,255,255,0.05);
-        }
-        .nav-link.active { border-left: 3px solid var(--accent-green); }
-
-        /* Main Content */
-        .main {
-            flex: 1;
-            padding: 2rem 3rem;
-            overflow-y: auto;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
-        }
-
-        .notification-btn {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            background: var(--card-glass);
-            border: 1px solid var(--border-glass);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-
-        /* Stats Row */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .stat-card {
-            background: var(--card-glass);
-            border: 1px solid var(--border-glass);
-            padding: 1.5rem;
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-title { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
-        .stat-val { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .stat-footer { font-size: 0.8rem; color: var(--text-secondary); }
-        .icon-float {
-            position: absolute; top: 1.5rem; right: 1.5rem;
-            width: 32px; height: 32px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(255,255,255,0.05);
-            color: var(--accent-green);
-        }
-
-        /* Content Grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .section-card {
-            background: var(--card-glass);
-            border: 1px solid var(--border-glass);
-            border-radius: 16px;
-            padding: 1.5rem;
-        }
-
-        .section-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        /* Map Container */
-        #map {
-            height: 300px;
-            width: 100%;
-            border-radius: 12px;
-            margin-top: 10px;
-            filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-        }
-
-        .report-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            background: rgba(255,255,255,0.03);
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-            transition: 0.3s;
-        }
-        .report-item:hover { border-color: var(--accent-green); }
-
-        .tag {
-            padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
-        }
-        .tag-high { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-        .tag-med { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-
-        /* Mobile Responsive */
-        @media (max-width: 1024px) {
-           body { flex-direction: column; min-height: 100vh; height: auto; overflow-y: auto; overflow-x: hidden; }
-            .sidebar { width: 100%; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border-glass); overflow-x: auto; }
-            .nav-link { display: inline-flex; padding: 8px 12px; margin: 0 0.25rem 0.5rem 0; font-size: 0.85rem; }
-            .main { padding: 1.5rem 1rem; overflow-y: auto; height: auto; max-width: 100vw; }
-            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
-            .dashboard-grid { grid-template-columns: 1fr; }
-            #map { height: 300px; width: 100%; }
-        }
-        @media (max-width: 768px) {
-            .sidebar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            h1 { font-size: 1.5rem; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .team-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-            .main { max-width: 100vw; overflow-x: hidden; }
-        }
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .team-grid { grid-template-columns: 1fr 1fr; }
-            button { padding: 8px 12px; font-size: 0.85rem; }
-        }
-
+    </script>
+<style>
+        .custom-shadow { box-shadow: 0 20px 30px rgba(0,0,0,0.04); }
     </style>
 </head>
-<body>
+<body class="bg-background text-on-surface font-body-md antialiased flex min-h-screen">
 
-    <aside class="sidebar">
-        <div class="logo"><i class="fas fa-shield-alt"></i> Vybe Africa</div>
-        
-        <a href="#" class="cta-btn" onclick="switchView('reports')"><i class="fas fa-plus"></i> New Report</a>
+<!-- SideNavBar -->
+<aside class="z-50 h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-inverse-surface shadow-[20px_0_30px_rgba(0,0,0,0.04)] hidden md:block">
+<div class="flex flex-col h-full py-base">
+<div class="px-6 py-6 border-none">
+<a href="homepage.html" class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-on-primary-container font-bold font-headline-md text-headline-md">V</div>
+<div>
+<h1 class="font-display-lg text-headline-md text-primary dark:text-primary-fixed-dim">Vybe Africa</h1>
+<p class="font-body-md text-label-sm text-on-surface-variant mt-1">Staff Portal</p>
+</div>
+</a>
+</div>
+<nav class="flex-1 px-4 mt-8 space-y-2">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-primary-container/10 transition-transform" href="admin_dashboard.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200" href="staff_management.html">
+<span class="material-symbols-outlined">manage_accounts</span>
+<span class="font-label-sm text-label-sm">Staff Management</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200" href="cms_dashboard.html">
+<span class="material-symbols-outlined">edit_document</span>
+<span class="font-label-sm text-label-sm">CMS Console</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200" href="team_directory.html">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-sm text-label-sm">Team Directory</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200" href="impact_analytics.html">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="font-label-sm text-label-sm">Impact Analytics</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200" href="edit_profile.html">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">My Settings</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200" href="homepage.html">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Ecosystem Site</span>
+</a>
+</nav>
+<div class="p-4 mt-auto">
+<button onclick="alert('New Report generator initiated');" class="w-full bg-primary text-on-primary py-3 rounded-xl font-label-sm text-label-sm hover:opacity-90 transition-opacity mb-4">
+    New Report
+</button>
+<button id="logout-btn" class="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-sm text-label-sm">Logout</span>
+</button>
+</div>
+</div>
+</aside>
 
-        <div class="nav-group-title">Navigation</div>
-        <a href="#" class="nav-link active" onclick="switchView('dashboard', this)"><i class="fas fa-th-large"></i> Dashboard</a>
-        <a href="#" class="nav-link" onclick="switchView('reports', this)"><i class="fas fa-file-alt"></i> Reports</a>
-        <a href="#" class="nav-link" onclick="switchView('team', this)"><i class="fas fa-users-cog"></i> Team</a>
-        <a href="#" class="nav-link" onclick="switchView('history', this)"><i class="fas fa-history"></i> History</a>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 min-h-screen flex flex-col">
+<!-- Top Nav -->
+<header class="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-outline-variant/20 flex items-center justify-between px-6 md:px-margin-desktop h-20 w-full shrink-0">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-extrabold">Executive Dashboard</h2>
+<p class="text-xs text-on-surface-variant">Strategic overview, team actions, and performance metrics</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors active:opacity-80" aria-label="Notifications">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors active:opacity-80" aria-label="Search">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant cursor-pointer" onclick="window.location.href='edit_profile.html'">
+<img alt="Sharon Chepkite" class="w-full h-full object-cover" src="assets/images/IMG-20251211-WA0053.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuA4UEY7viclFNWNTr9EKXg5fgBIc4ocG3AisucTpuea85BYxbLgadmKKaX0tJzom49cH9ymEkIiLxOF6IR4YOmv1LQbG__aY48tYawHjn2U6D_ZZR8JG1GX9XV3Uyq1PJ4UA28PY6LdPCK5aOzZvla8mTD5MdxogGUUdigPyHWmXRjlKUlFTXDbMeWDaaIsHhgQq0rAc4tTyACmGpQKJrgMeAfVHgj4GvOPTkDSxMAQ065Uma1vw6Z60yz-J5kD3QLWMAndJc4Cxlk'"/>
+</div>
+</div>
+</header>
 
-        <div class="nav-group-title" style="margin-top: 2rem;">Account</div>
-        <a href="#" class="nav-link" onclick="switchView('settings', this)"><i class="fas fa-cog"></i> Settings</a>
-        <a href="#" class="nav-link" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        
-        <div style="margin-top: auto; display: flex; align-items: center; gap: 10px; padding-top: 1rem; border-top: 1px solid var(--border-glass);">
-            <div id="admin-initials" style="width: 32px; height: 32px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center;">AD</div>
-            <div>
-                <div id="admin-name-display" style="font-size: 0.9rem; font-weight: 600;">Admin User</div>
-                <div id="admin-role-display" style="font-size: 0.7rem; color: var(--text-secondary);">Super Admin</div>
-            </div>
+<div class="flex-1 px-6 md:px-margin-desktop py-stack-md max-w-container-max mx-auto w-full flex flex-col gap-stack-lg">
+<!-- Header: Dynamic Welcome Banner -->
+<section class="flex flex-col md:flex-row items-center md:items-start gap-gutter">
+<div class="shrink-0 relative">
+<img id="user-avatar-display" alt="Profile" class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-tertiary custom-shadow" src="assets/images/IMG-20251211-WA0053.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuC17YJI6WnttvUpq4025zXrKnLwRBnPIFCcvfKArURB-efFka_HvS9rb1C8DJPxruzJVMKEGg5GTGk8E8dZK7IeTcKm62EvKc4q4-DMJ5L-FsI3R-O18Z5yB9tbRlQE9R8F34Zj2bBfuyQlCTvgN7adS9293azAPdSt-WUpLnUec2OdWwZYLk_dTncxol3nUo3kIc5CJxohn46MKP5A26CNepKHJ4D0xyZjLojoAhZ5aQ8hYN142uWjWugqkFlWofGOtWr05yztOCY'"/>
+</div>
+<div class="flex flex-col justify-center text-center md:text-left mt-4 md:mt-0 pt-2">
+<h2 class="font-headline-lg text-headline-lg text-on-surface" id="welcome-title">Welcome back...</h2>
+<div class="mt-4 bg-surface-container-low p-4 rounded-xl border-l-4 border-primary inline-block">
+<p class="font-body-md text-body-md italic text-on-surface-variant flex items-start gap-2">
+<span class="material-symbols-outlined text-tertiary text-xl leading-none">format_quote</span>
+    <span id="welcome-quote">"..."</span>
+</p>
+</div>
+</div>
+</section>
+
+<!-- Org Overview Stats -->
+<section class="grid grid-cols-12 gap-gutter">
+<div class="col-span-12 md:col-span-3 bg-surface-container-lowest rounded-xl p-6 custom-shadow border border-surface-variant">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Youth Reached</p>
+<h3 class="font-headline-lg text-headline-lg text-primary mt-2">1.2M</h3>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">group</span>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-1 text-secondary text-sm">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12% vs last year</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-3 bg-surface-container-lowest rounded-xl p-6 custom-shadow border border-surface-variant">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Active Programs</p>
+<h3 class="font-headline-lg text-headline-lg text-primary mt-2">45</h3>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">event_available</span>
+</div>
+</div>
+</div>
+<div class="col-span-12 md:col-span-3 bg-surface-container-lowest rounded-xl p-6 custom-shadow border border-surface-variant">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Staff Members</p>
+<h3 class="font-headline-lg text-headline-lg text-primary mt-2" id="staff-count-display">320</h3>
+</div>
+<div class="w-10 h-10 rounded-full bg-tertiary-container/30 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">badge</span>
+</div>
+</div>
+</div>
+<div class="col-span-12 md:col-span-3 bg-surface-container-lowest rounded-xl p-6 custom-shadow border border-surface-variant">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Global Partners</p>
+<h3 class="font-headline-lg text-headline-lg text-primary mt-2">85</h3>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">public</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Bento Grid: Main Dashboard Areas -->
+<section class="grid grid-cols-12 gap-gutter">
+<!-- Program Performance Chart -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-6 custom-shadow border border-surface-variant flex flex-col h-96">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Program Performance (6-Mo)</h3>
+<a href="programs_dashboard.html" class="text-secondary font-label-sm text-label-sm hover:underline">View Full Report</a>
+</div>
+<div class="flex-1 bg-surface-container-low rounded-lg relative flex items-end justify-between px-8 py-4 gap-4">
+<!-- Abstract Bar Chart Representation -->
+<div class="w-full bg-primary/20 rounded-t-md h-[40%] hover:bg-primary/40 transition-colors cursor-pointer relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-xs bg-inverse-surface text-on-secondary px-2 py-1 rounded transition-opacity">Jan</div></div>
+<div class="w-full bg-primary/30 rounded-t-md h-[55%] hover:bg-primary/50 transition-colors cursor-pointer relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-xs bg-inverse-surface text-on-secondary px-2 py-1 rounded transition-opacity">Feb</div></div>
+<div class="w-full bg-primary/40 rounded-t-md h-[45%] hover:bg-primary/60 transition-colors cursor-pointer relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-xs bg-inverse-surface text-on-secondary px-2 py-1 rounded transition-opacity">Mar</div></div>
+<div class="w-full bg-primary/50 rounded-t-md h-[70%] hover:bg-primary/70 transition-colors cursor-pointer relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-xs bg-inverse-surface text-on-secondary px-2 py-1 rounded transition-opacity">Apr</div></div>
+<div class="w-full bg-primary/70 rounded-t-md h-[60%] hover:bg-primary transition-colors cursor-pointer relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-xs bg-inverse-surface text-on-secondary px-2 py-1 rounded transition-opacity">May</div></div>
+<div class="w-full bg-primary rounded-t-md h-[85%] hover:opacity-80 transition-colors cursor-pointer relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-xs bg-inverse-surface text-on-secondary px-2 py-1 rounded transition-opacity">Jun</div></div>
+</div>
+</div>
+
+<!-- Budget & Funding -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-xl p-6 custom-shadow border border-surface-variant flex flex-col h-96">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6">Budget Allocation</h3>
+<div class="flex-1 flex flex-col items-center justify-center">
+<div class="w-48 h-48 rounded-full flex items-center justify-center" style="background: conic-gradient(var(--tw-colors-primary) 0% 45%, var(--tw-colors-secondary) 45% 75%, var(--tw-colors-tertiary) 75% 100%);">
+<div class="w-32 h-32 bg-surface-container-lowest rounded-full flex items-center justify-center flex-col shadow-inner">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total</span>
+<span class="font-headline-md text-headline-md text-on-surface">$4.2M</span>
+</div>
+</div>
+<div class="mt-6 w-full space-y-2">
+<div class="flex items-center justify-between text-sm">
+<div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-primary"></div><span>Programs</span></div>
+<span class="font-semibold text-on-surface">45%</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-secondary"></div><span>Operations</span></div>
+<span class="font-semibold text-on-surface">30%</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-tertiary"></div><span>Reserves</span></div>
+<span class="font-semibold text-on-surface">25%</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Bonga na Vybe — AI Chatbot Knowledge Base Management & Portals -->
+<section class="grid grid-cols-12 gap-gutter text-on-surface">
+  <!-- Upload/Ingest Form -->
+  <div class="col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-xl p-6 custom-shadow border border-surface-variant flex flex-col justify-between">
+    <div>
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-2xl">upload_file</span>
         </div>
-    </aside>
+        <div>
+          <h3 class="font-headline-md text-headline-md text-on-surface">Upload Knowledge Base</h3>
+          <p class="text-xs text-on-surface-variant font-medium">Parsed & embedded with Gemini</p>
+        </div>
+      </div>
 
-    <main class="main">
-        <header class="top-bar">
-            <h1 id="page-title">Welcome Back, Sharon! 👋</h1>
-            <button class="notification-btn"><i class="fas fa-bell"></i></button>
-        </header>
-
-        <!-- VIEW: DASHBOARD -->
-        <div id="view-dashboard" class="content-view">
-            <!-- (Existing Dashboard Code) -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="icon-float"><i class="fas fa-users"></i></div>
-                    <div class="stat-title">Total Users</div>
-                    <div class="stat-val" id="user-count">--</div>
-                    <div class="stat-footer">Across all departments</div>
-                </div>
-                <div class="stat-card">
-                    <div class="icon-float"><i class="fas fa-clock"></i></div>
-                    <div class="stat-title">Reports Pending</div>
-                    <div class="stat-val">3</div>
-                    <div class="stat-footer">Monthly quota</div>
-                </div>
-                <div class="stat-card">
-                    <div class="icon-float" style="color:#ef4444;"><i class="fas fa-exclamation-triangle"></i></div>
-                    <div class="stat-title">Critical Issues</div>
-                    <div class="stat-val">0</div>
-                    <div class="stat-footer">System healthy</div>
-                </div>
-                <div class="stat-card">
-                    <div class="icon-float"><i class="fas fa-chart-line"></i></div>
-                    <div class="stat-title">Traffic Growth</div>
-                    <div class="stat-val">+24%</div>
-                    <div class="stat-footer">vs last month</div>
-                </div>
-            </div>
-
-            <div class="dashboard-grid">
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Global Project Map</h3>
-                        <span class="tag tag-med">Live View</span>
-                    </div>
-                    <p style="color:var(--text-secondary); font-size: 0.9rem;">Visualization of active project locations.</p>
-                    <div id="map"></div>
-                </div>
-                <div class="section-card">
-                    <div class="section-header">
-                        <h3>Recent CMS Updates</h3>
-                        <a href="#" onclick="switchView('reports')" style="color:var(--accent-green); text-decoration:none;">View all</a>
-                    </div>
-                    <div id="recent-posts-list"></div>
-                </div>
-            </div>
+      <form id="rag-upload-form" class="space-y-4">
+        <div>
+          <label class="block font-label-sm text-label-sm text-on-surface mb-2 font-semibold" for="rag-pillar">Select Movement Pillar</label>
+          <select id="rag-pillar" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg px-4 py-2.5 font-body-md text-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary outline-none" required>
+            <option value="srhr">SRHR & Health</option>
+            <option value="climate">Climate Action</option>
+            <option value="child_protection">Child Protection</option>
+            <option value="governance">Inclusive Governance</option>
+          </select>
         </div>
 
-        <!-- VIEW: REPORTS -->
-        <div id="view-reports" class="content-view" style="display:none;">
-             <div class="section-card">
-                <div class="section-header">
-                    <h3>All System Reports</h3>
-                    <button class="cta-btn" style="margin:0; padding:8px 16px; font-size:0.9rem;">Export CSV</button>
-                </div>
-                <table style="width:100%; border-collapse:collapse; color:#ccc;">
-                    <thead>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.1); text-align:left;">
-                            <th style="padding:10px;">Report Name</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-                            <td style="padding:10px;">Q3 Financial Audit</td>
-                            <td>Dec 10, 2024</td>
-                            <td><span class="tag tag-med">Review</span></td>
-                            <td><button onclick="openDownloadModal('Q3 Financial Audit')" style="background:none; border:none; color:white; cursor:pointer;"><i class="fas fa-download"></i></button></td>
-                        </tr>
-                        <tr>
-                            <td style="padding:10px;">Security Log #4092</td>
-                            <td>Dec 18, 2024</td>
-                            <td><span class="tag tag-high">Critical</span></td>
-                            <td><button onclick="openDownloadModal('Security Log 4092')" style="background:none; border:none; color:white; cursor:pointer;"><i class="fas fa-download"></i></button></td>
-                        </tr>
-                    </tbody>
-                </table>
-             </div>
+        <div>
+          <label class="block font-label-sm text-label-sm text-on-surface mb-2 font-semibold" for="rag-file">Select PDF File</label>
+          <input type="file" id="rag-file" accept=".pdf" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg px-4 py-2.5 font-body-md text-sm text-on-surface file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer" required />
         </div>
 
-        <!-- VIEW: TEAM (New) -->
-        <div id="view-team" class="content-view" style="display:none;">
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>Staff Management</h3>
-                    <button class="cta-btn" onclick="openAddStaffModal()" style="margin:0; padding:8px 16px; font-size:0.9rem;"><i class="fas fa-user-plus"></i> Add New Staff</button>
-                </div>
-                <p style="color:#aaa; margin-bottom:1rem;">Manage team members and assign roles.</p>
-                <div style="overflow-x:auto;">
-                    <table style="width:100%; border-collapse:collapse; color:#ccc;" id="team-table">
-                        <thead>
-                            <tr style="border-bottom:1px solid rgba(255,255,255,0.1); text-align:left;">
-                                <th style="padding:10px;">Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Designation</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="team-list-body">
-                            <!-- Injected -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <!-- Ingestion Status / Progress -->
+        <div id="rag-status-container" class="hidden space-y-2 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+          <div class="flex justify-between items-center text-xs">
+            <span id="rag-status-text" class="font-semibold text-primary">Preparing...</span>
+            <span id="rag-status-percent" class="font-bold text-on-surface">0%</span>
+          </div>
+          <div class="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+            <div id="rag-status-bar" class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
         </div>
 
-        <!-- VIEW: HISTORY -->
-        <div id="view-history" class="content-view" style="display:none;">
-            <div class="section-card">
-                <h3>Activity History</h3>
-                <p style="color:#aaa; margin-bottom:1rem;">Recent actions performed by admins.</p>
-                <div class="report-item">
-                    <span><strong>Sharon C.</strong> updated Global Map settings</span>
-                    <small style="color:#666;">2 mins ago</small>
-                </div>
-                <div class="report-item">
-                     <span><strong>Farex N.</strong> generated Payroll (Nov)</span>
-                     <small style="color:#666;">1 hour ago</small>
-                </div>
-            </div>
+        <button type="submit" id="rag-submit-btn" class="w-full bg-primary hover:opacity-90 text-on-primary font-label-sm text-label-sm py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 font-bold mt-2">
+          <span class="material-symbols-outlined text-sm">rocket_launch</span>
+          <span>Sync PDF</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Ingested Sources Manager -->
+  <div class="col-span-12 lg:col-span-5 bg-surface-container-lowest rounded-xl p-6 custom-shadow border border-surface-variant flex flex-col h-full min-h-[384px]">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h3 class="font-headline-md text-headline-md text-on-surface">Knowledge Base Sources</h3>
+        <p class="text-xs text-on-surface-variant font-medium">Active reference documents & feeds</p>
+      </div>
+      <button onclick="loadKnowledgeSources()" class="p-2 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center bg-surface-container-low rounded-lg" aria-label="Refresh list">
+        <span class="material-symbols-outlined text-lg">refresh</span>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto max-h-[170px] border border-outline-variant/30 rounded-xl bg-surface-container-low/50">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-xs border-b border-outline-variant/30">
+            <th class="py-2 px-4 font-semibold">Source Name</th>
+            <th class="py-2 px-4 font-semibold">Pillar</th>
+            <th class="py-2 px-4 font-semibold text-center">Chunks</th>
+            <th class="py-2 px-4 font-semibold text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody id="rag-sources-list" class="text-xs divide-y divide-outline-variant/20">
+          <tr>
+            <td colspan="4" class="py-8 text-center text-on-surface-variant font-medium">Loading sources...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Department Portals -->
+  <div class="col-span-12 lg:col-span-3 bg-surface-container-lowest rounded-xl p-6 custom-shadow border border-surface-variant flex flex-col h-full min-h-[384px] justify-between">
+    <div>
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-12 h-12 rounded-xl bg-secondary-container text-secondary flex items-center justify-center">
+          <span class="material-symbols-outlined text-2xl">work</span>
         </div>
-
-        <!-- VIEW: SETTINGS -->
-        <div id="view-settings" class="content-view" style="display:none;">
-            <div class="section-card" style="max-width:600px;">
-                <h3>System Settings</h3>
-                <form style="display:grid; gap:15px; margin-top:1rem;">
-                    <div>
-                        <label style="display:block; color:#aaa; margin-bottom:5px;">Site Name</label>
-                        <input type="text" value="VYBE Africa" style="width:100%; padding:10px; background:#000; border:1px solid #333; color:white; border-radius:6px;">
-                    </div>
-                    <div>
-                        <label style="display:block; color:#aaa; margin-bottom:5px;">Maintenance Mode</label>
-                        <select style="width:100%; padding:10px; background:#000; border:1px solid #333; color:white; border-radius:6px;">
-                            <option>Off</option>
-                            <option>On</option>
-                        </select>
-                    </div>
-                    <button type="button" class="cta-btn" onclick="alert('Settings Saved!')">Save Changes</button>
-                </form>
-            </div>
+        <div>
+          <h3 class="font-headline-md text-headline-md text-on-surface">Department Portals</h3>
+          <p class="text-xs text-on-surface-variant font-medium">Quick Role Shortcuts</p>
         </div>
+      </div>
+      <div class="space-y-2">
+        <a href="programs_dashboard.html" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-secondary text-lg">assignment</span>
+            <span class="font-body-md text-sm font-semibold text-on-surface">Programs Portal</span>
+          </div>
+          <span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+        </a>
+        <a href="hr_dashboard.html" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-tertiary text-lg">badge</span>
+            <span class="font-body-md text-sm font-semibold text-on-surface">HR Portal</span>
+          </div>
+          <span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+        </a>
+        <a href="communications_dashboard.html" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-on-surface-variant text-lg">campaign</span>
+            <span class="font-body-md text-sm font-semibold text-on-surface">Communications</span>
+          </div>
+          <span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+        </a>
+        <a href="me_dashboard.html" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-lg">analytics</span>
+            <span class="font-body-md text-sm font-semibold text-on-surface">M&amp;E Portal</span>
+          </div>
+          <span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+        </a>
+        <a href="finance_dashboard.html" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-secondary text-lg">payments</span>
+            <span class="font-body-md text-sm font-semibold text-on-surface">Finance Portal</span>
+          </div>
+          <span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+        </a>
+        <a href="cms_dashboard.html" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group bg-primary/5">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-lg">edit_document</span>
+            <span class="font-body-md text-sm font-bold text-primary">CMS Content Manager</span>
+          </div>
+          <span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+</main>
 
-    </main>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Auth check
+        const userId = localStorage.getItem('user_id');
+        if (!userId) {
+            window.location.href = 'login.html';
+            return;
+        }
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("Admin Dashboard: DOM loaded");
-            
-            // Auth Check - localStorage
-            const userId = localStorage.getItem('user_id');
-            // We'll fetch the name dynamically, but keep fallback
-            
-            if (!userId) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            // Logout
-            document.getElementById('logout-btn').addEventListener('click', () => {
+        // Logout listener
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
                 localStorage.clear();
                 window.location.href = 'login.html';
             });
+        }
 
-            // VIEW SWITCHER
-            window.switchView = function(viewName, btn) {
-                document.querySelectorAll('.content-view').forEach(el => el.style.display = 'none');
-                document.getElementById('view-' + viewName).style.display = 'block';
-                
-                // Dynamic Greeting
-                const userName = document.getElementById('admin-name-display').textContent || 'Admin';
+        // Supabase load metrics (User Profile is loaded dynamically by auth-guard.js)
+        try {
+            const supabaseUrl = 'https://uwfkqitmopqcbvwhkcgg.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZmtxaXRtb3BxY2J2d2hrY2dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMTM2OTksImV4cCI6MjA5ODg4OTY5OX0.clHwO4AOcCB1yFbxGybydSUAlfR3uCaccnqt_mew3H8';
+            if (window.supabase) {
+                const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+                    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+                });
 
-                const titles = {
-                    'dashboard': `Welcome Back, ${userName.split(' ')[0]}! 👋`,
-                    'reports': 'System Reports',
-                    'team': 'Team Management',
-                    'history': 'Activity Log',
-                    'settings': 'Settings'
-                };
-                document.getElementById('page-title').innerText = titles[viewName];
-
-                if(btn) {
-                    document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-                    btn.classList.add('active');
-                }
-                if(viewName === 'dashboard') setTimeout(() => { map.invalidateSize(); }, 100);
-                if(viewName === 'team') loadTeam();
-            };
-
-            // --- DOWNLOAD MODAL LOGIC ---
-            let currentFile = '';
-            window.openDownloadModal = function(fileName) {
-                currentFile = fileName;
-                document.getElementById('download-fname').innerText = fileName;
-                document.getElementById('download-modal').style.display = 'flex';
-            };
-            window.closeDownloadModal = function() { document.getElementById('download-modal').style.display = 'none'; };
-            window.downloadFile = function(format) {
-                closeDownloadModal();
-                alert(`Downloading: ${currentFile || 'Report'}.${format}`);
-                if(format === 'csv') {
-                    const csvContent = "data:text/csv;charset=utf-8,ID,Report Name,Date,Status\\n1,Q3 Financial Audit,Dec 10 2024,Review\\n2,Security Log 4092,Dec 18 2024,Critical";
-                    const link = document.createElement("a");
-                    link.setAttribute("href", encodeURI(csvContent));
-                    link.setAttribute("download", (currentFile || "report") + ".csv");
-                    document.body.appendChild(link);
-                    link.click();
-                }
-            };
-            
-            window.openAddStaffModal = function() { document.getElementById('add-staff-modal').style.display = 'flex'; };
-            window.closeAddStaffModal = function() { document.getElementById('add-staff-modal').style.display = 'none'; };
-
-            // Close modals on outside click
-            window.onclick = function(event) {
-                if (event.target == document.getElementById('download-modal')) closeDownloadModal();
-                if (event.target == document.getElementById('add-staff-modal')) closeAddStaffModal();
-            };
-
-            // Initialize Map
-            const map = L.map('map').setView([1.23, 35.1], 7); 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-            L.marker([1.23, 35.1]).addTo(map).bindPopup('<b>West Pokot HQ</b><br>Main Office').openPopup();
-
-            // ----------------------------------------------------
-            // DIRECT SUPABASE INTEGRATION (SERVERLESS)
-            // ----------------------------------------------------
-            const supabaseUrl = 'https://mdjokagpejujfjfobdcs.supabase.co';
-            const supabaseKey = 'sb_publishable_Y9Wv-aZdMFVv55-CYgj2AA_6l3Iz31G';
-            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-                auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
-            });
-
-            // Fetch Data (Dashboard View)
-            async function loadData() {
-                try {
-                    // 0. Get Current User Profile
-                    const { data: userProfile, error: userError } = await supabase
-                        .from('users')
-                        .select('*')
-                        .eq('id', userId)
-                        .single();
-                    
-                    if(!userError && userProfile) {
-                        // Update Sidebar
-                        const initials = userProfile.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-                        document.getElementById('admin-initials').textContent = initials;
-                        document.getElementById('admin-name-display').textContent = userProfile.name;
-                        document.getElementById('admin-role-display').textContent = userProfile.role || 'Admin';
-                        
-                        // Update Header
-                        document.getElementById('page-title').innerText = `Welcome Back, ${userProfile.name.split(' ')[0]}! 👋`;
-                    }
-
-                    // 1. Get User Count
-                    const { count, error } = await supabase
-                        .from('users')
-                        .select('*', { count: 'exact', head: true });
-                    
-                    if(!error) document.getElementById('user-count').textContent = count;
-
-                    // 2. Get Recent Posts
-                    const { data: posts } = await supabase
-                        .from('posts')
-                        .select('title, category')
-                        .order('created_at', { ascending: false })
-                        .limit(3);
-
-                    const container = document.getElementById('recent-posts-list');
-                    if(posts && posts.length > 0) {
-                        container.innerHTML = posts.map(post => `
-                            <div class="report-item">
-                                <div><strong style="display:block;">${post.title}</strong><span style="font-size:0.8rem; color:var(--text-secondary);">${post.category}</span></div>
-                            </div>
-                        `).join('');
-                    } else {
-                         container.innerHTML = '<p style="color:var(--text-secondary); font-size:0.9rem;">No recent updates found.</p>';
-                    }
-                } catch(e) { console.error(e); }
-            }
-            loadData();
-
-            // --- TEAM MANAGEMENT (Supabase) ---
-            async function loadTeam() {
-                try {
-                    const { data: users, error } = await supabase.from('users').select('*');
-                    
-                    if(error) throw error;
-
-                    const rows = users.map(u => `
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
-                            <td style="padding:10px;"><strong>${u.name}</strong></td>
-                            <td>${u.email}</td>
-                            <td><span class="tag tag-med">${u.role}</span></td>
-                            <td>${u.designation}</td>
-                            <td>
-                                <button onclick="deleteUser('${u.id}')" style="color:#ef4444; background:none; border:none; cursor:pointer;" title="Remove User"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `).join('');
-                    document.getElementById('team-list-body').innerHTML = rows;
-                } catch(e) { 
-                    console.error(e); 
-                    document.getElementById('team-list-body').innerHTML = '<tr><td colspan="5">Failed to load team.</td></tr>';
+                // Get User Count for metrics display
+                const { count } = await supabase
+                    .from('users')
+                    .select('*', { count: 'exact', head: true });
+                if (count) {
+                    document.getElementById('staff-count-display').textContent = count;
                 }
             }
+        } catch (e) {
+            console.error('Supabase load error:', e);
+        }
 
-            window.addUser = async function(e) {
+        // Bonga na Vybe - RAG Knowledge Management Logic
+        const ragForm = document.getElementById('rag-upload-form');
+        if (ragForm) {
+            ragForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const name = document.getElementById('new-name').value;
-                const email = document.getElementById('new-email').value;
-                const password = document.getElementById('new-password').value;
-                const designation = document.getElementById('new-des').value;
-                const role = document.getElementById('new-role').value;
+                
+                const fileInput = document.getElementById('rag-file');
+                const pillarSelect = document.getElementById('rag-pillar');
+                const file = fileInput.files[0];
+                if (!file) return;
 
-                // Hash Password
-                const salt = dcodeIO.bcrypt.genSaltSync(10);
-                const hashedPassword = dcodeIO.bcrypt.hashSync(password, salt);
+                const statusContainer = document.getElementById('rag-status-container');
+                const statusText = document.getElementById('rag-status-text');
+                const statusBar = document.getElementById('rag-status-bar');
+                const statusPercent = document.getElementById('rag-status-percent');
+                const submitBtn = document.getElementById('rag-submit-btn');
+
+                statusContainer.classList.remove('hidden');
+                statusText.classList.remove('text-error');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50');
 
                 try {
-                    const { error } = await supabase
-                        .from('users')
-                        .insert([{ 
-                            name, 
-                            email, 
-                            password: hashedPassword, 
-                            role, 
-                            designation 
-                        }]);
+                    statusText.textContent = "Parsing PDF text...";
+                    statusPercent.textContent = "0%";
+                    statusBar.style.width = "0%";
 
-                    if(error) {
-                        alert('Error: ' + error.message);
-                    } else {
-                        alert('User Created Successfully!');
-                        closeAddStaffModal();
-                        loadTeam(); // Refresh list
-                        // Reset form
-                        document.getElementById('new-name').value = '';
-                        document.getElementById('new-email').value = '';
-                        document.getElementById('new-password').value = '';
+                    // 1. Extract text from PDF using PDF.js (loaded globally by shim above)
+                    const pdfjsLib = window.pdfjsLib;
+                    if (!pdfjsLib) {
+                        throw new Error("PDF.js library failed to load. Please refresh the page and try again.");
                     }
-                } catch(err) { alert('Request failed'); }
-            };
 
-            window.deleteUser = async function(id) {
-                if(!confirm('Are you sure you want to remove this user?')) return;
-                try {
-                    const { error } = await supabase.from('users').delete().eq('id', id);
-                    if(error) throw error;
-                    loadTeam();
-                } catch(e) { 
-                    console.error(e); 
-                    alert('Failed to delete user');
+                    // Ensure worker is set
+                    if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+                        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';
+                    }
+
+                    const arrayBuffer = await file.arrayBuffer();
+                    let pdf;
+                    try {
+                        pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    } catch(pdfErr) {
+                        throw new Error(`Could not open PDF: ${pdfErr.message}. Make sure it is a valid, non-password-protected PDF.`);
+                    }
+
+                    let fullText = '';
+                    const numPages = pdf.numPages;
+                    statusText.textContent = `Extracting text from ${numPages} page(s)...`;
+
+                    for (let i = 1; i <= numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        const pageText = textContent.items.map(item => item.str).join(' ');
+                        fullText += pageText + ' \n';
+                        
+                        const percent = Math.round((i / numPages) * 50); // PDF parsing = 0-50%
+                        statusBar.style.width = `${percent}%`;
+                        statusPercent.textContent = `${percent}%`;
+                        statusText.textContent = `Extracting page ${i} of ${numPages}...`;
+                    }
+
+                    if (!fullText.trim()) {
+                        throw new Error("No text content could be extracted from this PDF. It may be image-based (scanned). Only text-based PDFs are supported.");
+                    }
+
+                    console.log(`PDF parsed: ${numPages} pages, ~${fullText.split(' ').length} words`);
+
+                    // 2. Post parsed text to backend API /api/ingest/text
+                    statusText.textContent = "Embedding with Gemini AI & syncing to knowledge base...";
+                    statusBar.style.width = "55%";
+                    statusPercent.textContent = "55%";
+
+                    const payload = {
+                        text: fullText,
+                        title: file.name,
+                        pillar: pillarSelect.value,
+                        source_name: file.name,
+                        source_url: '#'
+                    };
+
+                    let response;
+                    try {
+                        response = await fetch('/api/ingest/text', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                    } catch(fetchErr) {
+                        throw new Error(`Cannot reach server: ${fetchErr.message}. Make sure the server is running on port 5000.`);
+                    }
+
+                    let result;
+                    try {
+                        result = await response.json();
+                    } catch(jsonErr) {
+                        throw new Error(`Server returned invalid response (HTTP ${response.status}). Check server logs.`);
+                    }
+
+                    if (!response.ok) throw new Error(result.error || `Server error ${response.status}: Ingestion failed.`);
+
+                    statusBar.style.width = "100%";
+                    statusPercent.textContent = "100%";
+                    statusText.textContent = `✅ Success! Embedded ${result.inserted} chunk(s) into knowledge base${result.skipped > 0 ? ` (${result.skipped} skipped)` : ''}.`;
+                    statusText.classList.remove('text-error');
+                    statusText.classList.add('text-secondary');
+
+                    // Clear inputs
+                    fileInput.value = '';
+                    
+                    // Reload list after short delay
+                    setTimeout(() => window.loadKnowledgeSources(), 1000);
+                } catch (err) {
+                    console.error('PDF Ingest Error:', err);
+                    statusText.textContent = `❌ Error: ${err.message}`;
+                    statusText.classList.add('text-error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50');
                 }
-            };
-        });
-    </script>
+            });
+        }
 
-    <!-- Download Modal -->
-    <div id="download-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:2000;">
-        <div style="background:#111; padding:2rem; border-radius:12px; width:90%; max-width:400px; border:1px solid rgba(255,255,255,0.1); text-align:center;">
-             <h3 style="color:white;">Download Report</h3>
-             <p id="download-fname" style="color:#aaa; margin-bottom:1rem;">name</p>
-             <button onclick="downloadFile('csv')" style="padding:10px; width:100%; background:var(--accent-green); border:none; color:white; border-radius:4px; font-weight:bold;">Download CSV</button>
-        </div>
-    </div>
+        window.loadKnowledgeSources = async function() {
+            const listContainer = document.getElementById('rag-sources-list');
+            if (!listContainer) return;
+            
+            try {
+                const response = await fetch('/api/ingest/documents');
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error);
 
-    <!-- Add Staff Modal -->
-    <div id="add-staff-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:2000;">
-        <div style="background:#1b1626; padding:2rem; border-radius:12px; width:90%; max-width:500px; border:1px solid rgba(255,255,255,0.1);">
-            <h3 style="color:white; margin-bottom:1.5rem;"><i class="fas fa-user-plus"></i> Add New Staff</h3>
-            <form onsubmit="addUser(event)" style="display:grid; gap:12px;">
-                <input type="text" id="new-name" placeholder="Full Name" required style="width:100%; padding:10px; background:rgba(0,0,0,0.3); border:1px solid #333; color:white; border-radius:4px;">
-                <input type="email" id="new-email" placeholder="Email Address" required style="width:100%; padding:10px; background:rgba(0,0,0,0.3); border:1px solid #333; color:white; border-radius:4px;">
-                <input type="password" id="new-password" placeholder="Password" required style="width:100%; padding:10px; background:rgba(0,0,0,0.3); border:1px solid #333; color:white; border-radius:4px;">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <select id="new-role" required style="padding:10px; background:rgba(0,0,0,0.3); border:1px solid #333; color:white; border-radius:4px;">
-                        <option value="staff">Staff</option>
-                        <option value="superadmin">Super Admin</option>
-                    </select>
-                    <input type="text" id="new-des" placeholder="Designation (e.g. HR, M&E)" required style="padding:10px; background:rgba(0,0,0,0.3); border:1px solid #333; color:white; border-radius:4px;">
-                </div>
-                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
-                    <button type="button" onclick="closeAddStaffModal()" style="padding:10px 20px; background:none; color:white; border:none; cursor:pointer;">Cancel</button>
-                    <button type="submit" style="padding:10px 20px; background:var(--accent-green); color:white; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">Create Account</button>
-                </div>
-            </form>
-        </div>
-    </div>
+                const docs = data.documents || [];
+                if (docs.length === 0) {
+                    listContainer.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="py-8 text-center text-on-surface-variant font-medium">No documents ingested. Upload a PDF above!</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                const pillarLabels = {
+                    srhr: 'SRHR & Health',
+                    climate: 'Climate Action',
+                    child_protection: 'Child Protection',
+                    governance: 'Governance'
+                };
+
+                listContainer.innerHTML = docs.map(doc => `
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3 px-4 font-semibold text-on-surface truncate max-w-[200px]" title="${doc.source_name}">${doc.source_name}</td>
+                        <td class="py-3 px-4 text-on-surface-variant">${pillarLabels[doc.pillar] || doc.pillar}</td>
+                        <td class="py-3 px-4 text-center font-bold text-primary">${doc.chunks_count}</td>
+                        <td class="py-3 px-4 text-right">
+                            <button onclick="deleteKnowledgeSource('${doc.source_name}')" class="text-error hover:opacity-80 p-1 rounded transition-colors inline-flex items-center gap-1 font-semibold">
+                                <span class="material-symbols-outlined text-sm">delete</span> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                console.error(err);
+                listContainer.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="py-8 text-center text-error font-medium">Failed to load sources: ${err.message}</td>
+                    </tr>
+                `;
+            }
+        };
+
+        window.deleteKnowledgeSource = async function(sourceName) {
+            if (!confirm(`Are you sure you want to delete "${sourceName}"? This will remove all its embeddings from the chatbot knowledge base.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/ingest/documents', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ source_name: sourceName })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error);
+
+                alert(`Successfully deleted "${sourceName}"`);
+                window.loadKnowledgeSources();
+            } catch (err) {
+                console.error(err);
+                alert(`Failed to delete source: ${err.message}`);
+            }
+        };
+
+        // Load knowledge sources initially
+        window.loadKnowledgeSources();
+    });
+</script>
 </body>
 </html>

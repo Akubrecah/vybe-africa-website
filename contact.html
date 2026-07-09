@@ -6,6 +6,8 @@
     <title>Contact Us - Vybe Africa</title>
     <meta name="description" content="Empowering youth across West Pokot, Kenya."/>
     <!-- Tailwind CSS CDN with Grassroots Premium Design Tokens -->
+    <!-- Auth Guard & Persistent Session Manager -->
+    <script src="assets/js/auth-guard.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -81,6 +83,9 @@
         .text-gradient { background: linear-gradient(135deg, #e2725b 0%, #9f402d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-clip { clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%); }
     </style>
+    <!-- Supabase & CMS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/cms-client.js"></script>
 </head>
 
 <body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col pt-[80px]">
@@ -90,7 +95,6 @@
 <!-- Top Utility Bar -->
 <div class="bg-primary text-on-primary py-2 text-xs font-label-sm w-full z-50 relative border-b border-white/10">
     <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
-        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="member_login.html">Members Login</a>
         <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="login.html">Staff Login</a>
         <a class="text-white font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
     </div>
@@ -147,7 +151,6 @@
             <a class="block py-2 px-3 rounded text-sm font-bold text-primary bg-primary-container/10" href="contact.html">Contact</a>
         </nav>
         <div class="max-w-container-max mx-auto px-margin-mobile pb-4 flex flex-col gap-2 border-t border-outline-variant/20 pt-3">
-            <a href="member_login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-outline-variant hover:border-primary hover:text-primary transition-colors">Member Login</a>
             <a href="login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">Staff Login</a>
         </div>
     </div>
@@ -159,8 +162,8 @@
 <section class="relative bg-surface-container-low pt-stack-lg pb-stack-lg md:pt-[120px] md:pb-[100px] overflow-hidden">
 <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#9f402d 1px, transparent 1px); background-size: 30px 30px;"></div>
 <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10 text-center">
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-display-lg md:text-display-lg text-on-surface mb-stack-sm">Get in Touch</h1>
-<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">We'd love to hear from you. Whether you have a question about our grassroots initiatives, want to partner with us, or just want to say hello, our team is ready to answer all your questions.</p>
+<h1 data-cms-page="contact" data-cms-section="hero" data-cms-key="title" class="font-headline-lg-mobile text-headline-lg-mobile md:font-display-lg md:text-display-lg text-on-surface mb-stack-sm">Get in Touch</h1>
+<p data-cms-page="contact" data-cms-section="hero" data-cms-key="subtitle" class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">We'd love to hear from you. Whether you have a question about our grassroots initiatives, want to partner with us, or just want to say hello, our team is ready to answer all your questions.</p>
 </div>
 </section>
 <!-- Contact Content Section -->

@@ -57,8 +57,8 @@
         const results = document.getElementById('results');
         
         // Initialize Supabase
-        const supabaseUrl = 'https://lkqkhpgrjhynqynaiciu.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrcWtocGdyamh5bnF5bmFpY2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNjk3MzMsImV4cCI6MjA4MTY0NTczM30.dSYnHZLJaRTL8LrWK0ZPiwYm-VnhbDkWy34wcuYy--M';
+        const supabaseUrl = 'https://uwfkqitmopqcbvwhkcgg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZmtxaXRtb3BxY2J2d2hrY2dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMTM2OTksImV4cCI6MjA5ODg4OTY5OX0.clHwO4AOcCB1yFbxGybydSUAlfR3uCaccnqt_mew3H8';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         function addResult(title, content, type = 'info') {
@@ -71,19 +71,19 @@
         async function testConnection() {
             addResult('Testing Connection...', 'Checking Supabase connection...', 'info');
             try {
-                const { data, error } = await supabase.from('user_profiles').select('count', { count: 'exact', head: true });
+                const { data, error } = await supabase.from('users').select('count', { count: 'exact', head: true });
                 
                 if (error) {
                     if (error.code === '42P01') {
                         addResult('❌ Table Missing', 
-                            'The user_profiles table does not exist.<br>Run migrate_to_supabase_auth.sql first!', 
+                            'The users table does not exist.<br>Run restore_users.sql first!', 
                             'error');
                     } else {
                         addResult('❌ Connection Error', `Error: ${error.message}`, 'error');
                     }
                 } else {
                     addResult('✅ Connection Success', 
-                        `Connected to Supabase!<br>user_profiles table exists.`, 
+                        `Connected to Supabase!<br>users table exists.`, 
                         'success');
                 }
             } catch (err) {

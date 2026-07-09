@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Staff Management - Vybe Africa Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Auth Guard -->
+<script src="assets/js/auth-guard.js"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#9f402d",
+          "on-primary": "#ffffff",
+          "primary-container": "#e2725b",
+          "on-primary-container": "#5a0d02",
+          "secondary": "#4d6453",
+          "on-secondary": "#ffffff",
+          "secondary-container": "#cde6d1",
+          "on-secondary-container": "#516857",
+          "tertiary": "#705d00",
+          "tertiary-container": "#c9a900",
+          "on-tertiary": "#ffffff",
+          "error": "#ba1a1a",
+          "error-container": "#ffdad6",
+          "surface": "#fcf9f8",
+          "surface-container-lowest": "#ffffff",
+          "surface-container-low": "#f6f3f2",
+          "surface-container": "#f0eded",
+          "surface-container-high": "#eae7e7",
+          "surface-container-highest": "#e5e2e1",
+          "surface-variant": "#e5e2e1",
+          "on-surface": "#1c1b1b",
+          "on-surface-variant": "#56423e",
+          "outline": "#89726d",
+          "outline-variant": "#ddc0ba",
+          "inverse-surface": "#313030",
+          "inverse-primary": "#ffb4a5",
+          "background": "#fcf9f8",
+          "on-background": "#1c1b1b",
+        },
+        fontFamily: {
+          "display-lg": ["Plus Jakarta Sans"],
+          "headline-lg": ["Plus Jakarta Sans"],
+          "headline-md": ["Plus Jakarta Sans"],
+          "label-sm": ["Inter"],
+          "body-md": ["Inter"],
+          "body-lg": ["Inter"],
+        },
+        fontSize: {
+          "display-lg": ["64px", { lineHeight: "1.1", fontWeight: "800" }],
+          "headline-lg": ["40px", { lineHeight: "1.2", fontWeight: "700" }],
+          "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+          "label-sm": ["14px", { lineHeight: "1.0", letterSpacing: "0.05em", fontWeight: "600" }],
+          "body-md": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+          "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+        },
+        spacing: {
+          "gutter": "24px",
+          "margin-mobile": "20px",
+          "margin-desktop": "48px",
+          "stack-sm": "16px",
+          "stack-md": "32px",
+          "stack-lg": "64px",
+          "container-max": "1280px",
+          "base": "8px",
+        },
+        borderRadius: {
+          "DEFAULT": "0.125rem",
+          "lg": "0.5rem",
+          "xl": "1rem",
+          "2xl": "1.25rem",
+          "full": "9999px",
+          "card": "16px",
+        }
+      }
+    }
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .fill-icon { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  
+  .nav-link { @apply flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200; }
+  .nav-link.active { @apply text-primary font-bold border-r-4 border-primary bg-primary-container/10; }
+
+  /* Table row hover */
+  tbody tr { transition: background 0.15s; }
+  tbody tr:hover { background: #f6f3f2; }
+
+  /* Modal backdrop */
+  .modal-backdrop { backdrop-filter: blur(4px); }
+
+  /* Role badge colors */
+  .badge-superadmin { background: rgba(159,64,45,0.12); color: #9f402d; }
+  .badge-admin { background: rgba(159,64,45,0.12); color: #9f402d; }
+  .badge-programs { background: rgba(77,100,83,0.12); color: #4d6453; }
+  .badge-hr { background: rgba(112,93,0,0.12); color: #705d00; }
+  .badge-communications { background: rgba(56,66,100,0.12); color: #384266; }
+  .badge-me { background: rgba(186,26,26,0.12); color: #ba1a1a; }
+  .badge-finance { background: rgba(36,100,56,0.12); color: #246438; }
+  .badge-staff { background: rgba(86,66,62,0.12); color: #56423e; }
+
+  /* Animated spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 0.8s linear infinite; }
+
+  /* Shake for errors */
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+  .shake { animation: shake 0.4s ease; }
+
+  /* Avatar initials fallback */
+  .avatar-initials {
+    background: linear-gradient(135deg, #9f402d, #e2725b);
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+  }
+
+  /* Toast */
+  #toast { transition: all 0.3s ease; }
+
+  /* Input focus ring */
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(159,64,45,0.25);
+    border-color: #9f402d;
+  }
+
+  /* Delete confirm shake */
+  .delete-confirm { animation: shake 0.4s; }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased flex min-h-screen">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SIDEBAR -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<aside class="z-50 h-screen w-64 fixed left-0 top-0 bg-surface shadow-[20px_0_30px_rgba(0,0,0,0.04)] hidden md:flex flex-col">
+  <div class="px-6 py-6">
+    <a href="homepage.html" class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-on-primary-container font-bold text-lg">V</div>
+      <div>
+        <h1 class="font-headline-md text-headline-md text-primary leading-tight">Vybe Africa</h1>
+        <p class="font-label-sm text-label-sm text-on-surface-variant">Admin Portal</p>
+      </div>
+    </a>
+  </div>
+
+  <nav class="flex-1 px-4 space-y-1">
+    <a href="admin_dashboard.html" class="nav-link">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="font-label-sm text-label-sm">Dashboard</span>
+    </a>
+    <a href="staff_management.html" class="nav-link active">
+      <span class="material-symbols-outlined fill-icon">manage_accounts</span>
+      <span class="font-label-sm text-label-sm">Staff Management</span>
+    </a>
+    <a href="cms_dashboard.html" class="nav-link">
+      <span class="material-symbols-outlined">edit_document</span>
+      <span class="font-label-sm text-label-sm">CMS Console</span>
+    </a>
+    <a href="team_directory.html" class="nav-link">
+      <span class="material-symbols-outlined">group</span>
+      <span class="font-label-sm text-label-sm">Team Directory</span>
+    </a>
+    <a href="impact_analytics.html" class="nav-link">
+      <span class="material-symbols-outlined">bar_chart</span>
+      <span class="font-label-sm text-label-sm">Impact Analytics</span>
+    </a>
+    <a href="edit_profile.html" class="nav-link">
+      <span class="material-symbols-outlined">settings</span>
+      <span class="font-label-sm text-label-sm">My Settings</span>
+    </a>
+    <a href="homepage.html" class="nav-link">
+      <span class="material-symbols-outlined">home</span>
+      <span class="font-label-sm text-label-sm">Ecosystem Site</span>
+    </a>
+  </nav>
+
+  <div class="p-4 mt-auto border-t border-outline-variant/20">
+    <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-error hover:bg-error-container/20 transition-colors text-left">
+      <span class="material-symbols-outlined">logout</span>
+      <span class="font-label-sm text-label-sm">Logout</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- MAIN CONTENT -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<main class="flex-1 md:ml-64 min-h-screen flex flex-col">
+
+  <!-- Top Nav -->
+  <header class="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-outline-variant/20 flex items-center justify-between px-6 md:px-margin-desktop h-20">
+    <div>
+      <h2 class="font-headline-md text-headline-md text-on-surface font-extrabold">Staff Management</h2>
+      <p class="text-xs text-on-surface-variant">Add, edit, and remove staff accounts</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <button onclick="openAddModal()" class="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl font-label-sm text-label-sm hover:opacity-90 active:scale-95 transition-all shadow-sm">
+        <span class="material-symbols-outlined text-[20px]">person_add</span>
+        Add Staff Member
+      </button>
+      <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-outline-variant cursor-pointer" onclick="window.location.href='edit_profile.html'">
+        <img id="nav-avatar" src="assets/images/IMG-20251211-WA0053.jpg" alt="Admin" class="w-full h-full object-cover"/>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Canvas -->
+  <div class="flex-1 px-6 md:px-margin-desktop py-stack-md max-w-container-max mx-auto w-full">
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/20 shadow-sm">
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Total Staff</p>
+        <p class="text-3xl font-extrabold text-primary" id="stat-total">—</p>
+      </div>
+      <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/20 shadow-sm">
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Admin Users</p>
+        <p class="text-3xl font-extrabold text-secondary" id="stat-admins">—</p>
+      </div>
+      <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/20 shadow-sm">
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Departments</p>
+        <p class="text-3xl font-extrabold text-tertiary" id="stat-depts">—</p>
+      </div>
+      <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/20 shadow-sm">
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Active Today</p>
+        <p class="text-3xl font-extrabold text-on-surface" id="stat-active">—</p>
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+
+      <!-- Table Header / Controls -->
+      <div class="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between px-6 py-4 border-b border-outline-variant/20">
+        <!-- Search -->
+        <div class="relative w-full md:w-80">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+          <input id="search-input" type="text" placeholder="Search by name, email, role…" oninput="filterTable()" class="w-full pl-10 pr-4 py-2.5 border border-outline-variant rounded-xl bg-surface text-sm focus:ring-0"/>
+        </div>
+        <!-- Role Filter -->
+        <div class="flex items-center gap-3">
+          <select id="role-filter" onchange="filterTable()" class="border border-outline-variant rounded-xl px-3 py-2.5 text-sm bg-surface text-on-surface focus:ring-0 cursor-pointer">
+            <option value="">All Roles</option>
+            <option value="superadmin">Executive / Admin</option>
+            <option value="programs">Programs</option>
+            <option value="hr">HR</option>
+            <option value="communications">Communications</option>
+            <option value="me">M&E</option>
+            <option value="finance">Finance</option>
+            <option value="staff">General Staff</option>
+          </select>
+          <button onclick="loadStaff()" class="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant hover:text-primary hover:border-primary transition-colors text-sm font-semibold">
+            <span class="material-symbols-outlined text-[18px]">refresh</span>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div id="table-loading" class="flex items-center justify-center py-20 gap-3 text-on-surface-variant">
+        <span class="material-symbols-outlined spin">sync</span>
+        <span class="text-sm font-medium">Loading staff members…</span>
+      </div>
+
+      <!-- Empty state -->
+      <div id="table-empty" class="hidden flex-col items-center justify-center py-20 gap-4 text-center">
+        <div class="w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-4xl text-on-surface-variant">group_off</span>
+        </div>
+        <p class="font-headline-md text-on-surface">No staff members found</p>
+        <p class="text-sm text-on-surface-variant max-w-xs">Try adjusting your search or filter. You can also add a new staff member above.</p>
+        <button onclick="openAddModal()" class="mt-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl font-label-sm hover:opacity-90 active:scale-95 transition-all">Add First Staff Member</button>
+      </div>
+
+      <!-- Table -->
+      <div id="table-wrapper" class="hidden overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-surface-container-low text-on-surface-variant">
+              <th class="text-left px-6 py-3 font-bold uppercase text-xs tracking-wider">Member</th>
+              <th class="text-left px-6 py-3 font-bold uppercase text-xs tracking-wider">Email</th>
+              <th class="text-left px-6 py-3 font-bold uppercase text-xs tracking-wider">Role</th>
+              <th class="text-left px-6 py-3 font-bold uppercase text-xs tracking-wider">Department</th>
+              <th class="text-left px-6 py-3 font-bold uppercase text-xs tracking-wider">Joined</th>
+              <th class="text-right px-6 py-3 font-bold uppercase text-xs tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="staff-tbody" class="divide-y divide-outline-variant/20"></tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div id="pagination-row" class="hidden items-center justify-between px-6 py-4 border-t border-outline-variant/20">
+        <p class="text-xs text-on-surface-variant" id="page-info"></p>
+        <div class="flex gap-2">
+          <button id="prev-btn" onclick="changePage(-1)" class="px-3 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:text-primary hover:border-primary transition-colors text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed">← Prev</button>
+          <button id="next-btn" onclick="changePage(1)" class="px-3 py-1.5 rounded-lg border border-outline-variant text-on-surface-variant hover:text-primary hover:border-primary transition-colors text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- ADD / EDIT MODAL -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="staff-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-black/60">
+  <div class="bg-surface rounded-2xl shadow-2xl w-full max-w-xl max-h-[92vh] overflow-y-auto">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/20">
+      <div>
+        <h3 class="font-headline-md text-headline-md text-on-surface font-bold" id="modal-title">Add Staff Member</h3>
+        <p class="text-xs text-on-surface-variant mt-0.5" id="modal-subtitle">Fill in the details below to create a new account</p>
+      </div>
+      <button onclick="closeModal()" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-surface-container-high transition-colors text-on-surface-variant">
+        <span class="material-symbols-outlined text-[22px]">close</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <form id="staff-form" onsubmit="handleFormSubmit(event)" class="px-6 py-6 space-y-5">
+      <input type="hidden" id="edit-id"/>
+
+      <!-- Avatar Upload -->
+      <div class="flex items-center gap-5 mb-2">
+        <div class="relative">
+          <div class="w-20 h-20 rounded-full overflow-hidden bg-surface-container-high border-2 border-outline-variant">
+            <img id="modal-avatar-preview" src="" alt="Preview" class="w-full h-full object-cover hidden"/>
+            <div id="modal-avatar-initials" class="avatar-initials text-lg">?</div>
+          </div>
+          <button type="button" onclick="document.getElementById('avatar-file-input').click()" class="absolute bottom-0 right-0 w-7 h-7 bg-primary text-on-primary rounded-full flex items-center justify-center hover:opacity-90 transition-opacity shadow-md">
+            <span class="material-symbols-outlined text-[14px]">photo_camera</span>
+          </button>
+          <input type="file" id="avatar-file-input" accept="image/*" class="hidden" onchange="previewAvatar(event)"/>
+        </div>
+        <div>
+          <p class="font-semibold text-on-surface text-sm" id="modal-preview-name">New Member</p>
+          <p class="text-xs text-on-surface-variant mt-0.5" id="modal-preview-role">Role not set</p>
+          <button type="button" onclick="document.getElementById('avatar-file-input').click()" class="mt-2 text-xs text-primary hover:underline font-semibold">Upload Photo</button>
+        </div>
+      </div>
+
+      <!-- Name -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Full Name *</label>
+          <input id="f-name" type="text" required placeholder="e.g. Moses Kibet" oninput="updatePreview()" class="w-full border border-outline-variant rounded-xl px-3 py-2.5 text-sm bg-surface-container-low text-on-surface transition-all"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Job Title *</label>
+          <input id="f-designation" type="text" required placeholder="e.g. Programs Manager" oninput="updatePreview()" class="w-full border border-outline-variant rounded-xl px-3 py-2.5 text-sm bg-surface-container-low text-on-surface transition-all"/>
+        </div>
+      </div>
+
+      <!-- Email + Phone -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Work Email *</label>
+          <input id="f-email" type="email" required placeholder="name@vybeafrica.org" class="w-full border border-outline-variant rounded-xl px-3 py-2.5 text-sm bg-surface-container-low text-on-surface transition-all"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Phone</label>
+          <input id="f-phone" type="tel" placeholder="+254 700 000 000" class="w-full border border-outline-variant rounded-xl px-3 py-2.5 text-sm bg-surface-container-low text-on-surface transition-all"/>
+        </div>
+      </div>
+
+      <!-- Role -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">System Role *</label>
+          <select id="f-role" required onchange="updatePreview()" class="w-full border border-outline-variant rounded-xl px-3 py-2.5 text-sm bg-surface-container-low text-on-surface transition-all cursor-pointer">
+            <option value="">Select role…</option>
+            <option value="superadmin">Executive Director (Admin)</option>
+            <option value="programs">Programs Manager</option>
+            <option value="hr">HR Manager</option>
+            <option value="communications">Communications Officer</option>
+            <option value="me">M&E Lead</option>
+            <option value="finance">Finance Manager</option>
+            <option value="staff">General Staff</option>
+          </select>
+        </div>
+        <div id="password-wrapper">
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Password <span id="pwd-label-hint" class="normal-case font-normal text-on-surface-variant">(required for new)</span></label>
+          <div class="relative">
+            <input id="f-password" type="password" placeholder="Min. 8 characters" class="w-full border border-outline-variant rounded-xl px-3 py-2.5 pr-10 text-sm bg-surface-container-low text-on-surface transition-all"/>
+            <button type="button" onclick="togglePwd()" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary">
+              <span class="material-symbols-outlined text-[18px]" id="pwd-eye">visibility</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Bio / Quote</label>
+        <textarea id="f-bio" rows="3" placeholder="A short bio or inspiring quote…" class="w-full border border-outline-variant rounded-xl px-3 py-2.5 text-sm bg-surface-container-low text-on-surface transition-all resize-none"></textarea>
+      </div>
+
+      <!-- Error msg -->
+      <div id="modal-error" class="hidden px-4 py-3 bg-error-container text-error rounded-xl text-sm font-semibold"></div>
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-3 pt-2 border-t border-outline-variant/20">
+        <button type="button" onclick="closeModal()" class="px-5 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors font-semibold text-sm">Cancel</button>
+        <button type="submit" id="submit-btn" class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-on-primary font-bold text-sm hover:opacity-90 active:scale-95 transition-all shadow-sm">
+          <span class="material-symbols-outlined text-[18px]" id="submit-icon">person_add</span>
+          <span id="submit-label">Add Member</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- DELETE CONFIRM MODAL -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-black/60">
+  <div class="bg-surface rounded-2xl shadow-2xl w-full max-w-sm p-6">
+    <div class="flex flex-col items-center text-center gap-4">
+      <div class="w-16 h-16 rounded-full bg-error-container flex items-center justify-center">
+        <span class="material-symbols-outlined text-error text-3xl">person_remove</span>
+      </div>
+      <div>
+        <h3 class="font-headline-md text-headline-md text-on-surface font-bold">Delete Staff Member?</h3>
+        <p class="text-sm text-on-surface-variant mt-2">You are about to permanently delete <strong id="delete-name" class="text-on-surface"></strong>. This action cannot be undone.</p>
+      </div>
+      <div id="delete-error" class="hidden w-full px-4 py-3 bg-error-container text-error rounded-xl text-sm font-semibold"></div>
+      <div class="flex gap-3 w-full mt-2">
+        <button onclick="closeDeleteModal()" class="flex-1 px-4 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors font-semibold text-sm">Cancel</button>
+        <button id="confirm-delete-btn" onclick="confirmDelete()" class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-error text-white font-bold text-sm hover:opacity-90 active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-[18px]">delete</span>
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TOAST NOTIFICATION -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="toast" class="fixed bottom-6 right-6 z-[100] hidden items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl font-semibold text-sm max-w-xs">
+  <span class="material-symbols-outlined text-[20px]" id="toast-icon">check_circle</span>
+  <span id="toast-msg"></span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCRIPTS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script>
+// ─── SUPABASE INIT ───────────────────────────────────────────────
+const SUPABASE_URL = 'https://uwfkqitmopqcbvwhkcgg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZmtxaXRtb3BxY2J2d2hrY2dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMTM2OTksImV4cCI6MjA5ODg4OTY5OX0.clHwO4AOcCB1yFbxGybydSUAlfR3uCaccnqt_mew3H8';
+let sb = null;
+if (window.supabase) {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+  });
+}
+
+// ─── STATE ───────────────────────────────────────────────────────
+let allStaff = [];
+let filteredStaff = [];
+let currentPage = 1;
+const PAGE_SIZE = 10;
+let deleteTargetId = null;
+let editingId = null;
+let pendingAvatarDataUrl = null;
+
+// bcrypt from CDN (loaded below) or fallback plain comparison
+const bcrypt = window.dcodeIO ? window.dcodeIO.bcrypt : window.bcrypt;
+
+// ─── ROLE LABELS ─────────────────────────────────────────────────
+const ROLE_LABELS = {
+  superadmin: 'Executive Director',
+  admin: 'Admin',
+  programs: 'Programs',
+  hr: 'HR',
+  communications: 'Communications',
+  me: 'M&E Lead',
+  finance: 'Finance',
+  staff: 'Staff'
+};
+
+// ─── HELPERS ─────────────────────────────────────────────────────
+function getInitials(name = '') {
+  return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?';
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function roleBadgeClass(role) {
+  return `badge-${role || 'staff'}`;
+}
+
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  const icon = document.getElementById('toast-icon');
+  const msgEl = document.getElementById('toast-msg');
+  msgEl.textContent = msg;
+  icon.textContent = type === 'success' ? 'check_circle' : 'error';
+  toast.className = `fixed bottom-6 right-6 z-[100] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl font-semibold text-sm max-w-xs ${
+    type === 'success' ? 'bg-secondary text-on-secondary' : 'bg-error text-white'
+  }`;
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { toast.className = toast.className + ' hidden'; }, 3500);
+}
+
+function setLoading(show) {
+  document.getElementById('table-loading').style.display = show ? 'flex' : 'none';
+  document.getElementById('table-wrapper').style.display = show ? 'none' : '';
+}
+
+// ─── LOAD STAFF ──────────────────────────────────────────────────
+async function loadStaff() {
+  setLoading(true);
+  document.getElementById('table-empty').classList.add('hidden');
+
+  if (!sb) {
+    // Fallback demo data
+    allStaff = getDemoStaff();
+    filterTable();
+    return;
+  }
+
+  try {
+    const { data, error } = await sb.from('users').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    allStaff = data || [];
+    filterTable();
+  } catch (err) {
+    console.error(err);
+    allStaff = getDemoStaff();
+    filterTable();
+    showToast('Using demo data — could not reach database.', 'error');
+  }
+}
+
+function getDemoStaff() {
+  return [
+    { id: 'demo-1', name: 'Sharon Chepkite', email: 'sharon@vybeafrica.org', role: 'superadmin', designation: 'Executive Director', phone: '+254 700 000 001', avatar_url: 'assets/images/IMG-20251211-WA0053.jpg', created_at: '2025-01-01' },
+    { id: 'demo-2', name: 'Moses Kibet', email: 'moses@vybeafrica.org', role: 'programs', designation: 'Programs Manager', phone: '+254 700 000 002', avatar_url: 'assets/images/IMG-20251211-WA0024.jpg', created_at: '2025-01-02' },
+    { id: 'demo-3', name: 'Farex Nandwa', email: 'farex@vybeafrica.org', role: 'hr', designation: 'HR Manager', phone: '+254 700 000 004', avatar_url: 'assets/images/IMG-20251211-WA0030.jpg', created_at: '2025-01-03' },
+    { id: 'demo-4', name: 'Marcellina Cherubia', email: 'marcellina@vybeafrica.org', role: 'staff', designation: 'Communication Officer', phone: '+254 700 000 003', avatar_url: 'assets/images/team/Marcellina Cherubia.jpg', created_at: '2025-01-04' },
+    { id: 'demo-5', name: 'Tony Barasa', email: 'tony@vybeafrica.org', role: 'staff', designation: 'M&E Lead', phone: '+254 700 000 005', avatar_url: 'assets/images/team/Tony Barasa.jpg', created_at: '2025-01-05' },
+    { id: 'demo-6', name: 'Joe Junior', email: 'joe@vybeafrica.org', role: 'finance', designation: 'Finance Manager', phone: '+254 700 000 006', avatar_url: 'assets/images/team/Joe Junior.jpg', created_at: '2025-01-06' },
+  ];
+}
+
+// ─── RENDER TABLE ────────────────────────────────────────────────
+function filterTable() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const roleFilter = document.getElementById('role-filter').value;
+
+  filteredStaff = allStaff.filter(s => {
+    const matchQ = !q || [s.name, s.email, s.designation, s.role].some(v => (v || '').toLowerCase().includes(q));
+    const matchRole = !roleFilter || s.role === roleFilter;
+    return matchQ && matchRole;
+  });
+  currentPage = 1;
+  renderTable();
+}
+
+function renderTable() {
+  setLoading(false);
+
+  // Stats
+  document.getElementById('stat-total').textContent = allStaff.length;
+  const admins = allStaff.filter(s => s.role === 'superadmin' || s.role === 'admin').length;
+  document.getElementById('stat-admins').textContent = admins;
+  const depts = new Set(allStaff.map(s => s.role)).size;
+  document.getElementById('stat-depts').textContent = depts;
+  document.getElementById('stat-active').textContent = allStaff.length; // demo — all active
+
+  // Paginate
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
+  const page = filteredStaff.slice(start, end);
+
+  const tbody = document.getElementById('staff-tbody');
+  const wrapper = document.getElementById('table-wrapper');
+  const emptyState = document.getElementById('table-empty');
+  const paginationRow = document.getElementById('pagination-row');
+
+  if (filteredStaff.length === 0) {
+    wrapper.classList.add('hidden');
+    emptyState.classList.remove('hidden');
+    emptyState.classList.add('flex');
+    paginationRow.classList.add('hidden');
+    return;
+  }
+
+  emptyState.classList.add('hidden');
+  emptyState.classList.remove('flex');
+  wrapper.classList.remove('hidden');
+
+  tbody.innerHTML = page.map(s => `
+    <tr data-id="${s.id}">
+      <td class="px-6 py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30 flex-shrink-0">
+            ${s.avatar_url
+              ? `<img src="${s.avatar_url}" alt="${s.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/><div class="avatar-initials hidden">${getInitials(s.name)}</div>`
+              : `<div class="avatar-initials">${getInitials(s.name)}</div>`
+            }
+          </div>
+          <div>
+            <p class="font-semibold text-on-surface">${s.name || '—'}</p>
+            <p class="text-xs text-on-surface-variant mt-0.5">${s.designation || '—'}</p>
+          </div>
+        </div>
+      </td>
+      <td class="px-6 py-4 text-on-surface-variant">${s.email || '—'}</td>
+      <td class="px-6 py-4">
+        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${roleBadgeClass(s.role)}">${ROLE_LABELS[s.role] || s.role || 'Staff'}</span>
+      </td>
+      <td class="px-6 py-4 text-on-surface-variant text-sm">${s.phone || '—'}</td>
+      <td class="px-6 py-4 text-on-surface-variant text-sm">${formatDate(s.created_at)}</td>
+      <td class="px-6 py-4 text-right">
+        <div class="flex items-center justify-end gap-2">
+          <button onclick="openEditModal('${s.id}')" title="Edit member" class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+            <span class="material-symbols-outlined text-[18px]">edit</span>
+          </button>
+          <button onclick="openDeleteModal('${s.id}', '${(s.name || '').replace(/'/g, "\\'")}' )" title="Delete member" class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:text-error hover:bg-error-container/30 transition-all">
+            <span class="material-symbols-outlined text-[18px]">delete</span>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  // Pagination controls
+  const totalPages = Math.ceil(filteredStaff.length / PAGE_SIZE);
+  if (filteredStaff.length > PAGE_SIZE) {
+    paginationRow.classList.remove('hidden');
+    paginationRow.classList.add('flex');
+    document.getElementById('page-info').textContent = `Showing ${start + 1}–${Math.min(end, filteredStaff.length)} of ${filteredStaff.length} members`;
+    document.getElementById('prev-btn').disabled = currentPage <= 1;
+    document.getElementById('next-btn').disabled = currentPage >= totalPages;
+  } else {
+    paginationRow.classList.add('hidden');
+    paginationRow.classList.remove('flex');
+  }
+}
+
+function changePage(dir) {
+  const totalPages = Math.ceil(filteredStaff.length / PAGE_SIZE);
+  currentPage = Math.max(1, Math.min(totalPages, currentPage + dir));
+  renderTable();
+}
+
+// ─── ADD MODAL ───────────────────────────────────────────────────
+function openAddModal() {
+  editingId = null;
+  pendingAvatarDataUrl = null;
+  document.getElementById('modal-title').textContent = 'Add Staff Member';
+  document.getElementById('modal-subtitle').textContent = 'Fill in the details to create a new account';
+  document.getElementById('submit-label').textContent = 'Add Member';
+  document.getElementById('submit-icon').textContent = 'person_add';
+  document.getElementById('pwd-label-hint').textContent = '(required)';
+  document.getElementById('f-password').required = true;
+  document.getElementById('edit-id').value = '';
+  document.getElementById('staff-form').reset();
+  resetAvatarPreview();
+  updatePreview();
+  document.getElementById('modal-error').classList.add('hidden');
+  document.getElementById('staff-modal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('f-name').focus(), 100);
+}
+
+// ─── EDIT MODAL ──────────────────────────────────────────────────
+function openEditModal(id) {
+  const member = allStaff.find(s => String(s.id) === String(id));
+  if (!member) return;
+
+  editingId = id;
+  pendingAvatarDataUrl = null;
+  document.getElementById('modal-title').textContent = 'Edit Staff Member';
+  document.getElementById('modal-subtitle').textContent = `Updating details for ${member.name}`;
+  document.getElementById('submit-label').textContent = 'Save Changes';
+  document.getElementById('submit-icon').textContent = 'save';
+  document.getElementById('pwd-label-hint').textContent = '(leave blank to keep current)';
+  document.getElementById('f-password').required = false;
+  document.getElementById('edit-id').value = id;
+
+  document.getElementById('f-name').value = member.name || '';
+  document.getElementById('f-email').value = member.email || '';
+  document.getElementById('f-designation').value = member.designation || '';
+  document.getElementById('f-phone').value = member.phone || '';
+  document.getElementById('f-role').value = member.role || 'staff';
+  document.getElementById('f-bio').value = member.bio || '';
+  document.getElementById('f-password').value = '';
+  document.getElementById('modal-error').classList.add('hidden');
+
+  // Avatar
+  if (member.avatar_url) {
+    const preview = document.getElementById('modal-avatar-preview');
+    preview.src = member.avatar_url;
+    preview.classList.remove('hidden');
+    document.getElementById('modal-avatar-initials').style.display = 'none';
+  } else {
+    resetAvatarPreview();
+    document.getElementById('modal-avatar-initials').textContent = getInitials(member.name);
+  }
+
+  updatePreview();
+  document.getElementById('staff-modal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('f-name').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('staff-modal').classList.add('hidden');
+}
+
+// ─── AVATAR PREVIEW ──────────────────────────────────────────────
+function previewAvatar(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    pendingAvatarDataUrl = ev.target.result;
+    const preview = document.getElementById('modal-avatar-preview');
+    preview.src = pendingAvatarDataUrl;
+    preview.classList.remove('hidden');
+    document.getElementById('modal-avatar-initials').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetAvatarPreview() {
+  document.getElementById('modal-avatar-preview').classList.add('hidden');
+  document.getElementById('modal-avatar-preview').src = '';
+  const init = document.getElementById('modal-avatar-initials');
+  init.style.display = 'flex';
+  init.textContent = '?';
+}
+
+function updatePreview() {
+  const name = document.getElementById('f-name').value || 'New Member';
+  const role = document.getElementById('f-role').value;
+  document.getElementById('modal-preview-name').textContent = name;
+  document.getElementById('modal-preview-role').textContent = ROLE_LABELS[role] || 'Role not set';
+  document.getElementById('modal-avatar-initials').textContent = getInitials(name);
+}
+
+// ─── FORM SUBMIT ─────────────────────────────────────────────────
+async function handleFormSubmit(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  const errEl = document.getElementById('modal-error');
+  errEl.classList.add('hidden');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-outlined spin text-[18px]">sync</span><span>Saving…</span>';
+
+  const name = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const designation = document.getElementById('f-designation').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  const role = document.getElementById('f-role').value;
+  const bio = document.getElementById('f-bio').value.trim();
+  const password = document.getElementById('f-password').value;
+  const avatarUrl = pendingAvatarDataUrl || (editingId ? (allStaff.find(s => String(s.id) === String(editingId))?.avatar_url || '') : '');
+
+  try {
+    if (editingId) {
+      // ── UPDATE ────────────────────────────────────
+      const updatePayload = { name, email, designation, phone, role, bio, avatar_url: avatarUrl };
+
+      if (password && password.length >= 8) {
+        // Hash new password via server
+        const hashRes = await fetch('/api/auth/hash-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        if (hashRes.ok) {
+          const { hash } = await hashRes.json();
+          updatePayload.password = hash;
+        } else {
+          // fallback: store plain (dev only)
+          updatePayload.password = password;
+        }
+      }
+
+      if (sb) {
+        const { error } = await sb.from('users').update(updatePayload).eq('id', editingId);
+        if (error) throw error;
+      }
+
+      // Update local state
+      const idx = allStaff.findIndex(s => String(s.id) === String(editingId));
+      if (idx !== -1) allStaff[idx] = { ...allStaff[idx], ...updatePayload };
+
+      closeModal();
+      renderTable();
+      showToast(`✅ ${name} updated successfully`);
+
+    } else {
+      // ── CREATE ────────────────────────────────────
+      if (!password || password.length < 8) {
+        throw new Error('Password must be at least 8 characters');
+      }
+
+      // Hash password via server endpoint
+      let hashedPwd = password;
+      try {
+        const hashRes = await fetch('/api/auth/hash-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        if (hashRes.ok) {
+          const { hash } = await hashRes.json();
+          hashedPwd = hash;
+        }
+      } catch (_) { /* use plaintext fallback in dev */ }
+
+      const newMember = { name, email, designation, phone, role, bio, avatar_url: avatarUrl, password: hashedPwd };
+
+      if (sb) {
+        const { data, error } = await sb.from('users').insert([newMember]).select().single();
+        if (error) throw error;
+        allStaff.unshift(data);
+      } else {
+        allStaff.unshift({ ...newMember, id: 'local-' + Date.now(), created_at: new Date().toISOString() });
+      }
+
+      closeModal();
+      renderTable();
+      showToast(`🎉 ${name} added successfully`);
+    }
+
+  } catch (err) {
+    console.error(err);
+    errEl.textContent = err.message || 'An error occurred. Please try again.';
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    const isEdit = !!editingId;
+    btn.innerHTML = `<span class="material-symbols-outlined text-[18px]">${isEdit ? 'save' : 'person_add'}</span><span>${isEdit ? 'Save Changes' : 'Add Member'}</span>`;
+  }
+}
+
+// ─── DELETE ──────────────────────────────────────────────────────
+function openDeleteModal(id, name) {
+  deleteTargetId = id;
+  document.getElementById('delete-name').textContent = name;
+  document.getElementById('delete-error').classList.add('hidden');
+  document.getElementById('delete-modal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+  deleteTargetId = null;
+  document.getElementById('delete-modal').classList.add('hidden');
+}
+
+async function confirmDelete() {
+  if (!deleteTargetId) return;
+  const btn = document.getElementById('confirm-delete-btn');
+  const errEl = document.getElementById('delete-error');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-outlined spin text-[18px]">sync</span><span>Deleting…</span>';
+
+  try {
+    if (sb) {
+      const { error } = await sb.from('users').delete().eq('id', deleteTargetId);
+      if (error) throw error;
+    }
+    const name = allStaff.find(s => String(s.id) === String(deleteTargetId))?.name || 'Staff member';
+    allStaff = allStaff.filter(s => String(s.id) !== String(deleteTargetId));
+    closeDeleteModal();
+    renderTable();
+    showToast(`🗑️ ${name} removed`);
+  } catch (err) {
+    console.error(err);
+    errEl.textContent = err.message || 'Could not delete. Please try again.';
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">delete</span><span>Delete</span>';
+  }
+}
+
+// ─── PASSWORD TOGGLE ─────────────────────────────────────────────
+function togglePwd() {
+  const input = document.getElementById('f-password');
+  const eye = document.getElementById('pwd-eye');
+  if (input.type === 'password') {
+    input.type = 'text';
+    eye.textContent = 'visibility_off';
+  } else {
+    input.type = 'password';
+    eye.textContent = 'visibility';
+  }
+}
+
+// ─── CLOSE MODALS ON BACKDROP CLICK ─────────────────────────────
+document.getElementById('staff-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById('delete-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeDeleteModal();
+});
+
+// ─── ESC KEY ────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeDeleteModal(); }
+});
+
+// ─── INIT ────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Role gate: only admin/superadmin
+  const role = (localStorage.getItem('role') || '').toLowerCase();
+  const desig = (localStorage.getItem('designation') || '').toLowerCase();
+  const isAdmin = ['superadmin', 'admin'].includes(role) || desig.includes('executive') || desig.includes('director');
+  if (!isAdmin) {
+    alert('Access restricted to administrators.');
+    window.location.href = 'admin_dashboard.html';
+    return;
+  }
+
+  // Logout
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    localStorage.clear();
+    window.location.href = 'login.html';
+  });
+
+  loadStaff();
+});
+
+// Prevent filterTable from being called before data loads
+// Re-assign to properly handle initial empty filteredStaff
+const _origFilterTable = filterTable;
+window.filterTable = function() {
+  if (allStaff.length === 0) return;
+  _origFilterTable();
+};
+</script>
+
+<!-- bcrypt for client-side password display only (hashing done server-side) -->
+<script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+
+</body>
+</html>

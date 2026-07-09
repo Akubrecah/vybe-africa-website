@@ -84,13 +84,15 @@
             background: linear-gradient(to bottom, #9f402d 0%, #e2725b 50%, #e5e2e1 100%);
         }
     </style>
+    <!-- Supabase & CMS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/cms-client.js"></script>
 </head>
 <body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden min-h-screen flex flex-col">
 
 <!-- Top Utility Bar -->
 <div class="bg-primary text-on-primary py-2 text-xs font-label-sm w-full z-50 relative border-b border-white/10">
     <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
-        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="member_login.html">Members Login</a>
         <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="login.html">Staff Login</a>
         <a class="text-white font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
     </div>
@@ -147,7 +149,6 @@
             <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="contact.html">Contact</a>
         </nav>
         <div class="max-w-container-max mx-auto px-margin-mobile pb-4 flex flex-col gap-2 border-t border-outline-variant/20 pt-3">
-            <a href="member_login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-outline-variant hover:border-primary hover:text-primary transition-colors">Member Login</a>
             <a href="login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">Staff Login</a>
         </div>
     </div>
@@ -164,8 +165,8 @@
             <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/40 to-transparent"></div>
         </div>
         <div class="relative z-10 max-w-[800px] text-surface-bright">
-            <h1 class="font-display-lg text-display-lg mb-stack-sm text-surface-container-lowest drop-shadow-md">West Pokot Chapter: Leading the Change</h1>
-            <p class="font-body-lg text-body-lg text-surface-container-high max-w-[600px] leading-relaxed">Our local movement in West Pokot is the heartbeat of Vybe Africa, driving grassroots innovation and community resilience.</p>
+            <h1 data-cms-page="west_pokot" data-cms-section="hero" data-cms-key="title" class="font-display-lg text-display-lg mb-stack-sm text-surface-container-lowest drop-shadow-md">West Pokot Chapter: Leading the Change</h1>
+            <p data-cms-page="west_pokot" data-cms-section="hero" data-cms-key="subtitle" class="font-body-lg text-body-lg text-surface-container-high max-w-[600px] leading-relaxed">Our local movement in West Pokot is the heartbeat of Vybe Africa, driving grassroots innovation and community resilience.</p>
             <div class="mt-stack-md flex gap-stack-sm flex-wrap">
                 <a href="#impact" class="bg-primary text-on-primary font-label-sm px-8 py-4 rounded-lg hover:bg-primary-container transition-colors shadow-sm inline-block">Join the West Pokot Movement</a>
             </div>

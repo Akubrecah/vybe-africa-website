@@ -104,13 +104,15 @@
             box-shadow: 0 10px 30px -10px rgba(28, 27, 27, 0.04);
         }
     </style>
+    <!-- Supabase & CMS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/cms-client.js"></script>
 </head>
 <body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col">
 
 <!-- Top Utility Bar -->
 <div class="bg-primary text-on-primary py-2 text-xs font-label-sm w-full z-50 relative border-b border-white/10">
     <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
-        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="member_login.html">Members Login</a>
         <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="login.html">Staff Login</a>
         <a class="text-white font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
     </div>
@@ -167,7 +169,6 @@
             <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="contact.html">Contact</a>
         </nav>
         <div class="max-w-container-max mx-auto px-margin-mobile pb-4 flex flex-col gap-2 border-t border-outline-variant/20 pt-3">
-            <a href="member_login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-outline-variant hover:border-primary hover:text-primary transition-colors">Member Login</a>
             <a href="login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">Staff Login</a>
         </div>
     </div>
@@ -178,10 +179,10 @@
     <section class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mb-stack-lg">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter items-center min-h-[614px]">
             <div class="order-2 md:order-1 flex flex-col gap-stack-md">
-                <h1 class="font-display-lg text-headline-lg-mobile md:text-display-lg text-primary">
+                <h1 data-cms-page="srhr" data-cms-section="hero" data-cms-key="title" data-cms-type="html" class="font-display-lg text-headline-lg-mobile md:text-display-lg text-primary">
                     Empowering Youth<br/>Health &amp; Rights
                 </h1>
-                <p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
+                <p data-cms-page="srhr" data-cms-section="hero" data-cms-key="subtitle" class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
                     Sexual and Reproductive Health and Rights (SRHR) are fundamental human rights. We drive youth-led healthcare advocacy, ensuring every young person in Africa has access to safe, inclusive, and comprehensive health services and education.
                 </p>
                 <div class="flex gap-stack-sm mt-4">

@@ -1,834 +1,531 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Programs Manager - VYBE Africa</title>
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        :root {
-            --bg-deep: #050505;
-            --card-glass: rgba(20, 20, 20, 0.6);
-            --accent-yellow: #facc15;
-            --accent-purple: #8b5cf6;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --text-primary: #ffffff;
-            --text-secondary: #9ca3af;
-            --border-glass: rgba(255, 255, 255, 0.08);
-        }
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Programs Manager Dashboard - Vybe Africa</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Supabase SDK & Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background: var(--bg-deep);
-            color: var(--text-primary);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            background-image: radial-gradient(circle at top right, #1a0a2e 0%, transparent 40%);
-        }
+<!-- Auth Guard & Role Router -->
+<script src="assets/js/auth-guard.js"></script>
 
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            padding: 2rem 1.5rem;
-            border-right: 1px solid var(--border-glass);
-            display: flex;
-            flex-direction: column;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#56423e",
+                        "primary-fixed-dim": "#ffb4a5",
+                        "outline-variant": "#ddc0ba",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1c1b1b",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "surface-dim": "#dcd9d9",
+                        "secondary-fixed": "#d0e9d4",
+                        "primary": "#9f402d",
+                        "on-primary-container": "#5a0d02",
+                        "surface-container-low": "#f6f3f2",
+                        "on-surface": "#1c1b1b",
+                        "on-secondary-container": "#516857",
+                        "surface": "#fcf9f8",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f3f0ef",
+                        "inverse-surface": "#313030",
+                        "primary-fixed": "#ffdad3",
+                        "error": "#ba1a1a",
+                        "background": "#fcf9f8",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-fixed": "#3e0500",
+                        "surface-tint": "#9f402d",
+                        "outline": "#89726d",
+                        "on-tertiary-fixed": "#221b00",
+                        "inverse-primary": "#ffb4a5",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#802918",
+                        "on-error": "#ffffff",
+                        "tertiary": "#705d00",
+                        "on-secondary-fixed-variant": "#364c3c",
+                        "surface-container": "#f0eded",
+                        "secondary-container": "#cde6d1",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fcf9f8",
+                        "secondary": "#4d6453",
+                        "on-secondary-fixed": "#0b2013",
+                        "tertiary-fixed": "#ffe16d",
+                        "on-tertiary-container": "#4c3f00",
+                        "tertiary-container": "#c9a900",
+                        "secondary-fixed-dim": "#b4cdb8",
+                        "primary-container": "#e2725b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-lg": "80px",
+                        "stack-md": "32px",
+                        "container-max": "1280px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "64px",
+                        "stack-sm": "16px",
+                        "gutter": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Inter"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-sm": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                },
+            },
         }
-
-        .logo {
-            font-size: 1.4rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 3rem;
-            color: var(--accent-yellow);
+    </script>
+<style>
+        .tactile-shadow {
+            box-shadow: 0 20px 30px rgba(28, 27, 27, 0.04);
         }
-
-        .nav-group-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: 0.8rem;
-            margin-top: 1.5rem;
-            letter-spacing: 1px;
+        .progress-track {
+            background-color: var(--color-secondary-fixed, #d0e9d4);
         }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            margin-bottom: 0.5rem;
-            border-radius: 8px;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-        .nav-link:hover, .nav-link.active {
-            color: var(--text-primary);
-            background: rgba(255,255,255,0.05);
-        }
-        .nav-link.active { border-left: 3px solid var(--accent-yellow); }
-
-        /* Main Content */
-        .main {
-            flex: 1;
-            padding: 2rem 3rem;
-            overflow-y: auto;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .top-bar h1 {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .filter-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 2rem;
-        }
-
-        .tab-btn {
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border-glass);
-            color: var(--text-secondary);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .tab-btn:hover, .tab-btn.active {
-            background: var(--accent-yellow);
-            color: #000;
-            border-color: var(--accent-yellow);
-        }
-
-        /* Metrics Cards */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .metric-card {
-            background: var(--card-glass);
-            border: 1px solid var(--border-glass);
-            padding: 1.5rem;
-            border-radius: 12px;
-            position: relative;
-        }
-
-        .metric-label {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-trend {
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-        .metric-trend.up { color: var(--accent-green); }
-        .metric-trend.down { color: var(--accent-red); }
-
-        .metric-subtitle {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        /* Charts Section */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .chart-card {
-            background: var(--card-glass);
-            border: 1px solid var(--border-glass);
-            border-radius: 12px;
-            padding: 1.5rem;
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .chart-header h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .chart-legend {
-            display: flex;
-            gap: 15px;
-            font-size: 0.85rem;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        /* Task List */
-        .task-list {
-            background: var(--card-glass);
-            border: 1px solid var(--border-glass);
-            border-radius: 12px;
-            padding: 1.5rem;
-        }
-
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid var(--border-glass);
-            transition: 0.3s;
-        }
-        .task-item:hover {
-            background: rgba(255,255,255,0.02);
-        }
-
-        .task-info {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .task-title {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .task-meta {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .status-pending { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
-        .status-progress { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-        .status-complete { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-
-        .user-profile {
-            margin-top: auto;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-glass);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            background: var(--accent-yellow);
-            color: #000;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-
-        .content-view { display: none; }
-        .content-view.active { display: block; }
-
-        #logout-btn {
-            background: none;
-            border: 1px solid var(--border-glass);
-            color: var(--text-secondary);
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        #logout-btn:hover {
-            background: rgba(255,255,255,0.05);
-            color: var(--text-primary);
-        }
-
-        @media (max-width: 1024px) {
-           body { flex-direction: column; min-height: 100vh; height: auto; overflow-y: auto; overflow-x: hidden; }
-            .sidebar { width: 100%; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border-glass); overflow-x: auto; }
-            .nav-link { display: inline-flex; padding: 8px 12px; margin: 0 0.25rem 0.5rem 0; font-size: 0.85rem; }
-            .main { padding: 1.5rem 1rem; overflow-y: auto; height: auto; max-width: 100vw; }
-            .metrics-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
-            .charts-grid { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 768px) {
-            h1 { font-size: 1.5rem; }
-            .metrics-grid { grid-template-columns: 1fr 1fr; }
-            table { font-size: 0.85rem; width: 100%; }
-            .main { max-width: 100vw; overflow-x: hidden; }
-        }
-        @media (max-width: 480px) {
-            .metrics-grid { grid-template-columns: 1fr; }
-            button { padding: 8px 12px; font-size: 0.85rem; }
-            table { display: block; overflow-x: auto; }
+        .progress-fill {
+            background-color: var(--color-tertiary-container, #c9a900);
         }
     </style>
 </head>
-<body>
+<body class="bg-background text-on-surface antialiased min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="bg-surface dark:bg-inverse-surface shadow-sm h-screen w-64 fixed left-0 top-0 shadow-[20px_0_30px_rgba(0,0,0,0.04)] flex flex-col h-full py-base z-50 hidden md:flex">
+<div class="px-6 py-6 mb-4">
+<a href="homepage.html" class="flex items-center gap-2.5">
+<img src="assets/images/logo.png" alt="VYBE Africa" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+<div>
+<h1 class="font-display-lg text-headline-md text-primary dark:text-primary-fixed-dim">Vybe Africa</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Staff Portal</p>
+</div>
+</a>
+</div>
+<nav class="flex-1 flex flex-col gap-1 px-4">
+<a class="nav-btn flex items-center gap-4 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-primary-container/10 transition-all cursor-pointer" onclick="switchView('overview')">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="nav-btn flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200 cursor-pointer" onclick="switchView('projects')">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-body-md text-body-md">Projects</span>
+</a>
+<a class="nav-btn flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200 cursor-pointer" onclick="switchView('tasks')">
+<span class="material-symbols-outlined">tasks</span>
+<span class="font-body-md text-body-md">Tasks</span>
+</a>
+<a class="nav-btn flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200 cursor-pointer" onclick="switchView('reports')">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+<a href="staff.html" class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200">
+<span class="material-symbols-outlined">person</span>
+<span class="font-body-md text-body-md">Staff Profile</span>
+</a>
+</nav>
+<div class="p-4 mt-auto">
+<button onclick="openProjectModal()" class="w-full bg-primary text-on-primary py-3 rounded-lg font-label-sm text-label-sm shadow-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+    <span class="material-symbols-outlined text-[18px]">add</span> New Project
+</button>
+</div>
+<button id="logout-btn" class="flex items-center gap-4 px-8 py-4 text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200 w-full text-left">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</button>
+</aside>
 
-    <aside class="sidebar">
-        <div class="logo"><i class="fas fa-project-diagram"></i> VYBE Programs</div>
-        
-        <div class="nav-group-title">Navigation</div>
-        <a class="nav-link active" onclick="switchView('overview')"><i class="fas fa-th-large"></i> Overview</a>
-        <a class="nav-link" onclick="switchView('projects')"><i class="fas fa-folder-open"></i> Projects</a>
-        <a class="nav-link" onclick="switchView('tasks')"><i class="fas fa-tasks"></i> Tasks</a>
-        <a class="nav-link" onclick="switchView('reports')"><i class="fas fa-chart-bar"></i> Reports</a>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 relative flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface/80 dark:bg-inverse-surface/80 backdrop-blur-md docked full-width top-0 bg-surface dark:bg-inverse-surface flat flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 sticky z-40 border-b border-surface-variant">
+<div class="flex items-center gap-4 md:hidden">
+<span class="material-symbols-outlined text-primary cursor-pointer">menu</span>
+<span class="font-display-lg text-headline-md text-primary">Vybe Africa</span>
+</div>
+<div class="hidden md:block flex-1 max-w-md ml-8">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-transparent border border-outline/20 rounded-lg pl-10 pr-4 py-2 font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-0 transition-colors outline-none placeholder:text-on-surface-variant/50" placeholder="Search programs..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6 ml-auto">
+<button class="text-on-surface-variant hover:text-primary transition-colors" aria-label="Notifications">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-tertiary">
+<img alt="Moses Kibet" class="w-full h-full object-cover" src="assets/images/IMG-20251211-WA0024.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuCe2ihdXtmKz6_1PNV20nFQivKyZaGy2A8RNpx0KBxE1ruwPOyc2ZTf2FMLEibaW_w5BvIewf3XWVnAzxjDa2M-4dv6K1z9ofRGWm_jMTTgRTsRAbnKEVRa7ItbNx8wKrunAAawQyJ8veZ2p1Ngfqp3AinbpYR6cq2SMmsiASYv_sWuzTzQ6wqeORyFsdcOdEZDC7xVSxOh2Xt_zl-WMjeJt0HdrRKN8X7-nA8aA3E_Hf6ndV05qhVrDZpk5wE7TBGvVTGUzhNf0Tk'"/>
+</div>
+</div>
+</header>
 
-        <div class="nav-group-title">Account</div>
-        <a class="nav-link" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        
-        <div class="user-profile">
-            <div class="user-avatar" id="user-avatar">M</div>
-            <div>
-                <div style="font-size: 0.9rem; font-weight: 600;" id="user-name">Moses</div>
-                <div style="font-size: 0.7rem; color: var(--text-secondary);">Program Manager</div>
-            </div>
+<!-- Canvas Container -->
+<div class="p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto w-full flex-1 flex flex-col gap-8">
+
+<!-- VIEW 1: OVERVIEW -->
+<div id="view-overview" class="view-panel space-y-8">
+<!-- Header Profile Section -->
+<section class="flex flex-col md:flex-row items-center md:items-start gap-6 pt-4">
+<div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-tertiary shadow-lg shrink-0">
+<img id="user-avatar-display" alt="Profile Photo" class="w-full h-full object-cover" src="assets/images/IMG-20251211-WA0024.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuBjwebkkoS0mA8j16LztVD1jlfhh0uwEzhxnC0V0vAjQRfcfOqX-iFRYPAGRHA3dE_8T3CdL_Nsvj-qkcVy-xNKXVpT8iXNzSb1hjOvczYQtr0qnQ9e5Z8J4xhP6vydPEwgWJisoDmh-g1CTXrrGx1NvVKUQlf1hzEaDJUoFl4PUk25rlZrF8DWhAIIPPudoeo2u_FSyOvNNZMUTPCwtxg2HyGDKug2m2UCzJyNmYIndr7Q2mNQj6H-aLzyvBHM6hh82g-UbYROVh0'"/>
+</div>
+<div class="text-center md:text-left flex flex-col justify-center h-full pt-2">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-on-surface mb-1" id="welcome-title">Welcome back...</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant italic max-w-2xl"><span id="welcome-quote">"..."</span></p>
+</div>
+<div class="ml-auto hidden lg:flex gap-4 items-center h-full">
+<button onclick="alert('Exporting Programs Report...');" class="px-6 py-3 border-2 border-secondary text-secondary font-label-sm text-label-sm rounded-lg hover:bg-secondary hover:text-on-secondary transition-colors">
+    Download Report
+</button>
+<button onclick="openProjectModal();" class="px-6 py-3 bg-primary text-on-primary font-label-sm text-label-sm rounded-lg hover:bg-primary/90 transition-colors shadow-sm">
+    Add New Project
+</button>
+</div>
+</section>
+
+<!-- Metrics Overview -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 tactile-shadow">
+    <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Completed by due date</p>
+    <h3 class="text-4xl font-extrabold text-secondary">90%</h3>
+    <p class="text-xs text-secondary font-semibold mt-2 flex items-center gap-1"><span class="material-symbols-outlined text-sm">trending_up</span> 400 of 450 tasks</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 tactile-shadow">
+    <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Completed past due date</p>
+    <h3 class="text-4xl font-extrabold text-tertiary">40%</h3>
+    <p class="text-xs text-tertiary font-semibold mt-2 flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> 35 of 450 tasks</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 tactile-shadow">
+    <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Completed without due date</p>
+    <h3 class="text-4xl font-extrabold text-primary">10%</h3>
+    <p class="text-xs text-primary font-semibold mt-2 flex items-center gap-1"><span class="material-symbols-outlined text-sm">info</span> 15 of 450 tasks</p>
+</div>
+</section>
+
+<!-- Active Program Tasks -->
+<section class="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/30 tactile-shadow">
+<div class="flex justify-between items-center mb-6">
+    <h3 class="font-headline-md text-headline-md text-on-surface">Program Milestones & Tasks</h3>
+    <button onclick="switchView('projects')" class="text-secondary font-label-sm text-label-sm hover:underline">Manage Projects</button>
+</div>
+<div class="space-y-4">
+    <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/20">
+        <div>
+            <h4 class="font-bold text-on-surface">SRHR Youth Workshops (West Pokot)</h4>
+            <p class="text-xs text-on-surface-variant">Community outreach & maternal health education • Target: 1,500 youth</p>
         </div>
-        <div style="margin-top:1rem; border-top:1px solid var(--border-glass); padding-top:1rem;">
-             <a href="staff.html" class="nav-link" style="justify-content:center; color:var(--text-primary); background:rgba(255,255,255,0.05);">
-                 <i class="fas fa-arrow-left"></i> Back to Portal
-             </a>
-        </div>
-    </aside>
-
-    <main class="main">
-        <!-- OVERVIEW VIEW -->
-        <div id="view-overview" class="content-view active">
-            <div class="top-bar">
-                <h1>Program Overview</h1>
-            </div>
-
-            <div class="filter-tabs">
-                <button class="tab-btn active">Monthly</button>
-                <button class="tab-btn">Quarterly</button>
-                <button class="tab-btn">Yearly</button>
-            </div>
-
-            <h4 style="color: var(--text-secondary); margin-bottom: 1rem;">Program task completion rate within SLA over the last 30 days</h4>
-
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-label">Completed by due date</div>
-                    <div class="metric-value" style="color: var(--accent-green);">90%</div>
-                    <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 30%</div>
-                    <div class="metric-subtitle">400 of 450 tasks</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Completed past due date</div>
-                    <div class="metric-value" style="color: #f59e0b;">40%</div>
-                    <div class="metric-trend down"><i class="fas fa-arrow-down"></i> 20%</div>
-                    <div class="metric-subtitle">35 of 450 tasks</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Completed without due date</div>
-                    <div class="metric-value" style="color: var(--accent-purple);">10%</div>
-                    <div class="metric-trend up"><i class="fas fa-arrow-up"></i> 10%</div>
-                    <div class="metric-subtitle">15 of 450 tasks</div>
-                </div>
-            </div>
-
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3>Assigned Tasks</h3>
-                        <div class="chart-legend">
-                            <div class="legend-item">
-                                <div class="legend-dot" style="background: var(--accent-yellow);"></div>
-                                <span>Assigned</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-dot" style="background: var(--text-secondary);"></div>
-                                <span>Unassigned</span>
-                            </div>
-                        </div>
-                    </div>
-                    <canvas id="tasksChart" height="200"></canvas>
-                </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3>Framework Progress</h3>
-                    </div>
-                    <canvas id="progressChart" height="200"></canvas>
-                </div>
-            </div>
-
-            <div class="task-list">
-                <div class="chart-header">
-                    <h3>Upcoming Tasks</h3>
-                    <a href="#" style="color: var(--accent-yellow); text-decoration: none;">View all</a>
-                </div>
-                <div class="task-item">
-                    <div class="task-info">
-                        <div class="task-title">SRHR Workshop Preparation</div>
-                        <div class="task-meta">West Pokot Team • Due Nov 30, 2024</div>
-                    </div>
-                    <span class="status-badge status-pending">Pending</span>
-                </div>
-                <div class="task-item">
-                    <div class="task-info">
-                        <div class="task-title">Climate Action Report</div>
-                        <div class="task-meta">M&E Team • Due Dec 5, 2024</div>
-                    </div>
-                    <span class="status-badge status-progress">In Progress</span>
-                </div>
-                <div class="task-item">
-                    <div class="task-info">
-                        <div class="task-title">Quarterly Budget Review</div>
-                        <div class="task-meta">Finance • Due Dec 10, 2024</div>
-                    </div>
-                    <span class="status-badge status-complete">Completed</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- PROJECTS VIEW -->
-        <div id="view-projects" class="content-view">
-            <div class="top-bar">
-                <h1>Projects & Programs</h1>
-                <button class="tab-btn active" onclick="openProjectModal()"><i class="fas fa-plus"></i> New Project</button>
-            </div>
-
-            <div class="task-list">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid var(--border-glass); text-align: left;">
-                            <th style="padding: 12px;">Title</th>
-                            <th style="padding: 12px;">Category</th>
-                            <th style="padding: 12px;">Progress</th>
-                            <th style="padding: 12px;">Budget</th>
-                            <th style="padding: 12px;">Status</th>
-                            <th style="padding: 12px;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="projects-table-body">
-                        <tr><td colspan="6" style="text-align: center; padding: 20px;">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- TASKS VIEW -->
-        <div id="view-tasks" class="content-view">
-            <div class="top-bar">
-                <h1>Program Tasks</h1>
-            </div>
-            <div class="task-list">
-                <div class="chart-header">
-                    <h3>All Tasks</h3>
-                </div>
-                <div class="task-item">
-                    <div class="task-info">
-                        <div class="task-title">SRHR Workshop Preparation</div>
-                        <div class="task-meta">West Pokot Team • Due Nov 30, 2024</div>
-                    </div>
-                    <span class="status-badge status-pending">Pending</span>
-                </div>
-                <div class="task-item">
-                    <div class="task-info">
-                        <div class="task-title">Climate Action Report</div>
-                        <div class="task-meta">M&E Team • Due Dec 5, 2024</div>
-                    </div>
-                    <span class="status-badge status-progress">In Progress</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- REPORTS VIEW -->
-        <div id="view-reports" class="content-view">
-            <div class="top-bar">
-                <h1>Program Reports</h1>
-            </div>
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-label">Total Programs</div>
-                    <div class="metric-value" id="total-programs">0</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Active Programs</div>
-                    <div class="metric-value" id="active-programs">0</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Completed</div>
-                    <div class="metric-value" id="completed-programs">0</div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Project Modal -->
-    <div id="project-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: var(--card-glass); border: 1px solid var(--border-glass); border-radius: 12px; padding: 2rem; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2 id="modal-title">Add New Project</h2>
-                <button onclick="closeProjectModal()" style="background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer;">&times;</button>
-            </div>
-            <form id="project-form" onsubmit="saveProject(event)">
-                <input type="hidden" id="project-id">
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Project Title</label>
-                    <input type="text" id="project-title" required style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 6px; color: var(--text-primary);">
-                </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Description</label>
-                    <textarea id="project-description" rows="3" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 6px; color: var(--text-primary);"></textarea>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Category</label>
-                        <select id="project-category" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 6px; color: var(--text-primary);">
-                            <option value="SRHR">SRHR</option>
-                            <option value="Climate Action">Climate Action</option>
-                            <option value="Child Protection">Child Protection</option>
-                            <option value="Inclusive Governance">Inclusive Governance</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Status</label>
-                        <select id="project-status" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 6px; color: var(--text-primary);">
-                            <option value="active">Active</option>
-                            <option value="completed">Completed</option>
-                            <option value="on-hold">On Hold</option>
-                        </select>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Start Date</label>
-                        <input type="date" id="project-start" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 6px; color: var(--text-primary);">
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">End Date</label>
-                        <input type="date" id="project-end" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 6px; color: var(--text-primary);">
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Budget (USD)</label>
-                        <input type="number" id="project-budget" step="0.01" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 6px; color: var(--text-primary);">
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Progress (%)</label>
-                        <input type="number" id="project-progress" min="0" max="100" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 6px; color: var(--text-primary);">
-                    </div>
-                </div>
-                <div style="margin-bottom:1.5rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Location</label>
-                    <input type="text" id="project-location" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); border-radius: 6px; color: var(--text-primary);">
-                </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" onclick="closeProjectModal()" style="padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); color: var(--text-secondary); border-radius: 6px; cursor: pointer;">Cancel</button>
-                    <button type="submit" style="padding: 10px 20px; background: var(--accent-yellow); color: #000; border: none; font-weight: 600; border-radius: 6px; cursor: pointer;">Save Project</button>
-                </div>
-            </form>
-        </div>
+        <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">Active</span>
     </div>
+    <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/20">
+        <div>
+            <h4 class="font-bold text-on-surface">Climate Resilient Seedling Drive</h4>
+            <p class="text-xs text-on-surface-variant">Tree planting & environmental stewardship • Target: 5,000 saplings</p>
+        </div>
+        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full">In Progress</span>
+    </div>
+    <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/20">
+        <div>
+            <h4 class="font-bold text-on-surface">Child Protection Policy Advocate Sessions</h4>
+            <p class="text-xs text-on-surface-variant">Safe spaces and legal defense awareness in Pokot Central</p>
+        </div>
+        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">Planning</span>
+    </div>
+</div>
+</section>
+</div>
 
-    <!-- Supabase & Bcrypt -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+<!-- VIEW 2: PROJECTS MANAGEMENT -->
+<div id="view-projects" class="view-panel hidden space-y-6">
+<div class="flex justify-between items-center">
+    <h2 class="font-headline-lg text-headline-lg text-on-surface">Projects & Programs</h2>
+    <button onclick="openProjectModal()" class="px-5 py-2.5 bg-primary text-on-primary font-bold rounded-xl text-xs uppercase tracking-wider hover:bg-primary-container shadow-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">add</span> Add Project
+    </button>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/30 tactile-shadow overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="border-b border-outline-variant/30 text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+                <th class="p-3">Title & Location</th>
+                <th class="p-3">Category</th>
+                <th class="p-3">Progress</th>
+                <th class="p-3">Budget</th>
+                <th class="p-3">Status</th>
+                <th class="p-3 text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="projects-table-body" class="divide-y divide-outline-variant/20 text-sm">
+            <tr><td colspan="6" class="p-6 text-center text-on-surface-variant">Loading projects...</td></tr>
+        </tbody>
+    </table>
+</div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("Programs Dashboard: DOM loaded");
-            
-            // Initialize Supabase - Disable session persistence for file:// compatibility
-            const supabaseUrl = 'https://mdjokagpejujfjfobdcs.supabase.co';
-            const supabaseKey = 'sb_publishable_Y9Wv-aZdMFVv55-CYgj2AA_6l3Iz31G';
-            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+<!-- VIEW 3: TASKS -->
+<div id="view-tasks" class="view-panel hidden space-y-6">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Program Tasks</h2>
+<div class="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/30 tactile-shadow space-y-4">
+    <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/20">
+        <div>
+            <h4 class="font-bold text-on-surface">Community Mobilization for Health Drive</h4>
+            <p class="text-xs text-on-surface-variant">Assigned to: West Pokot Team • Due: Dec 15, 2026</p>
+        </div>
+        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full">Pending</span>
+    </div>
+    <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/20">
+        <div>
+            <h4 class="font-bold text-on-surface">M&E Impact Assessment Questionnaire</h4>
+            <p class="text-xs text-on-surface-variant">Assigned to: M&E Officers • Due: Dec 20, 2026</p>
+        </div>
+        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">In Progress</span>
+    </div>
+</div>
+</div>
+
+<!-- VIEW 4: REPORTS -->
+<div id="view-reports" class="view-panel hidden space-y-6">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Program Reports</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 tactile-shadow">
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Total Programs</p>
+        <h3 class="text-4xl font-extrabold text-primary" id="total-programs">0</h3>
+    </div>
+    <div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 tactile-shadow">
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Active Programs</p>
+        <h3 class="text-4xl font-extrabold text-secondary" id="active-programs">0</h3>
+    </div>
+    <div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 tactile-shadow">
+        <p class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">Completed Programs</p>
+        <h3 class="text-4xl font-extrabold text-tertiary" id="completed-programs">0</h3>
+    </div>
+</div>
+</div>
+
+</div>
+</main>
+
+<!-- Project Modal -->
+<div id="project-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div class="bg-surface border border-outline-variant/30 rounded-2xl p-6 md:p-8 w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div class="flex justify-between items-center mb-6 border-b border-outline-variant/20 pb-4">
+            <h3 id="modal-title" class="font-headline-md text-headline-md text-on-surface">Add New Project</h3>
+            <button onclick="closeProjectModal()" class="text-on-surface-variant hover:text-primary text-2xl font-bold">&times;</button>
+        </div>
+        <form id="project-form" onsubmit="saveProject(event)" class="space-y-4">
+            <input type="hidden" id="project-id">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Project Title</label>
+                <input type="text" id="project-title" required class="w-full p-3 border border-outline-variant rounded-xl bg-surface-container-lowest focus:border-primary text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Description</label>
+                <textarea id="project-description" rows="3" class="w-full p-3 border border-outline-variant rounded-xl bg-surface-container-lowest focus:border-primary text-sm"></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Category</label>
+                    <select id="project-category" class="w-full p-3 border border-outline-variant rounded-xl bg-surface-container-lowest focus:border-primary text-sm">
+                        <option value="SRHR">SRHR</option>
+                        <option value="Climate Action">Climate Action</option>
+                        <option value="Child Protection">Child Protection</option>
+                        <option value="Inclusive Governance">Inclusive Governance</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Status</label>
+                    <select id="project-status" class="w-full p-3 border border-outline-variant rounded-xl bg-surface-container-lowest focus:border-primary text-sm">
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        <option value="on-hold">On Hold</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Budget (USD)</label>
+                    <input type="number" id="project-budget" step="0.01" class="w-full p-3 border border-outline-variant rounded-xl bg-surface-container-lowest focus:border-primary text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Progress (%)</label>
+                    <input type="number" id="project-progress" min="0" max="100" class="w-full p-3 border border-outline-variant rounded-xl bg-surface-container-lowest focus:border-primary text-sm">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-on-surface mb-1">Location</label>
+                <input type="text" id="project-location" placeholder="e.g. West Pokot County" class="w-full p-3 border border-outline-variant rounded-xl bg-surface-container-lowest focus:border-primary text-sm">
+            </div>
+            <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant/20">
+                <button type="button" onclick="closeProjectModal()" class="px-5 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-bold text-xs uppercase">Cancel</button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-primary text-on-primary font-bold text-xs uppercase hover:bg-primary-container shadow-sm">Save Project</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initialize Supabase client
+        const supabaseUrl = 'https://uwfkqitmopqcbvwhkcgg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZmtxaXRtb3BxY2J2d2hrY2dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMTM2OTksImV4cCI6MjA5ODg4OTY5OX0.clHwO4AOcCB1yFbxGybydSUAlfR3uCaccnqt_mew3H8';
+        let supabase;
+        if (window.supabase) {
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
                 auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
             });
+        }
 
-            // Auth Check - localStorage
-            const userId = localStorage.getItem('user_id');
-            const userName = localStorage.getItem('name');
-            
-            if (!userId) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            // Set user name
-            const userNameEl = document.getElementById('user-name');
-            const userAvatarEl = document.getElementById('user-avatar');
-            if (userNameEl) userNameEl.textContent = (userName || 'Programs').split(' ')[0];
-            if (userAvatarEl) userAvatarEl.textContent = (userName || 'P').charAt(0);
+        // Auth check
+        const userId = localStorage.getItem('user_id');
+        if (!userId) {
+            window.location.href = 'login.html';
+            return;
+        }
 
-            // Logout
-            document.getElementById('logout-btn').addEventListener('click', () => {
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
                 localStorage.clear();
                 window.location.href = 'login.html';
             });
+        }
 
-            // Load projects on start
-            loadProjects();
+        // Switch View Panels
+        window.switchView = function(viewName) {
+            document.querySelectorAll('.view-panel').forEach(panel => panel.classList.add('hidden'));
+            const targetPanel = document.getElementById('view-' + viewName);
+            if (targetPanel) targetPanel.classList.remove('hidden');
 
-            // View Switcher
-            window.switchView = function(viewName) {
-                document.querySelectorAll('.content-view').forEach(el => el.style.display = 'none');
-                document.getElementById('view-' + viewName).style.display = 'block';
-                
-                document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-                // Find and activate the correct nav link
-                const navLinks = document.querySelectorAll('.nav-link');
-                navLinks.forEach(link => {
-                    if(link.getAttribute('onclick') && link.getAttribute('onclick').includes(viewName)) {
-                        link.classList.add('active');
-                    }
-                });
-                
-                if(viewName === 'projects') loadProjects();
-                if(viewName === 'reports') loadReports();
-            };
+            if (viewName === 'projects') loadProjects();
+            if (viewName === 'reports') loadReports();
+        };
 
-            // Load Projects
-            async function loadProjects() {
-                try {
-                    const { data: projects, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
-                    
-                    if(error) throw error;
+        // Supabase Project Loader
+        async function loadProjects() {
+            if (!supabase) return;
+            try {
+                const { data: projects, error } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-                    const tbody = document.getElementById('projects-table-body');
-                    if(projects.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--text-secondary);">No projects yet. Click "New Project" to add one.</td></tr>';
-                        return;
-                    }
-
-                    const rows = projects.map(p => `
-                        <tr style="border-bottom: 1px solid var(--border-glass);">
-                            <td style="padding: 12px;"><strong>${p.title}</strong><br><span style="font-size: 0.8rem; color: var(--text-secondary);">${p.location || 'N/A'}</span></td>
-                            <td style="padding: 12px;">${p.category}</td>
-                            <td style="padding: 12px;">
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div style="flex: 1; background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px;">
-                                        <div style="background: var(--accent-yellow); width: ${p.progress}%; height: 100%; border-radius: 3px;"></div>
-                                    </div>
-                                    <span style="font-size: 0.85rem;">${p.progress}%</span>
-                                </div>
-                            </td>
-                            <td style="padding: 12px;">$${(p.budget || 0).toLocaleString()}</td>
-                            <td style="padding: 12px;"><span class="status-badge status-${p.status === 'active' ? 'progress' : p.status === 'completed' ? 'complete' : 'pending'}">${p.status}</span></td>
-                            <td style="padding: 12px;">
-                                <button onclick="editProject('${p.id}')" style="background: none; border: none; color: var(--accent-yellow); cursor: pointer; margin-right: 10px;" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteProject('${p.id}')" style="background: none; border: none; color: var(--accent-red); cursor: pointer;" title="Delete"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `).join('');
-                    tbody.innerHTML = rows;
-                } catch(e) {
-                    console.error(e);
-                    document.getElementById('projects-table-body').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--accent-red);">Failed to load projects</td></tr>';
+                const tbody = document.getElementById('projects-table-body');
+                if (error || !projects || projects.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-on-surface-variant">No projects recorded yet. Click "+ Add Project" above to create one.</td></tr>';
+                    return;
                 }
-            }
 
-            // Load Reports Stats
-            async function loadReports() {
-                try {
-                    const { data: projects, error } = await supabase.from('projects').select('status');
-                    if(error) throw error;
-                    
+                tbody.innerHTML = projects.map(p => `
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="p-3 font-bold text-on-surface">${p.title}<br><span class="text-xs font-normal text-on-surface-variant">${p.location || 'West Pokot'}</span></td>
+                        <td class="p-3">${p.category}</td>
+                        <td class="p-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-24 bg-surface-container-high h-2 rounded-full overflow-hidden">
+                                    <div class="bg-primary h-full rounded-full" style="width: ${p.progress || 0}%"></div>
+                                </div>
+                                <span class="text-xs font-bold">${p.progress || 0}%</span>
+                            </div>
+                        </td>
+                        <td class="p-3 font-semibold">$${(p.budget || 0).toLocaleString()}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 text-xs font-bold rounded-full ${p.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${p.status}</span></td>
+                        <td class="p-3 text-right">
+                            <button onclick="editProject('${p.id}')" class="text-primary hover:underline font-bold text-xs mr-2">Edit</button>
+                            <button onclick="deleteProject('${p.id}')" class="text-red-600 hover:underline font-bold text-xs">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function loadReports() {
+            if (!supabase) return;
+            try {
+                const { data: projects } = await supabase.from('projects').select('status');
+                if (projects) {
                     document.getElementById('total-programs').textContent = projects.length;
                     document.getElementById('active-programs').textContent = projects.filter(p => p.status === 'active').length;
                     document.getElementById('completed-programs').textContent = projects.filter(p => p.status === 'completed').length;
-                } catch(e) {
-                    console.error(e);
                 }
-            }
+            } catch (e) { console.error(e); }
+        }
 
-            // Project Modal Functions
-            window.openProjectModal = function(projectId = null) {
-                document.getElementById('project-modal').style.display = 'flex';
-                if(projectId) {
-                    // Load project for editing
-                    document.getElementById('modal-title').textContent = 'Edit Project';
+        window.openProjectModal = function() {
+            document.getElementById('project-modal').classList.remove('hidden');
+        };
+
+        window.closeProjectModal = function() {
+            document.getElementById('project-modal').classList.add('hidden');
+            document.getElementById('project-form').reset();
+        };
+
+        window.saveProject = async function(e) {
+            e.preventDefault();
+            if (!supabase) return;
+            const projectId = document.getElementById('project-id').value;
+            const data = {
+                title: document.getElementById('project-title').value,
+                description: document.getElementById('project-description').value,
+                category: document.getElementById('project-category').value,
+                status: document.getElementById('project-status').value,
+                budget: parseFloat(document.getElementById('project-budget').value) || 0,
+                progress: parseInt(document.getElementById('project-progress').value) || 0,
+                location: document.getElementById('project-location').value,
+                manager_id: userId
+            };
+
+            try {
+                if (projectId) {
+                    await supabase.from('projects').update(data).eq('id', projectId);
                 } else {
-                    document.getElementById('modal-title').textContent = 'Add New Project';
-                    document.getElementById('project-form').reset();
-                    document.getElementById('project-id').value = '';
+                    await supabase.from('projects').insert([data]);
                 }
-            };
+                closeProjectModal();
+                loadProjects();
+            } catch (err) {
+                alert('Save failed: ' + err.message);
+            }
+        };
 
-            window.closeProjectModal = function() {
-                document.getElementById('project-modal').style.display = 'none';
-                document.getElementById('project-form').reset();
-            };
-
-            window.editProject = async function(id) {
-                try {
-                    const { data: project, error } = await supabase.from('projects').select('*').eq('id', id).single();
-                    if(error) throw error;
-
-                    document.getElementById('project-id').value = project.id;
-                    document.getElementById('project-title').value = project.title;
-                    document.getElementById('project-description').value = project.description || '';
-                    document.getElementById('project-category').value = project.category;
-                    document.getElementById('project-status').value = project.status;
-                    document.getElementById('project-start').value = project.start_date || '';
-                    document.getElementById('project-end').value = project.end_date || '';
-                    document.getElementById('project-budget').value = project.budget || '';
-                    document.getElementById('project-progress').value = project.progress || 0;
-                    document.getElementById('project-location').value = project.location || '';
-                    
-                    openProjectModal(id);
-                } catch(e) {
-                    console.error(e);
-                    alert('Failed to load project');
-                }
-            };
-
-            window.saveProject = async function(e) {
-                e.preventDefault();
-                
-                const projectId = document.getElementById('project-id').value;
-                const projectData = {
-                    title: document.getElementById('project-title').value,
-                    description: document.getElementById('project-description').value,
-                    category: document.getElementById('project-category').value,
-                    status: document.getElementById('project-status').value,
-                    start_date: document.getElementById('project-start').value || null,
-                    end_date: document.getElementById('project-end').value || null,
-                    budget: parseFloat(document.getElementById('project-budget').value) || null,
-                    progress: parseInt(document.getElementById('project-progress').value) || 0,
-                    location: document.getElementById('project-location').value
-                };
-
-                try {
-                    if(projectId) {
-                        // Update
-                        const { error } = await supabase.from('projects').update(projectData).eq('id', projectId);
-                        if(error) throw error;
-                        alert('Project updated successfully!');
-                    } else {
-                        // Insert
-                        const { error } = await supabase.from('projects').insert([projectData]);
-                        if(error) throw error;
-                        alert('Project created successfully!');
-                    }
-                    closeProjectModal();
-                    loadProjects();
-                } catch(e) {
-                    console.error(e);
-                    alert('Failed to save project: ' + e.message);
-                }
-            };
-
-            window.deleteProject = async function(id) {
-                if(!confirm('Are you sure you want to delete this project?')) return;
-                
-                try {
-                    const { error } = await supabase.from('projects').delete().eq('id', id);
-                    if(error) throw error;
-                    loadProjects();
-                } catch(e) {
-                    console.error(e);
-                    alert('Failed to delete project');
-                }
-            };
-
-            // Tasks Chart (Stacked Bar)
-            new Chart(document.getElementById('tasksChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['1 Dec', '4 Dec', '8 Dec', '12 Dec', '16 Dec', '20 Dec', '24 Dec', '28 Dec', '31 Dec'],
-                    datasets: [{
-                        label: 'Assigned',
-                        data: [65, 59, 80, 81, 56, 75, 70, 85, 90],
-                        backgroundColor: 'rgba(250, 204, 21, 0.8)',
-                    }, {
-                        label: 'Unassigned',
-                        data: [28, 48, 40, 19, 36, 27, 30, 15, 10],
-                        backgroundColor: 'rgba(156, 163, 175, 0.5)',
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { stacked: true, grid: { display: false } },
-                        y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-
-            // Progress Chart (Line)
-            new Chart(document.getElementById('progressChart'), {
-                type: 'line',
-                data: {
-                    labels: ['1 Dec', '4 Dec', '8 Dec', '12 Dec', '16 Dec', '20 Dec', '24 Dec', '28 Dec', '31 Dec'],
-                    datasets: [{
-                        label: 'Progress',
-                        data: [30, 35, 40, 50, 55, 65, 70, 80, 85],
-                        borderColor: 'rgba(139, 92, 246, 1)',
-                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { grid: { display: false } },
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-        });
-    </script>
+        window.deleteProject = async function(id) {
+            if (!confirm('Delete this project?')) return;
+            if (!supabase) return;
+            try {
+                await supabase.from('projects').delete().eq('id', id);
+                loadProjects();
+            } catch (e) { console.error(e); }
+        };
+    });
+</script>
 </body>
 </html>

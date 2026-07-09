@@ -18,7 +18,8 @@ const https     = require('https');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const supabase  = require('../config/supabase');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// text-embedding-004 requires API version v1 (not v1beta which is the SDK default)
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, { apiVersion: 'v1' });
 
 // ── Data Sources ──────────────────────────────────────────────────────────────
 const SOURCES = [
@@ -126,9 +127,9 @@ function chunkText(text, chunkSize = 400, overlap = 50) {
   return chunks.filter(c => c.split(/\s+/).length > 20); // drop tiny chunks
 }
 
-/** Embed text with Gemini text-embedding-004 */
+/** Embed text with Gemini text-embedding-004 (requires API v1) */
 async function embed(text) {
-  const model  = genAI.getGenerativeModel({ model: 'text-embedding-004' });
+  const model  = genAI.getGenerativeModel({ model: 'text-embedding-004' }, { apiVersion: 'v1' });
   const result = await model.embedContent(text);
   return result.embedding.values;
 }
@@ -185,6 +186,115 @@ async function ingestSource(source, log) {
   log(`    ✓ ${source.source_name}: ${inserted} inserted, ${skipped} skipped`);
   return { source: source.source_name, inserted, skipped };
 }
+
+// ── GET /api/ingest/documents ───────────────────────────────────────────────
+// Lists distinct source documents and chunk counts
+router.get('/documents', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('bonga_documents')
+      .select('source_name, title, pillar, source_url');
+
+    if (error) throw error;
+
+    const docsMap = {};
+    (data || []).forEach(row => {
+      const key = row.source_name || row.title || 'Unknown Source';
+      if (!docsMap[key]) {
+        docsMap[key] = {
+          source_name: row.source_name || 'Unknown Source',
+          title: row.title || 'Untitled',
+          pillar: row.pillar || 'General',
+          source_url: row.source_url || '#',
+          chunks_count: 0
+        };
+      }
+      docsMap[key].chunks_count++;
+    });
+
+    res.json({ success: true, documents: Object.values(docsMap) });
+  } catch (err) {
+    console.error('Error fetching documents:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── DELETE /api/ingest/documents ────────────────────────────────────────────
+// Deletes all document chunks matching source_name
+router.delete('/documents', async (req, res) => {
+  const { source_name } = req.body;
+
+  if (!source_name) {
+    return res.status(400).json({ error: 'source_name is required in request body.' });
+  }
+
+  try {
+    const { error } = await supabase
+      .from('bonga_documents')
+      .delete()
+      .eq('source_name', source_name);
+
+    if (error) throw error;
+
+    res.json({ success: true, message: `Successfully deleted document: ${source_name}` });
+  } catch (err) {
+    console.error('Error deleting document:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── POST /api/ingest/text ──────────────────────────────────────────────────
+// Receives client-side parsed text, chunks, embeds, and uploads it
+router.post('/text', async (req, res) => {
+  const { text, title, pillar, source_name, source_url = '#' } = req.body;
+
+  if (!text || !title || !pillar || !source_name) {
+    return res.status(400).json({ error: 'Missing required parameters: text, title, pillar, source_name.' });
+  }
+
+  try {
+    const chunks = chunkText(`${title}. ${text}`);
+    console.log(`Starting custom ingestion for ${source_name}: ${chunks.length} chunks`);
+
+    let inserted = 0;
+    let skipped = 0;
+
+    for (const chunk of chunks) {
+      try {
+        const embedding = await embed(chunk);
+
+        const { error } = await supabase
+          .from('bonga_documents')
+          .insert({
+            content:     chunk,
+            embedding,
+            source_url,
+            source_name,
+            pillar,
+            title,
+            updated_at:  new Date().toISOString(),
+          });
+
+        if (error) {
+          skipped++;
+          console.error(`DB Insert error: ${error.message}`);
+        } else {
+          inserted++;
+        }
+
+        await sleep(150); // Small delay to avoid rate limit issues
+      } catch (e) {
+        skipped++;
+        console.error(`Embedding chunk failed: ${e.message}`);
+      }
+    }
+
+    res.json({ success: true, total_chunks: chunks.length, inserted, skipped });
+  } catch (err) {
+    console.error('Error ingesting custom text:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // ── Route ─────────────────────────────────────────────────────────────────────
 router.post('/', async (req, res) => {

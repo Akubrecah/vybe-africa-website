@@ -1,535 +1,434 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Dashboard - VYBE Africa</title>
-    <!-- Header -->
-    <header class="main-header">
-        <div class="container navbar">
-            <a href="homepage.html" class="logo">
-                <img src="assets/images/logo.png" alt="VYBE Africa Logo">
-                <span>VYBE Africa</span>
-            </a>
-            
-            <button class="hamburger"><i class="fas fa-bars"></i></button>
-            
-            <nav class="nav-links">
-                <a href="homepage.html" class="nav-link">Home</a>
-                <a href="about.html" class="nav-link">About Us</a>
-                <a href="work.html" class="nav-link">Our Work</a>
-                <a href="gallery.html" class="nav-link">Gallery</a>
-                <a href="contact.html" class="nav-link">Contact</a>
-                <div class="nav-cta">
-                    <a href="member_login.html" class="btn" style="margin-right:10px; border: 2px solid #facc15; color: #fff; font-weight:600;"><i class="fas fa-user"></i> Members Login</a>
-                    <a href="login.html" class="btn" style="margin-right:10px; border: 2px solid var(--primary-brand); color: #fff; font-weight:600;">Staff Login</a>
-                    <a href="get-involved.html" class="btn btn-primary">Get Involved</a>
-                </div>
-            </nav>
-        </div>
-    </header>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Staff Portal Dashboard - Vybe Africa</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Auth Guard & Role Router -->
+<script src="assets/js/auth-guard.js"></script>
 
-    <div class="container" style="padding-top: 140px; padding-bottom: 60px;">
-        <header class="dashboard-header">
-            <div class="welcome-text">
-                <h1>Welcome, <span id="user-name">Staff</span></h1>
-                <p>Staff Dashboard <span id="user-role-badge" class="role-tag">Loading...</span></p>
-            </div>
-            <button class="btn btn-outline" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </header>
-
-        <div class="dashboard-grid">
-            
-            <!-- 1. My Profile -->
-            <div class="dash-card">
-                <h3 class="card-title"><i class="fas fa-id-card"></i> My Profile</h3>
-                <div class="card-content" id="profile-details">
-                    <!-- Loaded dynamically -->
-                </div>
-                <!-- Manual Redirects (Failsafe) -->
-                <div id="redirect-btns" style="margin-top:10px; display:none; flex-direction:column; gap:10px;">
-                    <a href="hr_dashboard.html" class="btn-action" style="background:var(--accent-green); text-align:center;">Go to HR Dashboard</a>
-                    <a href="admin_dashboard.html" class="btn-action" style="background:var(--accent-purple); text-align:center;">Go to Admin Dashboard</a>
-                </div>
-                <button class="btn-action" onclick="openEditProfileModal()" style="background: var(--primary-brand); border: none; cursor: pointer;">Edit Profile</button>
-            </div>
-
-            <!-- 2. Role Specific Tools (Dynamic) -->
-            <div class="dash-card" id="role-tools-card" style="display:none;">
-                <h3 class="card-title" id="role-tools-title"><i class="fas fa-briefcase"></i> Work Tools</h3>
-                <div class="card-content" id="role-tools-content">
-                    <!-- Injected via JS -->
-                </div>
-            </div>
-
-            <!-- 3. Tasks -->
-            <div class="dash-card">
-                <h3 class="card-title"><i class="fas fa-tasks"></i> Pending Tasks</h3>
-                <div class="card-content">
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <i class="far fa-circle"></i> Complete weekly report
-                        </li>
-                        <li>
-                            <i class="far fa-circle"></i> Update timesheet
-                        </li>
-                    </ul>
-                </div>
-                <a href="#" class="btn-action">View All Tasks</a>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Edit Profile Modal -->
-    <div id="edit-profile-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: rgba(20, 20, 20, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 2rem; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2 style="color: white; margin: 0;">Edit Profile</h2>
-                <button onclick="closeEditProfileModal()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
-            </div>
-            <form id="edit-profile-form" onsubmit="saveProfile(event)">
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Full Name</label>
-                    <input type="text" id="edit-name" required style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white;">
-                </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Email</label>
-                    <input type="email" id="edit-email" required style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white;">
-                </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Phone Number</label>
-                    <input type="tel" id="edit-phone" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white;">
-                </div>
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Bio / Notes</label>
-                    <textarea id="edit-bio" rows="3" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white;"></textarea>
-                </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" onclick="closeEditProfileModal()" style="padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 6px; cursor: pointer;">Cancel</button>
-                    <button type="submit" style="padding: 10px 20px; background: var(--primary-brand); color: #000; border: none; font-weight: 600; border-radius: 6px; cursor: pointer;">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Supabase & Bcrypt -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Initialize Supabase - Disable session persistence for file:// compatibility
-        const supabaseUrl = 'https://mdjokagpejujfjfobdcs.supabase.co';
-        const supabaseKey = 'sb_publishable_Y9Wv-aZdMFVv55-CYgj2AA_6l3Iz31G';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-            auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
-        });
-
-        // Auth Check - localStorage
-        const userId = localStorage.getItem('user_id');
-        if (!userId) {
-            window.location.href = 'login.html';
-        }
-
-        // Logout
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            localStorage.clear();
-            window.location.href = 'login.html';
-        });
-
-        // Fetch User Data (from localStorage + Supabase DB)
-        async function fetchProfile() {
-            const userId = localStorage.getItem('user_id');
-            if (!userId) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            try {
-                const { data: profile, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
-                
-                if (error || !profile) throw new Error('User not found');
-
-                console.log('User fetched:', profile); // Debug
-
-                // Update UI
-                document.getElementById('user-name').textContent = profile.name;
-                document.getElementById('user-role-badge').textContent = profile.designation || profile.role;
-
-                // Profile Card
-                document.getElementById('profile-details').innerHTML = `
-                    <div class="profile-field">
-                        <div class="profile-label">Email</div>
-                        <div class="profile-value">${profile.email}</div>
-                    </div>
-                    <div class="profile-field">
-                        <div class="profile-label">Designation</div>
-                        <div class="profile-value">${profile.designation || 'Staff'}</div>
-                    </div>
-                `;
-
-                // Render Role-Specific Tools
-                renderRoleTools(profile);
-
-            } catch (err) {
-                console.error(err);
-                alert('Session expired or connection failed. Please login again.');
-                localStorage.clear();
-                window.location.href = 'login.html';
-            }
-        }
-
-        // Render Role-Specific Tools
-        async function renderRoleTools(user) {
-            const card = document.getElementById('role-tools-card');
-            const title = document.getElementById('role-tools-title');
-            const content = document.getElementById('role-tools-content');
-            const designation = (user.designation || '').toLowerCase();
-            
-            let toolTitle = 'Work Tools';
-            let icon = 'fa-briefcase';
-            let toolsHtml = '';
-
-            // CMS Section (Available to all)
-            const cmsSection = `
-                <div style="margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
-                    <h4 style="color:white; margin-bottom:1rem;"><i class="fas fa-pen-nib"></i> Create News Update</h4>
-                    <form id="cms-form" style="display:grid; gap:10px;">
-                        <input type="text" id="post-title" class="form-control" placeholder="Title (e.g. New Partnership)" required>
-                        <textarea id="post-content" class="form-control" rows="3" placeholder="Content details..." required></textarea>
-                        <select id="post-category" class="form-control">
-                            <option value="News">News</option>
-                            <option value="Event">Event</option>
-                        </select>
-                        <button type="submit" class="btn-action" style="width:100%;">Publish to Homepage</button>
-                    </form>
-                </div>
-            `;
-
-            // Logic for Roles
-            if (designation.includes('admin') || designation.includes('director') || designation.includes('lead')) {
-                 document.getElementById('redirect-btns').style.display = 'flex';
-            }
-
-            if (designation.includes('hr') || designation.includes('human resource') || designation.includes('finance')) {
-                toolTitle = 'HR Portal';
-                icon = 'fa-users-cog';
-                
-                // Simulated Apps Data
-                let appsHtml = `
-                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <span><strong style="color:white;">John Doe</strong> <small>(Senior Dev)</small></span>
-                        <span class="role-tag">Pending</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <span><strong style="color:white;">Jane Smith</strong> <small>(Designer)</small></span>
-                        <span class="role-tag">Interview</span>
-                    </div>
-                `;
-
-                // Show Redirect Button
-                document.getElementById('redirect-btns').style.display = 'flex';
-
-                toolsHtml = `
-                    ${cmsSection}
-                    <h4 style="color:var(--primary-brand); margin-bottom:1rem;">Recruitment & Payroll</h4>
-                    <div style="background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px; margin-bottom:1.5rem;">
-                        <h5 style="color:white; margin-bottom:0.5rem;">Job Applications</h5>
-                        ${appsHtml}
-                    </div>
-                    
-                    <div style="background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px;">
-                         <h5 style="color:white; margin-bottom:0.5rem;">Payroll Management</h5>
-                         <form id="payroll-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                            <input type="text" id="pay-employee" class="form-control" placeholder="Employee ID/Name" required>
-                            <input type="number" id="pay-amount" class="form-control" placeholder="Amount (KES)" required>
-                            <select id="pay-month" class="form-control">
-                                <option>January</option><option>February</option><option>March</option>
-                                <option>December</option>
-                            </select>
-                            <button type="submit" class="btn-action">Generate Slip</button>
-                         </form>
-                    </div>
-                `;
-            } else if (designation.includes('program') || designation.includes('project')) {
-                toolTitle = 'Project Management';
-                icon = 'fa-project-diagram';
-                // Show Redirect Button
-                document.getElementById('redirect-btns').style.display = 'flex';
-                toolsHtml = `
-                    ${cmsSection}
-                    <h4 style="color:var(--primary-brand); margin-bottom:1rem;">Program Overview</h4>
-                    <div style="background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:5px;">
-                            <span style="color:white;">SRHR Workshop (West Pokot)</span>
-                            <span class="role-tag" style="background:rgba(0,255,0,0.1); color:#4caf50;">Active</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:5px;">
-                            <span style="color:white;">Climate Action Drive</span>
-                            <span class="role-tag" style="background:rgba(255,200,0,0.1); color:#ffc107;">Planning</span>
-                        </div>
-                         <a href="#" id="btn-new-project" class="btn-action" style="margin-top:10px;">Create New Project</a>
-                    </div>
-                `;
-            } else if (designation.includes('communication') || designation.includes('media')) {
-                toolTitle = 'Media Center';
-                icon = 'fa-bullhorn';
-                toolsHtml = `
-                    ${cmsSection}
-                    <h4 style="color:var(--primary-brand); margin-bottom:1rem;">Campaign Stats</h4>
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:1rem;">
-                        <div style="background:rgba(0,0,0,0.3); padding:10px; text-align:center; border-radius:8px;">
-                            <h3 style="color:white; margin:0;">2.5K</h3>
-                            <small style="color:var(--text-muted);">Reach</small>
-                        </div>
-                        <div style="background:rgba(0,0,0,0.3); padding:10px; text-align:center; border-radius:8px;">
-                            <h3 style="color:white; margin:0;">150</h3>
-                            <small style="color:var(--text-muted);">Shares</small>
-                        </div>
-                        <div style="background:rgba(0,0,0,0.3); padding:10px; text-align:center; border-radius:8px;">
-                            <h3 style="color:white; margin:0;">45</h3>
-                            <small style="color:var(--text-muted);">Posts</small>
-                        </div>
-                    </div>
-                `;
-            } else if (designation.includes('monitor') || designation.includes('m&e')) {
-                toolTitle = 'Data & Reporting';
-                icon = 'fa-chart-line';
-                toolsHtml = `
-                    ${cmsSection}
-                    <h4 style="color:var(--primary-brand); margin-bottom:1rem;">Impact Metrics (Q4)</h4>
-                    <ul style="color:var(--text-secondary); padding-left:20px; line-height:1.8;">
-                        <li><strong>Youth Reached:</strong> 1,200 <span style="color:#4caf50;">(+15%)</span></li>
-                        <li><strong>Training Sessions:</strong> 12 Completed</li>
-                        <li><strong>Maternal Kits Distributed:</strong> 450</li>
-                    </ul>
-                    <a href="#" id="btn-download-report" class="btn-action" style="margin-top:10px;">Download Full Report</a>
-                `;
-            } else {
-                // Default View
-                toolsHtml = `
-                    ${cmsSection}
-                    <p style="color:var(--text-secondary);">Role-specific tools for <strong>${user.designation}</strong> are being configured.</p>
-                `;
-            }
-
-            title.innerHTML = `<i class="fas ${icon}"></i> ${toolTitle}`;
-            content.innerHTML = toolsHtml;
-            card.style.display = 'block';
-
-            // Bind Payroll Form
-            document.getElementById('payroll-form')?.addEventListener('submit', (e)=>{
-                e.preventDefault();
-                alert('Payslip Generated Successfully! (Stored in DB)');
-                e.target.reset();
-            });
-
-            // Bind CMS Form
-            document.getElementById('cms-form')?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const title = document.getElementById('post-title').value;
-                const body = document.getElementById('post-content').value;
-                const cat = document.getElementById('post-category').value;
-
-                try {
-                    const res = await fetch('/api/posts', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
-                        body: JSON.stringify({ title, content: body, category: cat })
-                    });
-                    if(res.ok) {
-                        alert('Post Published!');
-                        e.target.reset();
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#802918",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f3f0ef",
+                        "secondary-container": "#cde6d1",
+                        "primary": "#9f402d",
+                        "on-primary-fixed": "#3e0500",
+                        "secondary": "#4d6453",
+                        "surface-variant": "#e5e2e1",
+                        "surface-tint": "#9f402d",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "on-primary-container": "#5a0d02",
+                        "surface": "#fcf9f8",
+                        "background": "#fcf9f8",
+                        "on-surface": "#1c1b1b",
+                        "on-secondary-fixed-variant": "#364c3c",
+                        "on-background": "#1c1b1b",
+                        "primary-fixed-dim": "#ffb4a5",
+                        "on-surface-variant": "#56423e",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed": "#ffdad3",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#c9a900",
+                        "on-tertiary-container": "#4c3f00",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#313030",
+                        "surface-container-high": "#eae7e7",
+                        "surface-dim": "#dcd9d9",
+                        "tertiary-fixed": "#ffe16d",
+                        "tertiary": "#705d00",
+                        "secondary-fixed": "#d0e9d4",
+                        "outline-variant": "#ddc0ba",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b4cdb8",
+                        "outline": "#89726d",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "inverse-primary": "#ffb4a5",
+                        "primary-container": "#e2725b",
+                        "on-secondary-fixed": "#0b2013",
+                        "on-tertiary-fixed": "#221b00",
+                        "on-secondary-container": "#516857",
+                        "surface-bright": "#fcf9f8",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem",
+                        "card": "16px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "gutter": "24px",
+                        "margin-mobile": "20px",
+                        "stack-sm": "16px",
+                        "stack-lg": "80px",
+                        "margin-desktop": "64px",
+                        "container-max": "1280px",
+                        "stack-md": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "label-sm": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
                     }
-                } catch(err) { console.error(err); }
-            });
-
-            // Bind Action Buttons
-            document.getElementById('btn-new-project')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal('Create New Project', 'Enter project name:', 'Create Project');
-            });
-            
-            document.getElementById('btn-download-report')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                alert('Downloading Report... (Simulated)');
-            });
+                },
+            },
         }
-
-        function renderAppsList(apps) {
-            if(!apps.length) return '<p>No pending applications.</p>';
-            return apps.map(app => `
-                <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid rgba(255,255,255,0.05);">
-                    <span><strong style="color:white;">${app.applicantName}</strong> <small>(${app.position})</small></span>
-                    <span class="role-tag">${app.status}</span>
-                </div>
-            `).join('');
-        }
-
-        // --- Generic Modal Logic ---
-        function openModal(title, label, btnText) {
-            const modal = document.getElementById('action-modal');
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-label').innerText = label;
-            document.getElementById('modal-submit').innerText = btnText;
-            modal.style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('action-modal').style.display = 'none';
-        }
-
-        // Close on outside click
-        window.onclick = function(event) {
-            const modal = document.getElementById('action-modal');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-            const editModal = document.getElementById('edit-profile-modal');
-            if (event.target == editModal) {
-                editModal.style.display = "none";
-            }
-        };
-
-        // Profile Editing Functions
-        let currentUser = null;
-
-        // Profile Editing Functions
-        let currentUser = null;
-
-        window.openEditProfileModal = async function() {
-            try {
-                // Get current user ID from localStorage since we are not using persistent sessions
-                const userId = localStorage.getItem('user_id');
-                if (!userId) return;
-
-                // Fetch latest user data
-                const { data: profile, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
-                
-                if (error || !profile) throw new Error('Failed to load profile');
-                
-                currentUser = profile;
-                
-                // Populate form
-                document.getElementById('edit-name').value = profile.name || '';
-                document.getElementById('edit-email').value = profile.email || '';
-                document.getElementById('edit-phone').value = profile.phone || '';
-                document.getElementById('edit-bio').value = profile.bio || '';
-                
-                // Show modal
-                document.getElementById('edit-profile-modal').style.display = 'flex';
-            } catch(err) {
-                console.error(err);
-                alert('Failed to load profile data');
-            }
-        };
-
-        window.closeEditProfileModal = function() {
-            document.getElementById('edit-profile-modal').style.display = 'none';
-        };
-
-        window.saveProfile = async function(e) {
-            e.preventDefault();
-            
-            const userId = localStorage.getItem('user_id');
-            if (!userId) return;
-            
-            const updatedData = {
-                name: document.getElementById('edit-name').value,
-                email: document.getElementById('edit-email').value,
-                phone: document.getElementById('edit-phone').value || null,
-                bio: document.getElementById('edit-bio').value || null
-            };
-
-            try {
-                const { error } = await supabase
-                    .from('users')
-                    .update(updatedData)
-                    .eq('id', userId);
-                
-                if (error) throw error;
-                
-                alert('Profile updated successfully!');
-                closeEditProfileModal();
-                
-                // Refresh profile display
-                fetchProfile();
-            } catch(err) {
-                console.error(err);
-                alert('Failed to update profile: ' + err.message);
-            }
-        };
-
-        document.getElementById('modal-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const val = document.getElementById('modal-input').value;
-            alert(`Action Confirmed: ${val}`);
-            closeModal();
-            document.getElementById('modal-input').value = '';
-        });
-
-        fetchProfile();
     </script>
-    
-    <!-- Generic Action Modal -->
-    <div id="action-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:1000;">
-        <div style="background:#1b1626; padding:2rem; border-radius:12px; width:90%; max-width:400px; border:1px solid rgba(255,255,255,0.1);">
-            <h3 id="modal-title" style="color:white; margin-bottom:1rem;">Action</h3>
-            <form id="modal-form">
-                <label id="modal-label" style="display:block; color:var(--text-secondary); margin-bottom:0.5rem;">Input</label>
-                <input type="text" id="modal-input" class="form-control" required style="margin-bottom:1rem;">
-                <div style="display:flex; gap:10px; justify-content:flex-end;">
-                    <button type="button" onclick="closeModal()" style="padding:8px 16px; background:transparent; color:white; border:1px solid rgba(255,255,255,0.2); border-radius:6px; cursor:pointer;">Cancel</button>
-                    <button type="submit" id="modal-submit" class="btn-action" style="margin-top:0;">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .staff-card-shadow {
+            box-shadow: 0 20px 30px rgba(28,27,27,0.04);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary/20 flex min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant/10 p-stack-sm z-50">
+<div class="flex items-center gap-3 px-4 py-6">
+<a href="homepage.html" class="flex items-center gap-2.5">
+<img src="assets/images/logo.png" alt="VYBE Africa" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+<div>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary leading-tight">Vybe Africa</h1>
+<p class="text-[12px] font-label-sm text-on-surface-variant uppercase tracking-wider">Staff Portal</p>
+</div>
+</a>
+</div>
+<nav class="mt-8 flex-grow space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-bold bg-secondary-container/30 rounded-lg transition-all duration-200" href="staff.html">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded-lg transition-all duration-200" href="programs_dashboard.html">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-body-md">Programs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded-lg transition-all duration-200" href="impact_analytics.html">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-body-md">Impact Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded-lg transition-all duration-200" href="team_directory.html">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md">Team Directory</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant/10 pt-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded-lg transition-all duration-200" href="edit_profile.html">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Edit Profile</span>
+</a>
+<button id="logout-btn" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded-lg transition-all duration-200 w-full text-left">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</button>
+</div>
+</aside>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <h4>VYBE Africa</h4>
-                    <p style="color: #ccc;">West Pokot County, Kenya<br>info@vybeafrica.org</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Our Work</h4>
-                    <a href="srhr.html">SRHR & Maternal Health</a>
-                    <a href="climate.html">Climate Action</a>
-                    <a href="child-protection.html">Child Protection</a>
-                    <a href="inclusive-governance.html">Inclusive Governance</a>
-                </div>
-                <div class="footer-col">
-                    <h4>About</h4>
-                    <a href="about.html">Who We Are</a>
-                    <a href="gallery.html">Gallery</a>
-                    <a href="contact.html">Contact Us</a>
-                    <a href="get-involved.html">Get Involved</a>
-                </div>
-                <div class="footer-col">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        <a href="https://www.facebook.com/vybeafrica" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://x.com/VybeAfrica254" target="_blank" class="social-icon"><i class="fab fa-x-twitter"></i></a>
-                        <a href="https://www.instagram.com/vybeafrica254?igsh=MXVidHl3NjB4a2h2dQ==" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.tiktok.com/@vybe.africa254?_r=1&_t=ZS-92LtvzRRzw9" target="_blank" class="social-icon"><i class="fab fa-tiktok"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="copyright">
-                &copy; <script>document.write(new Date().getFullYear())</script> VYBE Africa. All Rights Reserved.
-            </div>
-        </div>
-    </footer>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="flex justify-between items-center px-6 md:px-margin-desktop w-full h-16 bg-surface shadow-sm border-b border-outline-variant/20 sticky top-0 z-40">
+<div class="flex items-center gap-8">
+<span class="md:hidden material-symbols-outlined cursor-pointer">menu</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="font-body-md text-primary border-b-2 border-primary font-bold" href="staff.html">Dashboard</a>
+<a class="font-body-md text-on-surface-variant font-medium hover:text-primary transition-colors" href="impact_analytics.html">Analytics</a>
+<a class="font-body-md text-on-surface-variant font-medium hover:text-primary transition-colors" href="team_directory.html">Directory</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-2" id="admin-topnav-actions">
+<a href="staff_register.html" class="px-4 py-2 bg-primary text-on-primary rounded-full font-label-sm hover:opacity-90 transition-opacity">Add Staff</a>
+<a href="contact.html" class="px-4 py-2 border border-outline text-on-surface-variant rounded-full font-label-sm hover:bg-surface-container-low transition-colors">Support</a>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">translate</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant/30 overflow-hidden cursor-pointer" onclick="window.location.href='edit_profile.html'">
+<img class="w-full h-full object-cover" src="assets/images/IMG-20251211-WA0053.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuC2pV6QxSpHhK7W6Gf3BCH7IcrTYelNI30q9bp_rIsWRF9cMhTC2i0erWOBXsmF7ZZktBk_Hv2LgyoafBYDX7RuzKPsJQtYOCiBRySRkf_iykxePLg4Lno_ySwnlXe5RH22csoAUBiFdpXmeudxzO0aI0HqIdGXMQczQWhqJDDZCuTBbmVmr4D_mp8wApHTkNJQ7uQMI7sNP119znvns5ij0fDVUAt3-qa828cSsAmWLItXV1tp00vLN28nboVmgTjUBHp44mIkSKk'"/>
+</div>
+</div>
+</div>
+</header>
 
-    <script src="js/main.js"></script>
+<!-- Hero Welcome Section -->
+<section class="px-6 md:px-margin-desktop py-stack-md mt-4">
+<div class="max-w-container-max mx-auto bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-3 py-1 bg-primary/10 text-primary rounded-full font-label-sm text-xs font-bold uppercase tracking-wider" id="user-role-badge">Staff Member</span>
+<span class="text-on-surface-variant text-xs font-medium" id="user-dept">Vybe Africa Team</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Welcome, <span id="user-name">Staff Member</span></h2>
+<p class="font-body-md text-on-surface-variant mt-2 max-w-xl">Access your department portal, review pending tasks, and collaborate with team members across all 4 movement pillars.</p>
+</div>
+<div class="flex flex-wrap gap-3 w-full md:w-auto">
+<a id="dept-portal-btn" href="programs_dashboard.html" class="px-6 py-3 bg-primary text-on-primary font-label-sm rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2 font-bold shadow-sm">
+<span>Open Department Portal</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+<a href="edit_profile.html" class="px-5 py-3 border border-outline text-on-surface font-label-sm rounded-xl hover:bg-surface-container-low transition-all flex items-center justify-center gap-2 font-semibold">
+<span class="material-symbols-outlined text-sm">edit</span>
+<span>Edit Profile</span>
+</a>
+</div>
+</div>
+</section>
+
+<!-- Dashboard Bento Grid -->
+<section class="px-6 md:px-margin-desktop pb-stack-lg">
+<div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-3 gap-gutter">
+
+<!-- 1. Profile Overview Card -->
+<div class="bg-white rounded-card staff-card-shadow p-6 border border-outline-variant/20 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-6">
+<div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">account_circle</span>
+</div>
+<div>
+<h3 class="font-headline-md text-lg font-bold text-on-surface">My Account</h3>
+<p class="text-xs text-on-surface-variant font-medium">Personal Details & Credentials</p>
+</div>
+</div>
+<div class="space-y-4" id="profile-details">
+<div class="p-3 bg-surface-container-low rounded-lg">
+<p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider">Full Name</p>
+<p class="font-body-md font-semibold text-on-surface text-sm mt-0.5" id="detail-name">Loading...</p>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg">
+<p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider">Email Address</p>
+<p class="font-body-md font-semibold text-on-surface text-sm mt-0.5" id="detail-email">Loading...</p>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg">
+<p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider">Role & Designation</p>
+<p class="font-body-md font-semibold text-primary text-sm mt-0.5" id="detail-designation">Loading...</p>
+</div>
+</div>
+</div>
+<a href="edit_profile.html" class="mt-6 w-full py-3 bg-surface-container-high text-on-surface font-label-sm rounded-xl hover:bg-primary hover:text-white transition-all text-center block font-semibold">
+Manage Profile Settings
+</a>
+</div>
+
+<!-- 2. Department Tools & Quick Navigation Card -->
+<div class="bg-white rounded-card staff-card-shadow p-6 border border-outline-variant/20 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-6">
+<div class="w-12 h-12 rounded-xl bg-secondary-container text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">work</span>
+</div>
+<div>
+<h3 class="font-headline-md text-lg font-bold text-on-surface">Department Portals</h3>
+<p class="text-xs text-on-surface-variant font-medium">Quick Role Shortcuts</p>
+</div>
+</div>
+<div class="space-y-2.5" id="portal-links-container">
+<a href="admin_dashboard.html" data-portal-role="superadmin,admin" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg">shield_person</span>
+<span class="font-body-md text-sm font-semibold text-on-surface">Executive Portal</span>
+</div>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+</a>
+<a href="programs_dashboard.html" data-portal-role="programs,superadmin,admin" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-lg">assignment</span>
+<span class="font-body-md text-sm font-semibold text-on-surface">Programs Management</span>
+</div>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+</a>
+<a href="hr_dashboard.html" data-portal-role="hr,superadmin,admin" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary text-lg">badge</span>
+<span class="font-body-md text-sm font-semibold text-on-surface">HR Portal</span>
+</div>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+</a>
+<a href="communications_dashboard.html" data-portal-role="communications,staff,superadmin,admin" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg">campaign</span>
+<span class="font-body-md text-sm font-semibold text-on-surface">Communications Hub</span>
+</div>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+</a>
+<a href="me_dashboard.html" data-portal-role="me,staff,superadmin,admin" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg">analytics</span>
+<span class="font-body-md text-sm font-semibold text-on-surface">M&amp;E Analytics</span>
+</div>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+</a>
+<a href="finance_dashboard.html" data-portal-role="finance,superadmin,admin" class="flex items-center justify-between p-3 rounded-xl border border-outline-variant/20 hover:border-primary hover:bg-primary/5 transition-all group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-lg">payments</span>
+<span class="font-body-md text-sm font-semibold text-on-surface">Finance Portal</span>
+</div>
+<span class="material-symbols-outlined text-sm text-outline group-hover:text-primary transition-colors">arrow_forward</span>
+</a>
+<p class="hidden text-sm text-on-surface-variant text-center py-4" id="no-portals-msg">Your department portal is available via the button above.</p>
+</div>
+</div>
+</div>
+
+<!-- 3. Tasks & Team Shortcuts Card -->
+<div class="bg-white rounded-card staff-card-shadow p-6 border border-outline-variant/20 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-6">
+<div class="w-12 h-12 rounded-xl bg-tertiary-container/30 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">checklist</span>
+</div>
+<div>
+<h3 class="font-headline-md text-lg font-bold text-on-surface">Pending Tasks</h3>
+<p class="text-xs text-on-surface-variant font-medium">To-Do Items & Reminders</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl">
+<input type="checkbox" checked class="rounded text-primary focus:ring-primary h-4 w-4"/>
+<span class="text-sm font-medium text-on-surface line-through opacity-70">Complete weekly impact log</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl">
+<input type="checkbox" class="rounded text-primary focus:ring-primary h-4 w-4"/>
+<span class="text-sm font-medium text-on-surface">Update West Pokot chapter metrics</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl">
+<input type="checkbox" class="rounded text-primary focus:ring-primary h-4 w-4"/>
+<span class="text-sm font-medium text-on-surface">Review Q3 community feedback</span>
+</div>
+</div>
+
+<div class="mt-6 pt-4 border-t border-outline-variant/20 space-y-2">
+<a href="onboarding.html" class="w-full py-2.5 px-4 bg-secondary/10 text-secondary hover:bg-secondary hover:text-white font-label-sm text-xs rounded-lg transition-all flex items-center justify-between font-bold">
+<span>New Staff Onboarding Wizard</span>
+<span class="material-symbols-outlined text-sm">rocket_launch</span>
+</a>
+<a href="team_directory.html" class="w-full py-2.5 px-4 bg-primary/10 text-primary hover:bg-primary hover:text-white font-label-sm text-xs rounded-lg transition-all flex items-center justify-between font-bold">
+<span>View Team Directory</span>
+<span class="material-symbols-outlined text-sm">group</span>
+</a>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- Footer -->
+<footer class="w-full py-stack-sm mt-auto bg-surface-container-lowest border-t border-outline-variant/20 flex flex-col md:flex-row gap-4 justify-between items-center px-margin-desktop">
+<div class="font-label-sm text-label-sm font-bold text-on-surface">© 2026 Vybe Africa NGO. All rights reserved.</div>
+<div class="flex gap-stack-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-opacity duration-200" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-opacity duration-200" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-opacity duration-200" href="contact.html">Contact Support</a>
+</div>
+</footer>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Supabase setup
+        const supabaseUrl = 'https://uwfkqitmopqcbvwhkcgg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZmtxaXRtb3BxY2J2d2hrY2dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMTM2OTksImV4cCI6MjA5ODg4OTY5OX0.clHwO4AOcCB1yFbxGybydSUAlfR3uCaccnqt_mew3H8';
+        let supabase;
+        if (window.supabase) {
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+                auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+            });
+        }
+
+        const userId = localStorage.getItem('user_id');
+        const storedName = localStorage.getItem('name') || 'Staff Member';
+        const storedEmail = localStorage.getItem('email') || 'staff@vybeafrica.org';
+        const storedRole = (localStorage.getItem('role') || 'staff').toUpperCase();
+        const storedDesig = localStorage.getItem('designation') || 'Staff Officer';
+
+        document.getElementById('user-name').textContent = storedName;
+        document.getElementById('detail-name').textContent = storedName;
+        document.getElementById('detail-email').textContent = storedEmail;
+        document.getElementById('detail-designation').textContent = `${storedDesig} (${storedRole})`;
+        document.getElementById('user-role-badge').textContent = storedRole;
+        document.getElementById('user-dept').textContent = storedDesig;
+
+        // Route target button for role
+        const btn = document.getElementById('dept-portal-btn');
+        const role = (localStorage.getItem('role') || '').toLowerCase();
+        const designation = (localStorage.getItem('designation') || '').toLowerCase();
+        let hasDeptDashboard = false;
+
+        if (role === 'superadmin' || role === 'admin' || designation.includes('executive')) {
+            btn.href = 'admin_dashboard.html';
+            hasDeptDashboard = true;
+        } else if (role === 'hr' || designation.includes('hr')) {
+            btn.href = 'hr_dashboard.html';
+            hasDeptDashboard = true;
+        } else if (role === 'programs' || designation.includes('program')) {
+            btn.href = 'programs_dashboard.html';
+            hasDeptDashboard = true;
+        } else if (role === 'communications' || designation.includes('communication')) {
+            btn.href = 'communications_dashboard.html';
+            hasDeptDashboard = true;
+        } else if (role === 'me' || designation.includes('m&e') || designation.includes('monitoring')) {
+            btn.href = 'me_dashboard.html';
+            hasDeptDashboard = true;
+        } else if (role === 'finance' || designation.includes('finance')) {
+            btn.href = 'finance_dashboard.html';
+            hasDeptDashboard = true;
+        }
+
+        if (!hasDeptDashboard && btn) {
+            btn.style.display = 'none';
+        }
+
+        if (userId && supabase) {
+            try {
+                const { data: user } = await supabase.from('users').select('*').eq('id', userId).single();
+                if (user) {
+                    if (user.name) {
+                        document.getElementById('user-name').textContent = user.name;
+                        document.getElementById('detail-name').textContent = user.name;
+                    }
+                    if (user.email) document.getElementById('detail-email').textContent = user.email;
+                    if (user.designation) {
+                        document.getElementById('detail-designation').textContent = `${user.designation} (${(user.role || 'staff').toUpperCase()})`;
+                    }
+                }
+            } catch (e) { console.error(e); }
+        }
+    });
+</script>
 </body>
 </html>

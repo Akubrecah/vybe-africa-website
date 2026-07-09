@@ -5,6 +5,10 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Gallery - Vybe Africa</title>
     <!-- Tailwind CSS CDN with Grassroots Premium Design Tokens -->
+    <!-- Auth Guard & Persistent Session Manager -->
+    <script src="assets/js/auth-guard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/cms-client.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
@@ -83,7 +87,6 @@
 <!-- Top Utility Bar -->
 <div class="bg-primary text-on-primary py-2 text-xs font-label-sm w-full z-50 relative border-b border-white/10">
     <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
-        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="member_login.html">Members Login</a>
         <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="login.html">Staff Login</a>
         <a class="text-white font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
     </div>
@@ -140,7 +143,6 @@
             <a class="block py-2 px-3 rounded text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors" href="contact.html">Contact</a>
         </nav>
         <div class="max-w-container-max mx-auto px-margin-mobile pb-4 flex flex-col gap-2 border-t border-outline-variant/20 pt-3">
-            <a href="member_login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-outline-variant hover:border-primary hover:text-primary transition-colors">Member Login</a>
             <a href="login.html" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">Staff Login</a>
         </div>
     </div>
@@ -404,6 +406,30 @@
         visibleCount = 4; // Reset count back to initial view limit
         renderGallery();
     });
+
+    // Dynamically load gallery items from Supabase CMS
+    async function loadDynamicGallery() {
+        if (!window.cmsClient) return;
+        try {
+            const dbGallery = await window.cmsClient.fetchGalleryItems();
+            if (dbGallery && dbGallery.length > 0) {
+                const dbItems = dbGallery.map((item, idx) => ({
+                    src: item.image_url,
+                    alt: item.title || 'VYBE Africa gallery image',
+                    category: item.category || 'other',
+                    tagLabel: item.category === 'events' ? 'Events' : (item.category === 'training' ? 'Training' : 'Field Work'),
+                    title: item.title || 'Community Action',
+                    description: 'Active community engagement and programs driving grassroots youth advocacy.',
+                    colSpan: idx % 3 === 0 ? 'md:col-span-2' : 'md:col-span-1'
+                }));
+                GALLERY_ITEMS.unshift(...dbItems);
+                renderGallery();
+            }
+        } catch (e) {
+            console.error('Failed to load dynamic gallery items:', e);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', loadDynamicGallery);
 
     // Initial render
     renderGallery();

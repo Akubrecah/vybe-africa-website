@@ -30,7 +30,7 @@ ALTER TABLE users DISABLE ROW LEVEL SECURITY;
 -- Password for all: "Vybe2024" (hashed with bcrypt)
 -- bcrypt hash generated for "Vybe2024"
 
-INSERT INTO users (name, email, password, role, designation, phone) VALUES
+INSERT INTO users (name, email, password, role, designation, phone, avatar_url) VALUES
 
 -- 1. Sharon Chepkite - Executive Director (ADMIN)
 (
@@ -39,7 +39,8 @@ INSERT INTO users (name, email, password, role, designation, phone) VALUES
     '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
     'superadmin',
     'Executive Director',
-    '+254 700 000 001'
+    '+254 700 000 001',
+    'assets/images/IMG-20251211-WA0053.jpg'
 ),
 
 -- 2. Moses Kibet - Programs Manager
@@ -49,7 +50,8 @@ INSERT INTO users (name, email, password, role, designation, phone) VALUES
     '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
     'programs',
     'Programs Manager',
-    '+254 700 000 002'
+    '+254 700 000 002',
+    'assets/images/IMG-20251211-WA0024.jpg'
 ),
 
 -- 3. Marcellina Cherubia - Communication Officer
@@ -59,7 +61,8 @@ INSERT INTO users (name, email, password, role, designation, phone) VALUES
     '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
     'staff',
     'Communication Officer',
-    '+254 700 000 003'
+    '+254 700 000 003',
+    'assets/images/team/Marcellina Cherubia.jpg'
 ),
 
 -- 4. Farex Nandwa - HR
@@ -69,7 +72,8 @@ INSERT INTO users (name, email, password, role, designation, phone) VALUES
     '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
     'hr',
     'HR Manager',
-    '+254 700 000 004'
+    '+254 700 000 004',
+    'assets/images/IMG-20251211-WA0030.jpg'
 ),
 
 -- 5. Tony Barasa - M&E
@@ -78,8 +82,20 @@ INSERT INTO users (name, email, password, role, designation, phone) VALUES
     'tony@vybeafrica.org',
     '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
     'staff',
-    'M&E Officer',
-    '+254 700 000 005'
+    'M&E Lead',
+    '+254 700 000 005',
+    'assets/images/team/Tony Barasa.jpg'
+),
+
+-- 6. Joe Junior - Finance Manager
+(
+    'Joe Junior',
+    'joe@vybeafrica.org',
+    '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
+    'finance',
+    'Finance Manager',
+    '+254 700 000 006',
+    'assets/images/team/Joe Junior.jpg'
 ),
 
 -- 6. Admin Account (You)
@@ -89,7 +105,8 @@ INSERT INTO users (name, email, password, role, designation, phone) VALUES
     '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqzFE4t5fQuPZ7c6r8LxqwK8XKNPO',
     'superadmin',
     'System Admin',
-    '+254 717 648 457'
+    '+254 717 648 457',
+    'assets/images/IMG-20251211-WA0053.jpg'
 );
 
 -- ============================================

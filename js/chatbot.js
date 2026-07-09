@@ -27,7 +27,11 @@
     `• 🌱 Climate Action & Eco\n` +
     `• 🛡 Child Protection\n` +
     `• 🏛 Inclusive Governance\n\n` +
-    `All my answers come from trusted sources like UNICEF, UN Kenya, Red Cross, and UNFPA. Ask away!`;
+    `All my answers come from trusted sources. Ask away!\n\n` +
+    `📞 **Emergency Toll-free Helplines**:\n` +
+    `• **Aunty Jane (SRHR)**: 0800721530 (WhatsApp: 0727101919)\n` +
+    `• **GBV Helpline**: 1195 (24/7)\n` +
+    `• **Child Helpline**: 116 (24/7)`;
 
   const SUGGESTED = [
     'What is FGM and how does Vybe address it?',
@@ -70,6 +74,26 @@
     #bvb-launcher:hover {
       transform: scale(1.1);
       box-shadow: 0 8px 32px rgba(159,64,45,0.55);
+    }
+    #bvb-launcher .bvb-launcher-label {
+      position: absolute;
+      right: 74px;
+      background: #1c1b1b;
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+    #bvb-launcher:hover .bvb-launcher-label {
+      transform: scale(1.05);
+      opacity: 1;
     }
     #bvb-launcher .bvb-badge {
       position: absolute; top: 2px; right: 2px;
@@ -276,7 +300,7 @@
     const launcher = document.createElement('button');
     launcher.id    = 'bvb-launcher';
     launcher.setAttribute('aria-label', 'Open Bonga na Vybe chatbot');
-    launcher.innerHTML = `<span class="material-symbols-outlined" style="font-size:26px">forum</span><span class="bvb-badge"></span>`;
+    launcher.innerHTML = `<span class="material-symbols-outlined" style="font-size:26px">forum</span><span class="bvb-launcher-label">Bonga na Vybe</span><span class="bvb-badge"></span>`;
 
     // Panel
     const panel = document.createElement('div');
@@ -441,11 +465,21 @@
       isOpen = !isOpen;
       panel.classList.toggle('bvb-open', isOpen);
       launcher.querySelector('.bvb-badge')?.remove();
+      const label = launcher.querySelector('.bvb-launcher-label');
+      if (label) {
+        label.style.opacity = isOpen ? '0' : '1';
+        label.style.pointerEvents = isOpen ? 'none' : 'all';
+      }
       if (isOpen) input.focus();
     });
     document.getElementById('bvb-close').addEventListener('click', () => {
       isOpen = false;
       panel.classList.remove('bvb-open');
+      const label = launcher.querySelector('.bvb-launcher-label');
+      if (label) {
+        label.style.opacity = '1';
+        label.style.pointerEvents = 'all';
+      }
     });
 
     // Pillar pills

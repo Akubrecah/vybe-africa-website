@@ -15,7 +15,7 @@ const router  = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const supabase = require('../config/supabase');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, { apiVersion: 'v1' });
 
 // Pillar display names
 const PILLAR_LABELS = {
@@ -35,11 +35,15 @@ function buildSystemPrompt(contextChunks) {
 
 STRICT RULES:
 1. Answer ONLY using the provided context below. Do NOT use outside knowledge.
-2. If the question is not related to Vybe Africa's four pillars (SRHR & Health, Climate Action, Child Protection, Inclusive Governance), respond: "Samahani! I can only answer questions about Vybe Africa's four pillars. Please ask me about SRHR, climate action, child protection, or inclusive governance."
-3. Always cite the source(s) you used, referencing the [Source N] labels.
-4. Keep answers concise, warm, and youth-friendly.
-5. If the context does not contain enough information, say so honestly — do not guess.
-6. Respond in the same language the user writes in (English or Swahili).
+2. If the user asks for emergency helplines, support numbers, or contacts, you MUST share these:
+   - Aunty Jane (SRHR & Health): 0800721530 (Toll-Free) or WhatsApp 0727101919
+   - GBV Helpline: 1195 (Toll-Free, 24/7)
+   - Child Helpline: 116 (Toll-Free, 24/7)
+3. If the question is not related to Vybe Africa's four pillars (SRHR & Health, Climate Action, Child Protection, Inclusive Governance) and does not ask for contact/support help, respond: "Samahani! I can only answer questions about Vybe Africa's four pillars. Please ask me about SRHR, climate action, child protection, or inclusive governance."
+4. Always cite the source(s) you used, referencing the [Source N] labels.
+5. Keep answers concise, warm, and youth-friendly.
+6. If the context does not contain enough information, say so honestly — do not guess.
+7. Respond in the same language the user writes in (English or Swahili).
 
 CONTEXT:
 ${context}
@@ -64,33 +68,60 @@ router.post('/', async (req, res) => {
   try {
     // ── 1. Embed the user's question ────────────────────────────────────
     console.log('Step 1: Attempting to embed message:', message.trim().substring(0, 50));
-    const embeddingModel = genAI.getGenerativeModel({ model: 'models/gemini-embedding-001' });
+    const embeddingModel = genAI.getGenerativeModel({ model: 'text-embedding-004' }, { apiVersion: 'v1' });
     const embeddingResult = await embeddingModel.embedContent(message.trim());
     const queryEmbedding   = embeddingResult.embedding.values;
     console.log('Step 1 success: Embedding dimensions =', queryEmbedding?.length);
 
-    // ── 2. Retrieve relevant chunks from Supabase ───────────────────────
+    // ── 2. Retrieve relevant chunks from Supabase with safe fallback ────
     console.log('Step 2: Querying Supabase...');
-    const { data: chunks, error: dbError } = await supabase.rpc(
-      'match_bonga_documents',
-      {
-        query_embedding: queryEmbedding,
-        match_threshold: 0.45,
-        match_count:     6,
-        filter_pillar:   pillar,   // null = search all pillars
+    let chunks = [];
+    let dbSuccess = false;
+
+    try {
+      const { data, error: dbError } = await supabase.rpc(
+        'match_bonga_documents',
+        {
+          query_embedding: queryEmbedding,
+          match_threshold: 0.45,
+          match_count:     6,
+          filter_pillar:   pillar,   // null = search all pillars
+        }
+      );
+      if (!dbError && data) {
+        chunks = data;
+        dbSuccess = true;
+        console.log('Step 2 success: Found', chunks.length, 'chunks');
+      } else {
+        console.warn('Step 2 warning: Supabase RPC returned error, proceeding with direct chat fallback.', dbError?.message);
       }
-    );
-
-    if (dbError) {
-      console.error('Step 2 error - Supabase RPC error:', dbError);
-      return res.status(500).json({ error: 'Knowledge base lookup failed: ' + dbError.message });
+    } catch (dbErr) {
+      console.warn('Step 2 warning: Supabase RPC threw exception, proceeding with direct chat fallback.', dbErr.message);
     }
-    console.log('Step 2 success: Found', chunks?.length || 0, 'chunks');
 
-    // ── 3. Build prompt ─────────────────────────────────────────────────
+    // ── 3. Build prompt (RAG or Fallback) ───────────────────────────────
     console.log('Step 3: Building system prompt...');
-    const systemPrompt = buildSystemPrompt(chunks || []);
-    const chatModel    = genAI.getGenerativeModel({ model: 'models/gemini-2.5-flash' });
+    let systemPrompt = '';
+    const hasKnowledgeBase = dbSuccess && chunks.length > 0;
+
+    if (hasKnowledgeBase) {
+      systemPrompt = buildSystemPrompt(chunks);
+      console.log('Step 3: Loaded RAG system prompt');
+    } else {
+      systemPrompt = `You are "Bonga na Vybe" — a warm, supportive, and friendly AI assistant for Vybe Africa, a youth-led organisation in West Pokot, Kenya.
+Since there are no matching reference documents in our local knowledge base for this query, answer the user's question directly to the best of your knowledge.
+Keep your answers engaging, youth-friendly, and concise.
+
+If relevant to their query, let the user know they can reach the following helplines:
+- Aunty Jane (SRHR & Health): 0800721530 (Toll-Free) or WhatsApp 0727101919
+- GBV Helpline: 1195 (Toll-Free, 24/7)
+- Child Helpline: 116 (Toll-Free, 24/7)
+
+Answer the user's question directly, matching the language they write in (English or Swahili).`;
+      console.log('Step 3: Loaded direct chat fallback prompt (knowledge base unavailable)');
+    }
+
+    const chatModel = genAI.getGenerativeModel({ model: 'models/gemini-2.5-flash' });
     console.log('Step 3 success: System prompt built');
 
     console.log('Step 4: Calling Gemini API...');
@@ -103,14 +134,16 @@ router.post('/', async (req, res) => {
     console.log('Step 4 success: Got response from Gemini');
 
     // ── 4. Deduplicate + format sources ─────────────────────────────────
-    const sources = (chunks || [])
-      .filter((c, i, arr) => arr.findIndex(x => x.source_url === c.source_url) === i)
-      .map(c => ({
-        name:   c.source_name,
-        url:    c.source_url,
-        pillar: PILLAR_LABELS[c.pillar] || c.pillar,
-        title:  c.title,
-      }));
+    const sources = hasKnowledgeBase 
+      ? (chunks || [])
+          .filter((c, i, arr) => arr.findIndex(x => x.source_url === c.source_url) === i)
+          .map(c => ({
+            name:   c.source_name,
+            url:    c.source_url,
+            pillar: PILLAR_LABELS[c.pillar] || c.pillar,
+            title:  c.title,
+          }))
+      : [];
 
     return res.json({ answer, sources });
 
