@@ -531,7 +531,7 @@
                     document.body.appendChild(overlay);
                 }
 
-                asideElement.className = "z-50 h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-inverse-surface border-r border-outline-variant/10 shadow-[20px_0_30px_rgba(0,0,0,0.04)] hidden md:flex flex-col p-4";
+                asideElement.className = "z-50 h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-inverse-surface border-r border-outline-variant/10 shadow-[20px_0_30px_rgba(0,0,0,0.04)] hidden md:flex flex-col";
                 
                 const activeStyle = "flex items-center gap-4 px-4 py-3 rounded-lg text-primary font-bold bg-primary-container/10 border-r-4 border-primary transition-all duration-200";
                 const inactiveStyle = "flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200";
@@ -584,7 +584,7 @@
                                 <span class="material-symbols-outlined" style="font-size: 20px;">close</span>
                             </button>
                         </div>
-                        <nav class="flex-1 px-4 mt-8 space-y-2">
+                        <nav class="flex-1 px-4 mt-8 space-y-2 overflow-y-auto" style="scrollbar-width: thin;">
                             ${linksHTML}
                         </nav>
                         <div class="p-4 mt-auto">
