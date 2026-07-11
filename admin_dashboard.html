@@ -135,6 +135,29 @@
     </script>
 <style>
         .custom-shadow { box-shadow: 0 20px 30px rgba(0,0,0,0.04); }
+
+        /* Mobile Sidebar Styles */
+        @media (max-width: 767px) {
+            aside.sidebar-open {
+                display: flex !important;
+                transform: translateX(0) !important;
+            }
+            aside {
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            #admin-mobile-overlay {
+                position: fixed;
+                top: 0; left: 0;
+                width: 100vw; height: 100vh;
+                background: rgba(28,27,27,0.5);
+                backdrop-filter: blur(4px);
+                z-index: 49;
+                display: none;
+            }
+            #admin-mobile-overlay.active { display: block !important; }
+            main { margin-left: 0 !important; }
+        }
     </style>
 </head>
 <body class="bg-background text-on-surface font-body-md antialiased flex min-h-screen">
@@ -193,13 +216,22 @@
 </div>
 </aside>
 
+<!-- Mobile Sidebar Overlay -->
+<div id="admin-mobile-overlay"></div>
+
 <!-- Main Content Canvas -->
 <main class="flex-1 md:ml-64 min-h-screen flex flex-col">
 <!-- Top Nav -->
-<header class="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-outline-variant/20 flex items-center justify-between px-6 md:px-margin-desktop h-20 w-full shrink-0">
+<header class="sticky top-0 z-50 bg-surface/90 backdrop-blur-md border-b border-outline-variant/20 flex items-center justify-between px-4 md:px-margin-desktop h-16 md:h-20 w-full shrink-0">
+<!-- Mobile Hamburger -->
+<div class="flex items-center gap-3">
+<button id="admin-hamburger-btn" class="md:hidden flex items-center justify-center p-2 rounded-lg bg-surface-container-low border border-outline-variant/20 text-on-surface-variant hover:text-primary transition-colors" aria-label="Open menu">
+<span class="material-symbols-outlined">menu</span>
+</button>
 <div>
-<h2 class="font-headline-md text-headline-md text-on-surface font-extrabold">Executive Dashboard</h2>
-<p class="text-xs text-on-surface-variant">Strategic overview, team actions, and performance metrics</p>
+<h2 class="font-headline-md text-base md:text-headline-md text-on-surface font-extrabold">Executive Dashboard</h2>
+<p class="text-xs text-on-surface-variant hidden sm:block">Strategic overview, team actions, and performance metrics</p>
+</div>
 </div>
 <div class="flex items-center gap-4">
 <div class="flex gap-4">
@@ -712,6 +744,38 @@
 
         // Load knowledge sources initially
         window.loadKnowledgeSources();
+    });
+
+    // ─── Mobile Sidebar Wiring ───
+    document.addEventListener('DOMContentLoaded', () => {
+        const hamburger = document.getElementById('admin-hamburger-btn');
+        const overlay   = document.getElementById('admin-mobile-overlay');
+        const sidebar   = document.querySelector('aside');
+
+        if (!hamburger || !overlay || !sidebar) return;
+
+        // Open sidebar
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.add('sidebar-open');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        // Close sidebar via overlay
+        overlay.addEventListener('click', closeSidebar);
+
+        // Close when a nav link is tapped
+        sidebar.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('click', () => {
+                if (window.innerWidth < 768) closeSidebar();
+            });
+        });
+
+        function closeSidebar() {
+            sidebar.classList.remove('sidebar-open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
     });
 </script>
 </body>

@@ -601,16 +601,50 @@
                     </div>
                 `;
 
-                // Inject Hamburger Button into header on mobile
+                // Standardize header styling and inject Hamburger on mobile
                 const header = document.querySelector('header');
                 if (header) {
+                    // Remove hidden, mobile hidden, or push/padding offsets from header
+                    let classes = header.className.split(' ');
+                    classes = classes.filter(c => 
+                        c !== 'hidden' && 
+                        c !== 'md:hidden' && 
+                        !c.startsWith('md:pl-') && 
+                        !c.startsWith('pl-') && 
+                        !c.startsWith('pr-') &&
+                        !c.startsWith('md:pr-')
+                    );
+                    
+                    // Add standard layout properties
+                    if (!classes.includes('sticky') && !classes.includes('fixed')) {
+                        classes.push('sticky');
+                    }
+                    if (!classes.includes('top-0')) classes.push('top-0');
+                    if (!classes.includes('z-40') && !classes.includes('z-30')) classes.push('z-40');
+                    
+                    header.className = classes.join(' ');
+                    
+                    // Find the flex container inside header (or use header itself)
+                    let flexContainer = header;
+                    const innerFlex = header.querySelector('.flex, div[class*="flex"]');
+                    if (innerFlex) {
+                        flexContainer = innerFlex;
+                    }
+                    
+                    // Ensure the flex container itself is visible on mobile
+                    if (flexContainer !== header) {
+                        flexContainer.className = flexContainer.className
+                            .replace('hidden', '')
+                            .replace('md:hidden', '');
+                    }
+                    
                     let burgerBtn = document.getElementById('mobile-hamburger-btn');
                     if (!burgerBtn) {
                         burgerBtn = document.createElement('button');
                         burgerBtn.id = 'mobile-hamburger-btn';
-                        burgerBtn.className = 'md:hidden mr-4 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center p-2 rounded-lg bg-surface-container-low border border-outline-variant/20';
+                        burgerBtn.className = 'md:hidden mr-4 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center p-2 rounded-lg bg-surface-container-low border border-outline-variant/20 flex-shrink-0';
                         burgerBtn.innerHTML = '<span class="material-symbols-outlined">menu</span>';
-                        header.insertBefore(burgerBtn, header.firstChild);
+                        flexContainer.insertBefore(burgerBtn, flexContainer.firstChild);
                         
                         burgerBtn.addEventListener('click', () => {
                             asideElement.classList.add('mobile-active');

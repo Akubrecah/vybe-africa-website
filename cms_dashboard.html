@@ -256,15 +256,58 @@
 
         <!-- 3. IMPACT STATISTICS TAB -->
         <section id="section-stats" class="tab-content hidden flex flex-col gap-6">
+            <!-- Header -->
             <div class="bg-white p-6 rounded-card border border-outline-variant/10 shadow-sm">
-                <h3 class="text-lg font-bold text-on-surface">Dynamic Landing Page Impact Counters</h3>
-                <p class="text-xs text-on-surface-variant">Modify the real-time counting metrics shown on the homepage</p>
+                <h3 class="text-lg font-bold text-on-surface">Impact Statistics Editor</h3>
+                <p class="text-xs text-on-surface-variant mt-1">Update all numbers and metrics displayed across the public website — homepage counters and programme page stats</p>
+                <!-- Sub-tabs -->
+                <div class="flex gap-2 mt-4 border-b border-outline-variant/20 pb-0">
+                    <button id="stats-sub-homepage" onclick="switchStatsSub('homepage')" class="stats-sub-btn px-4 py-2 text-sm font-bold rounded-t-lg border border-b-0 border-outline-variant/20 bg-primary text-white transition-all">
+                        🏠 Homepage Counters
+                    </button>
+                    <button id="stats-sub-pages" onclick="switchStatsSub('pages')" class="stats-sub-btn px-4 py-2 text-sm font-bold rounded-t-lg border border-b-0 border-outline-variant/20 bg-surface-container-low text-on-surface-variant hover:text-primary transition-all">
+                        📊 Programme Page Stats
+                    </button>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="stats-grid-container">
-                <!-- Dynamic Stats Cards -->
+            <!-- Sub-panel: Homepage Counters -->
+            <div id="stats-sub-panel-homepage">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="stats-grid-container">
+                    <!-- Dynamic Stats Cards (loaded by loadStats()) -->
+                </div>
+            </div>
+
+            <!-- Sub-panel: Programme Page Stats -->
+            <div id="stats-sub-panel-pages" class="hidden flex flex-col gap-6">
+                <div class="bg-white p-4 rounded-card border border-outline-variant/10 shadow-sm flex flex-wrap items-center gap-3">
+                    <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Filter by Programme:</span>
+                    <select id="prog-stats-filter" onchange="loadProgrammeStats()" class="bg-surface-container-low border border-outline-variant/30 rounded-lg px-3 py-1.5 text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                        <option value="all">All Pages</option>
+                        <option value="srhr">SRHR &amp; Health</option>
+                        <option value="climate">Climate Action</option>
+                        <option value="child">Child Protection</option>
+                        <option value="governance">Inclusive Governance</option>
+                        <option value="work">Our Work Page</option>
+                    </select>
+                    <button onclick="loadProgrammeStats()" class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-low border border-outline-variant/30 rounded-lg text-xs font-semibold text-on-surface-variant hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-sm">refresh</span> Refresh
+                    </button>
+                </div>
+
+                <div id="prog-stats-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div class="col-span-full p-8 text-center text-on-surface-variant font-semibold">Loading programme stats…</div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                    <span class="material-symbols-outlined text-amber-500 text-xl flex-shrink-0 mt-0.5">info</span>
+                    <div class="text-xs text-amber-800">
+                        <strong>How this works:</strong> These stats are stored in the Supabase <code>page_contents</code> table and loaded by the public website pages. Changes save instantly to the database and appear live within seconds on the website.
+                    </div>
+                </div>
             </div>
         </section>
+
 
         <!-- 4. PAGE CONTENTS TAB (Unlimited scope blocks) -->
         <section id="section-pages" class="tab-content hidden flex flex-col gap-6">
@@ -1083,6 +1126,174 @@
             showToast(`Metric '${key}' updated (Saved to browser cache)!`, 'warning');
         }
         loadStats();
+    }
+
+    // --- 3b. PROGRAMME STATS (data-cms-key stats from public pages) ---
+
+    // All known programme stats extracted from public HTML pages
+    const PROGRAMME_STATS = [
+        // work.html - SRHR
+        { page: 'work', section: 'srhr', key: 'stat_1_val', label: 'Individuals Reached', emoji: '👥', colour: '#e2725b' },
+        { page: 'work', section: 'srhr', key: 'stat_2_val', label: 'Clinics Supported',   emoji: '🏥', colour: '#e2725b' },
+        // work.html - Climate
+        { page: 'work', section: 'climate', key: 'stat_1_val', label: 'Trees Planted',   emoji: '🌳', colour: '#4d6453' },
+        { page: 'work', section: 'climate', key: 'stat_2_val', label: 'Farming Co-ops',  emoji: '🌾', colour: '#4d6453' },
+        // work.html - Child Protection
+        { page: 'work', section: 'child', key: 'stat_1_val', label: 'Safe Centers',       emoji: '🏫', colour: '#705d00' },
+        { page: 'work', section: 'child', key: 'stat_2_val', label: 'Children Enrolled',  emoji: '🎒', colour: '#705d00' },
+        // work.html - Governance
+        { page: 'work', section: 'governance', key: 'stat_1_val', label: 'Leaders Trained',   emoji: '🎓', colour: '#9f402d' },
+        { page: 'work', section: 'governance', key: 'stat_2_val', label: 'Policy Dialogues',  emoji: '📋', colour: '#9f402d' },
+        // srhr.html stats
+        { page: 'srhr', section: 'stats', key: 'stat_1_val', label: 'SRHR – Youth Reached',    emoji: '👥', colour: '#e2725b' },
+        { page: 'srhr', section: 'stats', key: 'stat_2_val', label: 'SRHR – Partner Clinics',  emoji: '🏥', colour: '#e2725b' },
+        { page: 'srhr', section: 'stats', key: 'stat_3_val', label: 'SRHR – Access Increase',  emoji: '📈', colour: '#e2725b' },
+        { page: 'srhr', section: 'stats', key: 'stat_4_val', label: 'SRHR – Products Dist.',   emoji: '📦', colour: '#e2725b' },
+    ];
+
+    // Sub-tab switcher for the stats section
+    function switchStatsSub(sub) {
+        const panels = ['homepage', 'pages'];
+        panels.forEach(p => {
+            const panel = document.getElementById(`stats-sub-panel-${p}`);
+            const btn   = document.getElementById(`stats-sub-${p}`);
+            if (!panel || !btn) return;
+            if (p === sub) {
+                panel.classList.remove('hidden');
+                btn.style.backgroundColor = '#9f402d';
+                btn.style.color = '#ffffff';
+            } else {
+                panel.classList.add('hidden');
+                btn.style.backgroundColor = '';
+                btn.style.color = '';
+                btn.className = 'stats-sub-btn px-4 py-2 text-sm font-bold rounded-t-lg border border-b-0 border-outline-variant/20 bg-surface-container-low text-on-surface-variant hover:text-primary transition-all';
+            }
+        });
+        if (sub === 'pages') loadProgrammeStats();
+    }
+
+    async function loadProgrammeStats() {
+        const grid   = document.getElementById('prog-stats-grid');
+        const filter = document.getElementById('prog-stats-filter').value;
+        grid.innerHTML = '<div class="col-span-full p-8 text-center text-on-surface-variant font-semibold">Loading programme stats…</div>';
+
+        // Build filtered list
+        let list = PROGRAMME_STATS;
+        if (filter !== 'all') {
+            list = PROGRAMME_STATS.filter(s => s.page === filter || s.section === filter);
+        }
+
+        // Try fetching saved values from Supabase page_contents
+        let savedMap = {};
+        try {
+            if (window.cmsClient && window.cmsClient.client) {
+                const keys  = list.map(s => s.key);
+                const { data } = await window.cmsClient.client
+                    .from('page_contents')
+                    .select('page, section, content_key, value')
+                    .in('content_key', keys);
+                if (data) {
+                    data.forEach(row => {
+                        savedMap[`${row.page}__${row.section}__${row.content_key}`] = row.value;
+                    });
+                }
+            }
+        } catch (e) {
+            console.warn('Could not fetch programme stats from DB:', e);
+        }
+
+        // Also check localStorage override
+        const localMap = JSON.parse(localStorage.getItem('vybe_prog_stats') || '{}');
+        const merged   = Object.assign({}, savedMap, localMap);
+
+        if (list.length === 0) {
+            grid.innerHTML = '<div class="col-span-full p-8 text-center text-on-surface-variant font-semibold">No stats match this filter.</div>';
+            return;
+        }
+
+        grid.innerHTML = list.map(stat => {
+            const uid = `${stat.page}__${stat.section}__${stat.key}`;
+            const currentVal = merged[uid] || '';
+            const pageLabel = stat.page === 'work' ? `Our Work (${stat.section})` : stat.page.toUpperCase();
+            return `
+            <div class="bg-white rounded-card border border-outline-variant/10 shadow-sm overflow-hidden">
+                <div class="px-5 pt-5 pb-3 border-b border-outline-variant/10 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">${stat.emoji}</span>
+                        <div>
+                            <p class="font-bold text-sm text-on-surface">${stat.label}</p>
+                            <p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">${pageLabel}</p>
+                        </div>
+                    </div>
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background:${stat.colour}20">
+                        <span class="material-symbols-outlined text-sm" style="color:${stat.colour}">edit</span>
+                    </div>
+                </div>
+                <div class="p-5 space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Current Value Shown on Website</label>
+                        <input
+                            type="text"
+                            id="prog-input-${uid}"
+                            value="${currentVal}"
+                            placeholder="e.g. 15k+, 1.2M, 89%"
+                            class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                        >
+                        <p class="text-[10px] text-on-surface-variant mt-1">Accepts any format: 15k+, 1.2M, 89%, 5,200</p>
+                    </div>
+                    <button
+                        onclick="saveProgrammeStat('${stat.page}', '${stat.section}', '${stat.key}', '${uid}')"
+                        class="w-full py-2 rounded-lg text-xs font-bold text-white transition-opacity hover:opacity-90 active:scale-95"
+                        style="background-color:${stat.colour}"
+                    >
+                        <span class="material-symbols-outlined text-sm align-middle mr-1">save</span>
+                        Save to Website
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    async function saveProgrammeStat(page, section, key, uid) {
+        const input = document.getElementById(`prog-input-${uid}`);
+        if (!input) return;
+        const newValue = input.value.trim();
+        if (!newValue) { showToast('Please enter a value first.'); return; }
+
+        let dbSaved = false;
+        try {
+            if (window.cmsClient && window.cmsClient.client) {
+                // Upsert into page_contents (same table as Page Content Blocks)
+                const { error } = await window.cmsClient.client
+                    .from('page_contents')
+                    .upsert(
+                        { page, section, content_key: key, value: newValue, updated_at: new Date().toISOString() },
+                        { onConflict: 'page,section,content_key' }
+                    );
+                if (!error) dbSaved = true;
+            }
+        } catch (e) {
+            console.warn('DB upsert failed, using localStorage:', e);
+        }
+
+        // Always save to localStorage as fallback
+        const localMap = JSON.parse(localStorage.getItem('vybe_prog_stats') || '{}');
+        localMap[uid] = newValue;
+        localStorage.setItem('vybe_prog_stats', JSON.stringify(localMap));
+
+        if (dbSaved) {
+            showToast(`✅ "${key}" updated to "${newValue}" — live on website!`);
+        } else {
+            showToast(`💾 "${key}" saved locally (DB offline). Will sync when connected.`);
+        }
+
+        // Flash the input green briefly
+        input.style.borderColor = '#4d6453';
+        input.style.backgroundColor = '#f0fdf4';
+        setTimeout(() => {
+            input.style.borderColor = '';
+            input.style.backgroundColor = '';
+        }, 2000);
     }
 
     // --- 4. PAGE CONTENT BLOCKS CONTROLLERS ---
