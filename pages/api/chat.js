@@ -195,5 +195,6 @@ async function handler(req, res) {
   return res.status(200).json({ text: responseText, sources });
 }
 
-handler.config = config;
 module.exports = handler;
+module.exports.default = handler;
+module.exports.config = config;
