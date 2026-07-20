@@ -19,21 +19,38 @@ function buildSystemPrompt(contextChunks) {
   return `You are "Bonga na Vybe" — an AI assistant for Vybe Africa, a youth-led organisation in West Pokot, Kenya.
 
 STRICT RULES:
-1. Answer ONLY using the provided context below. Do NOT use outside knowledge.
+1. Answer using the provided context below as much as possible.
 2. If the user asks for emergency helplines, support numbers, or contacts, you MUST share these:
    - Aunty Jane (SRHR & Health): 0800721530 (Toll-Free) or WhatsApp 0727101919
    - GBV Helpline: 1195 (Toll-Free, 24/7)
    - Child Helpline: 116 (Toll-Free, 24/7)
-3. If the question is not related to Vybe Africa's four pillars (SRHR & Health, Climate Action, Child Protection, Inclusive Governance) and does not ask for contact/support help, respond: "Samahani! I can only answer questions about Vybe Africa's four pillars. Please ask me about SRHR, climate action, child protection, or inclusive governance."
+3. Keep answers concise, warm, engaging, and youth-friendly.
 4. Always cite the source(s) you used, referencing the [Source N] labels in your answer text (e.g. "[Source 1]").
-5. Keep answers concise, warm, and youth-friendly.
-6. If the context does not contain enough information to answer the question, say: "Samahani! I cannot find this information in my knowledge base. Please ask about SRHR, climate action, child protection, or inclusive governance."
-7. Respond in the same language the user writes in (English or Swahili).
+5. Respond in the same language the user writes in (English or Swahili).
 
 CONTEXT:
 ${context}
 
-Answer the user's question based strictly on the context above.`;
+Answer the user's question based on the context above.`;
+}
+
+function buildGeneralPrompt() {
+  return `You are "Bonga na Vybe" — a warm, supportive, and friendly AI assistant for Vybe Africa, a youth-led organisation in West Pokot, Kenya.
+
+Keep your answers engaging, youth-friendly, and concise.
+If the user greets you or asks who you are, greet them warmly (e.g. "Jambo!", "Habari!", "Hello!") and introduce yourself.
+Let the user know you are here to assist with questions on Vybe Africa's four pillars:
+- 💊 SRHR & Maternal Health
+- 🌱 Climate Action & Eco
+- 🛡 Child Protection
+- 🏛 Inclusive Governance
+
+Emergency Helplines (share if relevant):
+- Aunty Jane (SRHR & Health): 0800721530 (Toll-Free) or WhatsApp 0727101919
+- GBV Helpline: 1195 (Toll-Free, 24/7)
+- Child Helpline: 116 (Toll-Free, 24/7)
+
+Respond warmly in the same language the user writes in (English or Swahili).`;
 }
 
 module.exports = async function handler(req, res) {
@@ -59,22 +76,24 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-cache, no-transform');
   res.setHeader('Connection', 'keep-alive');
 
-  try {
-    // ── 1. Embed the user's question with NVIDIA API ─────────────────────
-    const queryEmbedding = await getNvidiaEmbedding(message.trim(), 'query');
+  const trimmedMsg = message.trim();
+  const isGreetingOrGeneral = /^(hello|hi|hey|jambo|habari|greetings|good\s*(morning|afternoon|evening)|thank\s*you|thanks|who\s*are\s*you|what\s*can\s*you\s*do|mambo)/i.test(trimmedMsg);
 
-    // ── 2. Retrieve relevant chunks from Supabase ───────────────────────
+  try {
     let chunks = [];
     let dbSuccess = false;
 
+    // ── 1. Embed and query vector DB if not a pure greeting ────────────
     try {
+      const queryEmbedding = await getNvidiaEmbedding(trimmedMsg, 'query');
+
       const { data, error: dbError } = await supabase.rpc(
         'match_bonga_documents',
         {
           query_embedding: queryEmbedding,
-          match_threshold: 0.40, // Slightly lower threshold for higher match likelihood
+          match_threshold: 0.35, // Lower threshold for higher match likelihood
           match_count:     6,
-          filter_pillar:   pillar || null, // null matches all pillars
+          filter_pillar:   pillar || null,
         }
       );
       if (!dbError && data) {
@@ -84,41 +103,61 @@ module.exports = async function handler(req, res) {
         console.warn('Supabase RPC error:', dbError?.message);
       }
     } catch (dbErr) {
-      console.warn('Supabase RPC exception:', dbErr.message);
+      console.warn('Embedding / Supabase RPC exception:', dbErr.message);
     }
 
-    // ── 3. Strict Check: If no information retrieved, say so ───────────
-    if (!dbSuccess || chunks.length === 0) {
-      const fallbackText = "Samahani! I cannot find any relevant information in my knowledge base to answer your question. Please ask me about SRHR, climate action, child protection, or inclusive governance.";
-      res.write(`data: ${JSON.stringify({ text: fallbackText })}\n\n`);
+    // ── 2. Determine Prompt ─────────────────────────────────────────────
+    const hasKnowledgeBase = dbSuccess && chunks.length > 0;
+    const systemPrompt = (hasKnowledgeBase && !isGreetingOrGeneral)
+      ? buildSystemPrompt(chunks)
+      : buildGeneralPrompt();
+
+    // ── 3. Fallback Model Loop for Gemini API (prevents 429 rate limit crashes) ──
+    const MODELS_TO_TRY = ['gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    let resultStream = null;
+    let modelError = null;
+
+    for (const modelName of MODELS_TO_TRY) {
+      try {
+        const chatModel = genAI.getGenerativeModel({ model: modelName });
+        resultStream = await chatModel.generateContentStream([
+          { text: systemPrompt },
+          { text: `User question: ${trimmedMsg}` },
+        ]);
+        if (resultStream) break;
+      } catch (err) {
+        console.warn(`Gemini model ${modelName} error:`, err?.message || err);
+        modelError = err;
+      }
+    }
+
+    if (!resultStream) {
+      const quotaMsg = (modelError?.message?.includes('429') || modelError?.message?.includes('quota'))
+        ? "Bonga na Vybe is currently experiencing high demand. Please try again in a few seconds."
+        : (modelError?.message || "Something went wrong generating a response.");
+      res.write(`data: ${JSON.stringify({ text: quotaMsg })}\n\n`);
       res.write(`data: ${JSON.stringify({ sources: [] })}\n\n`);
       res.end();
       return;
     }
 
-    // ── 4. Build prompt and Stream response ─────────────────────────────
-    const systemPrompt = buildSystemPrompt(chunks);
-    const chatModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-
-    const resultStream = await chatModel.generateContentStream([
-      { text: systemPrompt },
-      { text: `User question: ${message.trim()}` },
-    ]);
-
+    // ── 4. Stream response chunks ───────────────────────────────────────
     for await (const chunk of resultStream.stream) {
       const chunkText = chunk.text();
       res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
     }
 
-    // ── 5. Deduplicate + format sources and send at the end ─────────────
-    const sources = chunks
-      .filter((c, i, arr) => arr.findIndex(x => x.source_url === c.source_url) === i)
-      .map(c => ({
-        name:   c.source_name,
-        url:    c.source_url,
-        pillar: PILLAR_LABELS[c.pillar] || c.pillar,
-        title:  c.title,
-      }));
+    // ── 5. Format sources if RAG was used ──────────────────────────────
+    const sources = (hasKnowledgeBase && !isGreetingOrGeneral)
+      ? chunks
+          .filter((c, i, arr) => arr.findIndex(x => x.source_url === c.source_url) === i)
+          .map(c => ({
+            name:   c.source_name,
+            url:    c.source_url,
+            pillar: PILLAR_LABELS[c.pillar] || c.pillar,
+            title:  c.title,
+          }))
+      : [];
 
     res.write(`data: ${JSON.stringify({ sources })}\n\n`);
     res.end();
@@ -128,4 +167,4 @@ module.exports = async function handler(req, res) {
     res.write(`data: ${JSON.stringify({ error: err.message || 'Something went wrong.' })}\n\n`);
     res.end();
   }
-}
+};
