@@ -8,105 +8,17 @@ const nextConfig = {
   generateBuildId: async () => {
     return `build-${Date.now()}`;
   },
-  async rewrites() {
-    return [
-      // ── 1. Staff Subdomain Rewrites (e.g. staff-vybe-africa.vercel.app, vybe-africa-staff.vercel.app, staff.vybeafrica.org) ──
-      {
-        source: '/',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/staff/login.html',
-      },
-      {
-        source: '/login',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/staff/login.html',
-      },
-      {
-        source: '/admin',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/staff/admin_dashboard.html',
-      },
-      {
-        source: '/cms',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/staff/cms_dashboard.html',
-      },
-      {
-        source: '/hr',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/staff/hr_dashboard.html',
-      },
-      {
-        source: '/finance',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/staff/finance_dashboard.html',
-      },
-      {
-        source: '/programs',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/staff/programs_dashboard.html',
-      },
-      {
-        source: '/communications',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/staff/communications_dashboard.html',
-      },
-      {
-        source: '/management',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/staff/staff_management.html',
-      },
-      {
-        source: '/me',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/staff/me_dashboard.html',
-      },
-      {
-        source: '/analytics',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/staff/impact_analytics.html',
-      },
-
-      // ── 2. Main Website Rewrites ──
-      { source: '/', destination: '/homepage.html' },
-      { source: '/index.html', destination: '/homepage.html' },
-    ];
-  },
   async redirects() {
     return [
-      // ── Main Website Domain: block staff pages & redirect to staff portal ──
+      // ── Main Website Domain: block staff directories and redirect to staff portal ──
       {
         source: '/staff/:path*',
         has: [{ type: 'host', value: '(?!.*staff).*' }],
         destination: 'https://staff-vybe-africa.vercel.app/login',
         permanent: false,
       },
-      {
-        source: '/login',
-        has: [{ type: 'host', value: '(?!.*staff).*' }],
-        destination: 'https://staff-vybe-africa.vercel.app/login',
-        permanent: false,
-      },
-      {
-        source: '/login.html',
-        has: [{ type: 'host', value: '(?!.*staff).*' }],
-        destination: 'https://staff-vybe-africa.vercel.app/login',
-        permanent: false,
-      },
-      {
-        source: '/admin',
-        has: [{ type: 'host', value: '(?!.*staff).*' }],
-        destination: 'https://staff-vybe-africa.vercel.app/login',
-        permanent: false,
-      },
-      {
-        source: '/cms',
-        has: [{ type: 'host', value: '(?!.*staff).*' }],
-        destination: 'https://staff-vybe-africa.vercel.app/login',
-        permanent: false,
-      },
 
-      // ── Staff Domain: block public website pages & redirect to main site ──
+      // ── Staff Domain: block public website pages and redirect to main site ──
       {
         source: '/homepage.html',
         has: [{ type: 'host', value: '.*staff.*' }],
@@ -186,7 +98,7 @@ const nextConfig = {
         permanent: false,
       },
 
-      // ── General legacy shortcuts ──
+      // Legacy shortcuts
       { source: '/homepage', destination: '/homepage.html', permanent: true },
     ];
   }
