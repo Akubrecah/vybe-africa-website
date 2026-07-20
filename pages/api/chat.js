@@ -55,7 +55,7 @@ Respond warmly in the same language the user writes in (English or Swahili).`;
 }
 
 async function handler(req, res) {
-  // Allow CORS
+  // Allow CORS for production access
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -77,7 +77,7 @@ async function handler(req, res) {
 
   if (!process.env.NVIDIA_API_KEY && !process.env.GEMINI_API_KEY) {
     return res.status(503).json({
-      error: 'API key not configured. Add NVIDIA_API_KEY or GEMINI_API_KEY to your Vercel Environment Variables.',
+      error: 'Chat service API key not configured. Please add GEMINI_API_KEY or NVIDIA_API_KEY to your Vercel Environment Variables.',
     });
   }
 
@@ -94,7 +94,7 @@ async function handler(req, res) {
     let chunks = [];
     let dbSuccess = false;
 
-    // ── 1. Embed and query vector DB (NVIDIA API with Gemini Fallback) ──
+    // ── 1. Embed and query vector DB ───────────────────────────────────
     try {
       const queryEmbedding = await getNvidiaEmbedding(trimmedMsg, 'query');
 
@@ -133,7 +133,7 @@ async function handler(req, res) {
     }
 
     // ── 4. Fallback to Gemini API if NVIDIA is not configured or failed ─
-    if (!nvidiaSuccess) {
+    if (!nvidiaSuccess && process.env.GEMINI_API_KEY) {
       console.log('NVIDIA API unavailable or failed, falling back to Gemini API...');
       const MODELS_TO_TRY = ['gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
       let resultStream = null;
@@ -153,7 +153,13 @@ async function handler(req, res) {
         }
       }
 
-      if (!resultStream) {
+      if (resultStream) {
+        for await (const chunk of resultStream.stream) {
+          const chunkText = chunk.text();
+          res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
+        }
+        nvidiaSuccess = true;
+      } else {
         const quotaMsg = (modelError?.message?.includes('429') || modelError?.message?.includes('quota'))
           ? "Bonga na Vybe is currently experiencing high demand. Please try again in a few seconds."
           : (modelError?.message || "Something went wrong generating a response.");
@@ -162,11 +168,13 @@ async function handler(req, res) {
         res.end();
         return;
       }
+    }
 
-      for await (const chunk of resultStream.stream) {
-        const chunkText = chunk.text();
-        res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
-      }
+    if (!nvidiaSuccess) {
+      res.write(`data: ${JSON.stringify({ text: "Unable to generate response. Please check server API key configuration." })}\n\n`);
+      res.write(`data: ${JSON.stringify({ sources: [] })}\n\n`);
+      res.end();
+      return;
     }
 
     // ── 5. Format sources if RAG was used ──────────────────────────────

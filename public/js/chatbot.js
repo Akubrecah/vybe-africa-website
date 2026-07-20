@@ -474,8 +474,26 @@
       hideTyping();
 
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        appendMessage('bot', err.error || 'Something went wrong. Please try again.');
+        let errorMsg = 'Something went wrong. Please try again.';
+        try {
+          const rawText = await res.text();
+          try {
+            const errObj = JSON.parse(rawText);
+            errorMsg = errObj.error || errObj.message || errorMsg;
+          } catch (e) {
+            if (rawText.includes('data:')) {
+              const match = rawText.match(/data:\s*(\{"(?:error|text)":.*?\})/);
+              if (match) {
+                const parsed = JSON.parse(match[1]);
+                errorMsg = parsed.error || parsed.text || errorMsg;
+              }
+            } else if (rawText.trim().length > 0 && rawText.length < 200) {
+              errorMsg = rawText.trim();
+            }
+          }
+        } catch (e) {}
+
+        appendMessage('bot', errorMsg);
         return;
       }
 
