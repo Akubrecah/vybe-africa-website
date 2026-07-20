@@ -11,7 +11,7 @@ const nextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        // ── Subdomain Rewrites for Staff Portal (e.g., staff.vybeafrica.org, staff.localhost, staff-*.vercel.app) ──
+        // ── Subdomain Rewrites for Staff Portal (e.g., staff-vybe-africa.vercel.app, vybe-africa-staff.vercel.app, staff.vybeafrica.org) ──
         {
           source: '/',
           has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
@@ -72,56 +72,55 @@ const nextConfig = {
         // ── Main Website Path Mappings ──
         { source: '/', destination: '/homepage.html' },
         { source: '/index.html', destination: '/homepage.html' },
-        
-        // Clean staff URLs on main domain
-        { source: '/staff', destination: '/staff/staff.html' },
-        { source: '/staff/', destination: '/staff/staff.html' },
-        { source: '/staff/admin', destination: '/staff/admin_dashboard.html' },
-        { source: '/staff/admin/', destination: '/staff/admin_dashboard.html' },
-        { source: '/staff/hr', destination: '/staff/hr_dashboard.html' },
-        { source: '/staff/hr/', destination: '/staff/hr_dashboard.html' },
-        { source: '/staff/programs', destination: '/staff/programs_dashboard.html' },
-        { source: '/staff/programs/', destination: '/staff/programs_dashboard.html' },
-        { source: '/staff/communications', destination: '/staff/communications_dashboard.html' },
-        { source: '/staff/communications/', destination: '/staff/communications_dashboard.html' },
-        { source: '/staff/me', destination: '/staff/me_dashboard.html' },
-        { source: '/staff/me/', destination: '/staff/me_dashboard.html' },
-        { source: '/staff/finance', destination: '/staff/finance_dashboard.html' },
-        { source: '/staff/finance/', destination: '/staff/finance_dashboard.html' },
-        { source: '/staff/cms', destination: '/staff/cms_dashboard.html' },
-        { source: '/staff/cms/', destination: '/staff/cms_dashboard.html' },
-        { source: '/staff/management', destination: '/staff/staff_management.html' },
-        { source: '/staff/management/', destination: '/staff/staff_management.html' },
       ],
     };
   },
   async redirects() {
     return [
-      { source: '/login', destination: '/staff/login.html', permanent: false },
+      // ── 1. On main domain (host WITHOUT "staff"), block /staff & /login and redirect to staff domain ──
+      {
+        source: '/staff/:path*',
+        has: [{ type: 'host', value: '(?!.*staff).*' }],
+        destination: 'https://staff-vybe-africa.vercel.app/login',
+        permanent: false,
+      },
+      {
+        source: '/login',
+        has: [{ type: 'host', value: '(?!.*staff).*' }],
+        destination: 'https://staff-vybe-africa.vercel.app/login',
+        permanent: false,
+      },
+      {
+        source: '/login.html',
+        has: [{ type: 'host', value: '(?!.*staff).*' }],
+        destination: 'https://staff-vybe-africa.vercel.app/login',
+        permanent: false,
+      },
+
+      // ── 2. On Staff domain, clean up raw /staff/login.html URLs to clean /login ──
+      {
+        source: '/staff/login.html',
+        has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
+        destination: '/login',
+        permanent: false,
+      },
+      {
+        source: '/staff/admin_dashboard.html',
+        has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
+        destination: '/admin',
+        permanent: false,
+      },
+      {
+        source: '/staff/cms_dashboard.html',
+        has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
+        destination: '/cms',
+        permanent: false,
+      },
+
+      // ── General legacy shortcuts ──
       { source: '/homepage', destination: '/homepage.html', permanent: true },
-      { source: '/login.html', destination: '/staff/login.html', permanent: true },
-      { source: '/forgot-password.html', destination: '/staff/forgot-password.html', permanent: true },
-      { source: '/reset-password.html', destination: '/staff/reset-password.html', permanent: true },
-      { source: '/verify-email.html', destination: '/staff/verify-email.html', permanent: true },
-      { source: '/onboarding.html', destination: '/staff/onboarding.html', permanent: true },
-      { source: '/profile_setup.html', destination: '/staff/profile_setup.html', permanent: true },
-      { source: '/edit_profile.html', destination: '/staff/edit_profile.html', permanent: true },
-      { source: '/admin_dashboard.html', destination: '/staff/admin/', permanent: true },
-      { source: '/hr_dashboard.html', destination: '/staff/hr/', permanent: true },
-      { source: '/programs_dashboard.html', destination: '/staff/programs/', permanent: true },
-      { source: '/finance_dashboard.html', destination: '/staff/finance/', permanent: true },
-      { source: '/me_dashboard.html', destination: '/staff/me/', permanent: true },
-      { source: '/communications_dashboard.html', destination: '/staff/communications/', permanent: true },
-      { source: '/staff.html', destination: '/staff/', permanent: true },
-      { source: '/staff_management.html', destination: '/staff/staff_management.html', permanent: true },
-      { source: '/staff_register.html', destination: '/staff/staff_register.html', permanent: true },
-      { source: '/team_directory.html', destination: '/staff/team_directory.html', permanent: true },
-      { source: '/impact_analytics.html', destination: '/staff/impact_analytics.html', permanent: true },
-      { source: '/cms_dashboard.html', destination: '/staff/cms_dashboard.html', permanent: true },
-      { source: '/header_footer_editor.html', destination: '/staff/header_footer_editor.html', permanent: true },
-      { source: '/admin_categories.html', destination: '/staff/admin_categories.html', permanent: true },
-      { source: '/admin_images.html', destination: '/staff/admin_images.html', permanent: true },
-      { source: '/admin.html', destination: '/staff/admin.html', permanent: true },
+      { source: '/admin_dashboard.html', destination: '/admin', permanent: true },
+      { source: '/cms_dashboard.html', destination: '/cms', permanent: true },
     ];
   }
 };
