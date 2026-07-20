@@ -291,6 +291,49 @@
       flex-shrink: 0;
     }
     #bvb-footer a { color: #999; }
+
+    /* Mobile & Device Responsiveness */
+    @media (max-width: 640px) {
+      #bvb-launcher {
+        bottom: 18px !important;
+        right: 18px !important;
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 24px !important;
+      }
+      #bvb-launcher .bvb-launcher-label {
+        display: none !important;
+      }
+      #bvb-panel {
+        position: fixed !important;
+        bottom: 0 !important;
+        right: 0 !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: 100vw !important;
+        max-height: 100dvh !important;
+        border-radius: 0 !important;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      #bvb-header {
+        padding-top: max(16px, env(safe-area-inset-top, 16px));
+      }
+      #bvb-input {
+        font-size: 16px !important;
+        padding: 12px 14px !important;
+      }
+      .bvb-bubble {
+        max-width: 88% !important;
+        font-size: 14px !important;
+      }
+      #bvb-close {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 22px !important;
+      }
+    }
   `;
   document.head.appendChild(style);
 
