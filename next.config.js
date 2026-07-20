@@ -77,7 +77,7 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      // ── 1. On main domain (host WITHOUT "staff"), block /staff & /login and redirect to staff domain ──
+      // ── On main domain (host WITHOUT "staff"), redirect all /staff/* & /login requests to staff domain ──
       {
         source: '/staff/:path*',
         has: [{ type: 'host', value: '(?!.*staff).*' }],
@@ -96,31 +96,7 @@ const nextConfig = {
         destination: 'https://staff-vybe-africa.vercel.app/login',
         permanent: false,
       },
-
-      // ── 2. On Staff domain, clean up raw /staff/login.html URLs to clean /login ──
-      {
-        source: '/staff/login.html',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/login',
-        permanent: false,
-      },
-      {
-        source: '/staff/admin_dashboard.html',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/admin',
-        permanent: false,
-      },
-      {
-        source: '/staff/cms_dashboard.html',
-        has: [{ type: 'host', value: '.*staff.*' }],
-        destination: '/cms',
-        permanent: false,
-      },
-
-      // ── General legacy shortcuts ──
       { source: '/homepage', destination: '/homepage.html', permanent: true },
-      { source: '/admin_dashboard.html', destination: '/admin', permanent: true },
-      { source: '/cms_dashboard.html', destination: '/cms', permanent: true },
     ];
   }
 };
