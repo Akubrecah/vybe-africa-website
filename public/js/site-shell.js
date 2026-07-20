@@ -41,10 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
     { href: 'contact.html', label: 'Contact', key: 'contact' },
   ];
 
+  const userLinkHtml = userId 
+    ? `<a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="${primaryDashboard}">My Dashboard</a>`
+    : '';
+
   const headerMarkup = `
     <div class="bg-primary text-on-primary py-2 text-xs font-semibold w-full border-b border-white/10">
       <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
-        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="${primaryDashboard}">${loginText}</a>
+        ${userLinkHtml}
         <a class="font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
       </div>
     </div>
@@ -82,9 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <nav class="max-w-container-max mx-auto px-margin-mobile py-3 flex flex-col gap-1">
           ${navLinks.map((link) => `<a class="block py-2 px-3 rounded text-sm ${pageKey === link.key ? 'font-bold text-primary bg-primary-container/10' : 'font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors'}" href="${link.href}">${link.label}</a>`).join('')}
         </nav>
+        ${userId ? `
         <div class="max-w-container-max mx-auto px-margin-mobile pb-4 flex flex-col gap-2 border-t border-outline-variant/20 pt-3">
-          <a href="${primaryDashboard}" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">${loginText}</a>
+          <a href="${primaryDashboard}" class="text-center text-xs px-4 py-2.5 rounded-lg font-semibold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors">My Dashboard</a>
         </div>
+        ` : ''}
       </div>
     </header>`;
 

@@ -249,12 +249,10 @@
 
 <!-- Supabase JS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
     const supabaseUrl = 'https://uwfkqitmopqcbvwhkcgg.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZmtxaXRtb3BxY2J2d2hrY2dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMTM2OTksImV4cCI6MjA5ODg4OTY5OX0.clHwO4AOcCB1yFbxGybydSUAlfR3uCaccnqt_mew3H8';
 
-    // Initialize Supabase Client (Rename to supabaseClient to prevent collision with window.supabase global UMD export)
     let supabaseClient;
     try {
         supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey, {
@@ -262,6 +260,36 @@
         });
     } catch (e) {
         console.error('Supabase init failed in login:', e);
+    }
+
+    function getDashboardForUser() {
+        const role = (localStorage.getItem('role') || '').toLowerCase();
+        const designation = (localStorage.getItem('designation') || '').toLowerCase();
+
+        if (role === 'superadmin' || role === 'admin' || designation.includes('executive') || designation.includes('director')) {
+            return 'admin_dashboard.html';
+        }
+        if (role === 'hr' || designation.includes('hr')) {
+            return 'hr_dashboard.html';
+        }
+        if (role === 'programs' || designation.includes('program')) {
+            return 'programs_dashboard.html';
+        }
+        if (role === 'communications' || designation.includes('communication') || designation.includes('media')) {
+            return 'communications_dashboard.html';
+        }
+        if (role === 'me' || designation.includes('m&e') || designation.includes('evaluation') || designation.includes('monitoring')) {
+            return 'me_dashboard.html';
+        }
+        if (role === 'finance' || designation.includes('finance') || designation.includes('account')) {
+            return 'finance_dashboard.html';
+        }
+        return 'staff.html';
+    }
+
+    // Auto-redirect if staff is already logged in
+    if (typeof window !== 'undefined' && localStorage.getItem('user_id')) {
+        window.location.href = getDashboardForUser();
     }
 
     async function quickDemoLogin(email, role, name, designation, targetDashboard) {
