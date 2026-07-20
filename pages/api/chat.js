@@ -1,9 +1,19 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const supabase = require('../../config/supabase');
 const { getNvidiaEmbedding } = require('../../utils/nvidiaEmbeddings');
-const { streamNvidiaChat } = require('../../utils/nvidiaChat');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy_key');
+// ── Vercel serverless config ──────────────────────────────────────────────────
+const config = { maxDuration: 60 };
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
+const NVIDIA_CHAT_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
+const NVIDIA_MODELS = [
+  'meta/llama-3.3-70b-instruct',
+  'nvidia/llama-3.1-nemotron-70b-instruct',
+  'meta/llama-3.1-70b-instruct',
+  'mistralai/mistral-7b-instruct-v0.3',
+];
 
 const PILLAR_LABELS = {
   srhr:             'SRHR & Maternal Health',
@@ -54,15 +64,96 @@ Emergency Helplines (share if relevant):
 Respond warmly in the same language the user writes in (English or Swahili).`;
 }
 
+// ── Non-streaming NVIDIA completion (works on Vercel serverless) ──────────────
+async function callNvidiaChat(systemPrompt, userMessage) {
+  const apiKey = process.env.NVIDIA_API_KEY;
+  if (!apiKey) return null;
+
+  for (const model of NVIDIA_MODELS) {
+    try {
+      const response = await fetch(NVIDIA_CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user',   content: userMessage },
+          ],
+          temperature: 0.6,
+          top_p: 0.9,
+          max_tokens: 1024,
+          stream: false,
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.warn(`NVIDIA model ${model} HTTP ${response.status}:`, errText.slice(0, 200));
+        continue;
+      }
+
+      const data = await response.json();
+      const text = data?.choices?.[0]?.message?.content;
+      if (text) {
+        console.log(`NVIDIA model ${model} responded successfully`);
+        return text;
+      }
+    } catch (err) {
+      console.warn(`NVIDIA model ${model} error:`, err.message);
+    }
+  }
+
+  return null;
+}
+
+// ── Gemini completion (fallback) ──────────────────────────────────────────────
+async function callGeminiChat(systemPrompt, userMessage) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+
+  const GEMINI_MODELS = [
+    'gemini-2.0-flash-lite',
+    'gemini-1.5-flash',
+    'gemini-2.0-flash',
+    'gemini-1.5-pro',
+  ];
+
+  for (const modelName of GEMINI_MODELS) {
+    try {
+      const chatModel = genAI.getGenerativeModel({ model: modelName });
+      const result = await chatModel.generateContent([
+        { text: systemPrompt },
+        { text: `User question: ${userMessage}` },
+      ]);
+      const text = result?.response?.text?.();
+      if (text) {
+        console.log(`Gemini model ${modelName} responded successfully`);
+        return text;
+      }
+    } catch (err) {
+      const errMsg = err?.message || String(err);
+      console.warn(`Gemini model ${modelName} error:`, errMsg.slice(0, 200));
+      // If it's a quota/rate-limit issue, stop trying other models
+      if (errMsg.includes('429') || errMsg.includes('quota')) break;
+    }
+  }
+
+  return null;
+}
+
+// ── Main API handler ──────────────────────────────────────────────────────────
 async function handler(req, res) {
-  // Allow CORS for production access
+  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST', 'OPTIONS']);
@@ -75,38 +166,31 @@ async function handler(req, res) {
     return res.status(400).json({ error: 'Message is required.' });
   }
 
-  if (!process.env.NVIDIA_API_KEY && !process.env.GEMINI_API_KEY) {
+  const hasNvidia = Boolean(process.env.NVIDIA_API_KEY);
+  const hasGemini = Boolean(process.env.GEMINI_API_KEY);
+
+  if (!hasNvidia && !hasGemini) {
     return res.status(503).json({
-      error: 'Chat service API key not configured. Please add GEMINI_API_KEY or NVIDIA_API_KEY to your Vercel Environment Variables.',
+      error: 'Chat service is not configured. Please add GEMINI_API_KEY or NVIDIA_API_KEY in your Vercel Environment Variables.',
     });
   }
-
-  // Set headers for Server-Sent Events (SSE) streaming
-  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-cache, no-transform');
-  res.setHeader('Connection', 'keep-alive');
-  res.setHeader('X-Accel-Buffering', 'no');
 
   const trimmedMsg = message.trim();
   const isGreetingOrGeneral = /^(hello|hi|hey|jambo|habari|greetings|good\s*(morning|afternoon|evening)|thank\s*you|thanks|who\s*are\s*you|what\s*can\s*you\s*do|mambo)/i.test(trimmedMsg);
 
   try {
+    // ── 1. Embed & vector search ──────────────────────────────────────────
     let chunks = [];
     let dbSuccess = false;
 
-    // ── 1. Embed and query vector DB ───────────────────────────────────
     try {
       const queryEmbedding = await getNvidiaEmbedding(trimmedMsg, 'query');
-
-      const { data, error: dbError } = await supabase.rpc(
-        'match_bonga_documents',
-        {
-          query_embedding: queryEmbedding,
-          match_threshold: 0.35,
-          match_count:     6,
-          filter_pillar:   pillar || null,
-        }
-      );
+      const { data, error: dbError } = await supabase.rpc('match_bonga_documents', {
+        query_embedding: queryEmbedding,
+        match_threshold:  0.35,
+        match_count:      6,
+        filter_pillar:    pillar || null,
+      });
       if (!dbError && data) {
         chunks = data;
         dbSuccess = true;
@@ -117,67 +201,30 @@ async function handler(req, res) {
       console.warn('Embedding / Supabase RPC exception:', dbErr.message);
     }
 
-    // ── 2. Determine Prompt ─────────────────────────────────────────────
+    // ── 2. Build prompt ───────────────────────────────────────────────────
     const hasKnowledgeBase = dbSuccess && chunks.length > 0;
     const systemPrompt = (hasKnowledgeBase && !isGreetingOrGeneral)
       ? buildSystemPrompt(chunks)
       : buildGeneralPrompt();
 
-    // ── 3. Try Streaming with NVIDIA API First ──────────────────────────
-    let nvidiaSuccess = false;
-    if (process.env.NVIDIA_API_KEY) {
-      console.log('Attempting chat completion via NVIDIA API...');
-      nvidiaSuccess = await streamNvidiaChat(systemPrompt, trimmedMsg, (chunkText) => {
-        res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
+    // ── 3. Generate response (NVIDIA → Gemini fallback) ───────────────────
+    let responseText = null;
+
+    if (hasNvidia) {
+      responseText = await callNvidiaChat(systemPrompt, trimmedMsg);
+    }
+
+    if (!responseText && hasGemini) {
+      responseText = await callGeminiChat(systemPrompt, trimmedMsg);
+    }
+
+    if (!responseText) {
+      return res.status(503).json({
+        error: 'Bonga na Vybe is currently unavailable. Please try again in a few moments.',
       });
     }
 
-    // ── 4. Fallback to Gemini API if NVIDIA is not configured or failed ─
-    if (!nvidiaSuccess && process.env.GEMINI_API_KEY) {
-      console.log('NVIDIA API unavailable or failed, falling back to Gemini API...');
-      const MODELS_TO_TRY = ['gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
-      let resultStream = null;
-      let modelError = null;
-
-      for (const modelName of MODELS_TO_TRY) {
-        try {
-          const chatModel = genAI.getGenerativeModel({ model: modelName });
-          resultStream = await chatModel.generateContentStream([
-            { text: systemPrompt },
-            { text: `User question: ${trimmedMsg}` },
-          ]);
-          if (resultStream) break;
-        } catch (err) {
-          console.warn(`Gemini model ${modelName} error:`, err?.message || err);
-          modelError = err;
-        }
-      }
-
-      if (resultStream) {
-        for await (const chunk of resultStream.stream) {
-          const chunkText = chunk.text();
-          res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
-        }
-        nvidiaSuccess = true;
-      } else {
-        const quotaMsg = (modelError?.message?.includes('429') || modelError?.message?.includes('quota'))
-          ? "Bonga na Vybe is currently experiencing high demand. Please try again in a few seconds."
-          : (modelError?.message || "Something went wrong generating a response.");
-        res.write(`data: ${JSON.stringify({ text: quotaMsg })}\n\n`);
-        res.write(`data: ${JSON.stringify({ sources: [] })}\n\n`);
-        res.end();
-        return;
-      }
-    }
-
-    if (!nvidiaSuccess) {
-      res.write(`data: ${JSON.stringify({ text: "Unable to generate response. Please check server API key configuration." })}\n\n`);
-      res.write(`data: ${JSON.stringify({ sources: [] })}\n\n`);
-      res.end();
-      return;
-    }
-
-    // ── 5. Format sources if RAG was used ──────────────────────────────
+    // ── 4. Build sources ──────────────────────────────────────────────────
     const sources = (hasKnowledgeBase && !isGreetingOrGeneral)
       ? chunks
           .filter((c, i, arr) => arr.findIndex(x => x.source_url === c.source_url) === i)
@@ -189,18 +236,13 @@ async function handler(req, res) {
           }))
       : [];
 
-    res.write(`data: ${JSON.stringify({ sources })}\n\n`);
-    res.end();
+    return res.status(200).json({ text: responseText, sources });
 
   } catch (err) {
-    console.error('Chat API stream error:', err);
-    res.write(`data: ${JSON.stringify({ error: err.message || 'Something went wrong.' })}\n\n`);
-    res.end();
+    console.error('Chat API error:', err);
+    return res.status(500).json({ error: err.message || 'Something went wrong.' });
   }
 }
 
-handler.config = {
-  maxDuration: 60,
-};
-
+handler.config = config;
 module.exports = handler;

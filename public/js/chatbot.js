@@ -465,12 +465,17 @@
     showTyping();
 
     try {
+      const controller = new AbortController();
+      const timeoutId  = setTimeout(() => controller.abort(), 55000); // 55s client timeout
+
       const res = await fetch(API_URL, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ message: text, pillar: activePillar }),
+        signal:  controller.signal,
       });
 
+      clearTimeout(timeoutId);
       hideTyping();
 
       if (!res.ok) {
@@ -497,73 +502,27 @@
         return;
       }
 
-      // Create empty message bubble to populate as stream chunks arrive
-      const botMessageEl = appendMessage('bot', '');
-      const bubbleEl = botMessageEl.querySelector('.bvb-bubble p');
-      
-      let answerText = '';
-      let sources = [];
+      // Parse plain JSON response (compatible with Vercel serverless)
+      const data = await res.json();
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        
-        // Parse lines in buffer
-        const lines = buffer.split('\n');
-        // Keep the last partial line in the buffer
-        buffer = lines.pop();
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const dataStr = line.slice(6).trim();
-            if (!dataStr) continue;
-            
-            try {
-              const data = JSON.parse(dataStr);
-              if (data.text) {
-                answerText += data.text;
-                // Render markdown and update DOM
-                bubbleEl.innerHTML = renderMarkdown(answerText);
-                const msgs = document.getElementById('bvb-messages');
-                msgs.scrollTop = msgs.scrollHeight;
-              }
-              if (data.sources) {
-                sources = data.sources;
-              }
-              if (data.error) {
-                answerText = data.error;
-                bubbleEl.innerHTML = renderMarkdown(answerText);
-              }
-            } catch (jsonErr) {
-              console.warn('Failed to parse SSE JSON chunk:', jsonErr);
-            }
-          }
-        }
+      if (data.error) {
+        appendMessage('bot', data.error);
+        return;
       }
 
-      // Append citations container if sources were returned
-      if (sources.length > 0) {
-        const sourcesHtml = `
-          <div class="bvb-sources">
-            <div class="bvb-source-label">Sources</div>
-            ${sources.map(s => `<a class="bvb-source-link" href="${s.url}" target="_blank" rel="noopener">${s.name}</a>`).join('')}
-          </div>`;
-        botMessageEl.querySelector('.bvb-bubble').insertAdjacentHTML('beforeend', sourcesHtml);
-        const msgs = document.getElementById('bvb-messages');
-        msgs.scrollTop = msgs.scrollHeight;
-      }
+      const answerText = data.text || 'No response received.';
+      const sources    = data.sources || [];
 
+      appendMessage('bot', answerText, sources);
       messageHistory.push({ role: 'assistant', content: answerText });
 
     } catch (err) {
       hideTyping();
-      appendMessage('bot', 'Could not connect to the server. Make sure the app is running locally or online.');
+      if (err.name === 'AbortError') {
+        appendMessage('bot', 'The request timed out. Please try a shorter question or try again.');
+      } else {
+        appendMessage('bot', 'Could not connect to the server. Please check your connection and try again.');
+      }
     } finally {
       isLoading = false;
       document.getElementById('bvb-send').disabled = false;
