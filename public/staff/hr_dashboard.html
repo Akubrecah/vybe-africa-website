@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <base href="/">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Farex Nandwa - HR Dashboard - Vybe Africa</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Auth Guard & Role Router -->
+<script src="assets/js/auth-guard.js"></script>
+
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#56423e",
+                        "primary-fixed-dim": "#ffb4a5",
+                        "outline-variant": "#ddc0ba",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1c1b1b",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "surface-dim": "#dcd9d9",
+                        "secondary-fixed": "#d0e9d4",
+                        "primary": "#9f402d",
+                        "on-primary-container": "#5a0d02",
+                        "surface-container-low": "#f6f3f2",
+                        "on-surface": "#1c1b1b",
+                        "on-secondary-container": "#516857",
+                        "surface": "#fcf9f8",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f3f0ef",
+                        "inverse-surface": "#313030",
+                        "primary-fixed": "#ffdad3",
+                        "error": "#ba1a1a",
+                        "background": "#fcf9f8",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-fixed": "#3e0500",
+                        "surface-tint": "#9f402d",
+                        "outline": "#89726d",
+                        "on-tertiary-fixed": "#221b00",
+                        "inverse-primary": "#ffb4a5",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#802918",
+                        "on-error": "#ffffff",
+                        "tertiary": "#705d00",
+                        "on-secondary-fixed-variant": "#364c3c",
+                        "surface-container": "#f0eded",
+                        "secondary-container": "#cde6d1",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fcf9f8",
+                        "secondary": "#4d6453",
+                        "on-secondary-fixed": "#0b2013",
+                        "tertiary-fixed": "#ffe16d",
+                        "on-tertiary-container": "#4c3f00",
+                        "tertiary-container": "#c9a900",
+                        "secondary-fixed-dim": "#b4cdb8",
+                        "primary-container": "#e2725b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-lg": "80px",
+                        "stack-md": "32px",
+                        "container-max": "1280px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "64px",
+                        "stack-sm": "16px",
+                        "gutter": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Inter"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-sm": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(252, 249, 248, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(137, 114, 109, 0.1);
+        }
+        .soft-shadow {
+            box-shadow: 0 10px 30px -10px rgba(28, 27, 27, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col md:flex-row">
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface shadow-[20px_0_30px_rgba(0,0,0,0.04)] py-base z-40">
+<div class="px-gutter py-stack-sm mb-4">
+<a href="homepage.html" class="flex items-center gap-2.5">
+<img src="assets/images/logo.png" alt="VYBE Africa" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+<div>
+<h1 class="font-display-lg text-headline-md text-primary">Vybe Africa</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Staff Portal</p>
+</div>
+</a>
+</div>
+<ul class="flex flex-col gap-2 px-base flex-grow">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-primary-container/10 transition-colors duration-200" href="hr_dashboard.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200" href="staff.html">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Staff Directory</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200" href="programs_dashboard.html">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-sm text-label-sm">Programs</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200" href="admin_dashboard.html">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Executive Portal</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200" href="homepage.html">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Ecosystem Site</span>
+</a>
+</li>
+</ul>
+<div class="px-gutter mt-auto pb-stack-sm">
+<button onclick="alert('Exporting HR Summary Report...');" class="w-full bg-primary text-on-primary font-label-sm text-label-sm py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-on-primary-fixed-variant transition-colors">
+<span class="material-symbols-outlined">add</span>
+    New Report
+</button>
+</div>
+<div class="px-base mt-2">
+<button id="logout-btn" class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors duration-200 w-full text-left">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-sm text-label-sm">Logout</span>
+</button>
+</div>
+</nav>
+
+<!-- TopNavBar (Mobile) / Header Area -->
+<header class="md:pl-64 w-full bg-surface/80 backdrop-blur-md sticky top-0 z-30">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4">
+<div class="md:hidden">
+<h1 class="font-display-lg text-headline-md text-primary">Vybe Africa</h1>
+</div>
+<div class="flex items-center gap-4 ml-auto">
+<button class="text-on-surface-variant hover:text-primary transition-colors" aria-label="Search">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors relative" aria-label="Notifications">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</div>
+</div>
+</header>
+
+<!-- Main Canvas -->
+<main class="flex-1 md:ml-64 p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto w-full">
+<!-- Header Profile Section -->
+<section class="mb-stack-lg flex flex-col md:flex-row items-center md:items-start gap-gutter text-center md:text-left">
+<div class="relative w-32 h-32 rounded-full border-4 border-tertiary p-1 overflow-hidden shrink-0">
+<img id="user-avatar-display" alt="Profile" class="w-full h-full object-cover rounded-full" src="assets/images/IMG-20251211-WA0030.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuD4BSffuq2VQGQnUVs4zagJGnelYMlWYScLE_cQwLegzjm1iZsCwQcaWr2klKPhzBP_oynW1CdyIpxTf1A3KM1FqD_dcZMWpTJZoAzYdlBD0qNPhx_SuDren6eqiRk5GKs7-qugrNjhtPCrkKEr6NUraTRn0Mv7PpOZV2jiLUZMK4vBUxshpk0dM2cCNhi5Ss_DZUQ5WXOCNHXaZ4pJrwMo5I3JdyYyDQfpYx1MIyAeoaKC6DkALYvu7eE7Csakiplfsawt0xJ14mc'"/>
+</div>
+<div class="flex flex-col justify-center pt-2">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface" id="welcome-title">Welcome back...</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant italic mt-4 max-w-2xl border-l-4 border-secondary pl-4"><span id="welcome-quote">"..."</span></p>
+</div>
+</section>
+
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Staff Overview Stats (Span 12 on mobile, 8 on desktop) -->
+<div class="col-span-1 md:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-base">
+<div class="bg-surface-container-lowest rounded-xl p-stack-sm soft-shadow flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-primary mb-2 text-3xl">groups</span>
+<span class="font-display-lg text-headline-md text-on-surface block" id="total-staff-val">142</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total Staff</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-stack-sm soft-shadow flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-secondary mb-2 text-3xl">person_add</span>
+<span class="font-display-lg text-headline-md text-on-surface block">12</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">New Hires</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-stack-sm soft-shadow flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-tertiary mb-2 text-3xl">event_available</span>
+<span class="font-display-lg text-headline-md text-on-surface block">98%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Attendance</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-stack-sm soft-shadow flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-primary-container mb-2 text-3xl">psychology</span>
+<span class="font-display-lg text-headline-md text-on-surface block">8.4</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Wellbeing Score</span>
+</div>
+</div>
+
+<!-- Employee Wellbeing Gauge (Span 12 on mobile, 4 on desktop) -->
+<div class="col-span-1 md:col-span-4 bg-surface-container-lowest rounded-xl p-stack-sm soft-shadow flex flex-col items-center justify-center">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant w-full text-left mb-4 uppercase tracking-wider">Overall Wellbeing</h3>
+<div class="relative w-40 h-40 flex items-center justify-center">
+<div class="w-full h-full rounded-full border-8 border-surface-container-high absolute"></div>
+<div class="w-full h-full rounded-full border-8 border-t-tertiary border-r-tertiary border-b-transparent border-l-transparent absolute transform rotate-45"></div>
+<div class="text-center z-10 bg-surface-container-lowest rounded-full w-24 h-24 flex flex-col items-center justify-center shadow-inner">
+<span class="font-headline-md text-headline-md text-tertiary">84%</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-4 text-center text-sm">Based on Q3 Pulse Survey</p>
+</div>
+
+<!-- Recruitment Pipeline Kanban (Span 12) -->
+<div class="col-span-1 md:col-span-12 bg-surface-container-lowest rounded-xl p-stack-sm soft-shadow mt-stack-md">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">view_kanban</span>
+Recruitment Pipeline
+</h3>
+<a href="staff.html" class="text-primary font-label-sm text-label-sm hover:underline">View All Roles</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter overflow-x-auto pb-4">
+<!-- Sourcing -->
+<div class="bg-surface-container-low rounded-lg p-4 min-w-[250px]">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-4 uppercase flex justify-between">Sourcing <span class="bg-surface-variant text-on-surface-variant px-2 rounded-full text-xs">5</span></h4>
+<div class="space-y-3">
+<div class="bg-surface rounded p-3 shadow-sm border border-outline-variant/30 hover:border-primary/50 transition-colors cursor-pointer">
+<p class="font-label-sm text-label-sm text-on-surface font-semibold">Community Manager</p>
+<p class="text-xs text-on-surface-variant mt-1">Nairobi Office</p>
+</div>
+<div class="bg-surface rounded p-3 shadow-sm border border-outline-variant/30 hover:border-primary/50 transition-colors cursor-pointer">
+<p class="font-label-sm text-label-sm text-on-surface font-semibold">Field Officer</p>
+<p class="text-xs text-on-surface-variant mt-1">West Pokot Hub</p>
+</div>
+</div>
+</div>
+<!-- Interviewing -->
+<div class="bg-surface-container-low rounded-lg p-4 min-w-[250px]">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-4 uppercase flex justify-between">Interviewing <span class="bg-surface-variant text-on-surface-variant px-2 rounded-full text-xs">3</span></h4>
+<div class="space-y-3">
+<div class="bg-surface rounded p-3 shadow-sm border border-outline-variant/30 hover:border-primary/50 transition-colors cursor-pointer border-l-4 border-l-tertiary">
+<p class="font-label-sm text-label-sm text-on-surface font-semibold">Senior Developer</p>
+<p class="text-xs text-on-surface-variant mt-1">Remote</p>
+<div class="mt-2 flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-primary-container border-2 border-surface text-[10px] flex items-center justify-center text-on-primary-container font-bold">JD</div>
+<div class="w-6 h-6 rounded-full bg-secondary-container border-2 border-surface text-[10px] flex items-center justify-center text-on-secondary-container font-bold">SM</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Offer -->
+<div class="bg-surface-container-low rounded-lg p-4 min-w-[250px]">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-4 uppercase flex justify-between">Offer Extended <span class="bg-surface-variant text-on-surface-variant px-2 rounded-full text-xs">1</span></h4>
+<div class="space-y-3">
+<div class="bg-surface rounded p-3 shadow-sm border border-outline-variant/30 hover:border-primary/50 transition-colors cursor-pointer border-l-4 border-l-secondary">
+<p class="font-label-sm text-label-sm text-on-surface font-semibold">Data Analyst</p>
+<p class="text-xs text-on-surface-variant mt-1">Nairobi Office</p>
+</div>
+</div>
+</div>
+<!-- Hired -->
+<div class="bg-surface-container-low rounded-lg p-4 min-w-[250px]">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-4 uppercase flex justify-between">Hired <span class="bg-surface-variant text-on-surface-variant px-2 rounded-full text-xs">12</span></h4>
+<div class="space-y-3 opacity-70">
+<div class="bg-surface rounded p-3 shadow-sm border border-outline-variant/30">
+<p class="font-label-sm text-label-sm text-on-surface line-through">Project Lead</p>
+<p class="text-xs text-on-surface-variant mt-1">West Pokot Chapter</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Two Column Section -->
+<div class="col-span-1 md:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-gutter mt-stack-md">
+<!-- Training & Development Panel -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-sm soft-shadow flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">model_training</span>
+Training &amp; Dev
+</h3>
+</div>
+<div class="space-y-4 flex-1">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div class="flex-1">
+<h4 class="font-label-sm text-label-sm text-on-surface">Leadership Workshop</h4>
+<div class="w-full bg-surface-container-high h-2 rounded-full mt-2 overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant font-bold">75%</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">security</span>
+</div>
+<div class="flex-1">
+<h4 class="font-label-sm text-label-sm text-on-surface">Compliance Q3</h4>
+<div class="w-full bg-surface-container-high h-2 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 40%"></div>
+</div>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant font-bold">40%</span>
+</div>
+</div>
+<button onclick="alert('Managing Training Programs...');" class="mt-4 w-full py-2.5 border-2 border-secondary text-secondary font-label-sm text-label-sm rounded-lg hover:bg-secondary hover:text-on-secondary transition-colors">Manage Programs</button>
+</div>
+
+<!-- Leave & Attendance Calendar Snippet -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-sm soft-shadow">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary">calendar_month</span>
+Upcoming Leave
+</h3>
+</div>
+<ul class="space-y-3">
+<li class="flex items-start gap-3 p-3 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="bg-tertiary/10 text-tertiary rounded p-2 text-center min-w-[50px]">
+<span class="block text-xs uppercase font-bold">Oct</span>
+<span class="block font-headline-md leading-none">12</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface font-semibold">Sarah Johnson</p>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Annual Leave (5 days)</p>
+</div>
+</li>
+<li class="flex items-start gap-3 p-3 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="bg-primary/10 text-primary rounded p-2 text-center min-w-[50px]">
+<span class="block text-xs uppercase font-bold">Oct</span>
+<span class="block font-headline-md leading-none">15</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface font-semibold">David Ochieng</p>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Paternity Leave (14 days)</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Supabase setup
+        const supabaseUrl = 'https://uwfkqitmopqcbvwhkcgg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZmtxaXRtb3BxY2J2d2hrY2dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMTM2OTksImV4cCI6MjA5ODg4OTY5OX0.clHwO4AOcCB1yFbxGybydSUAlfR3uCaccnqt_mew3H8';
+        let supabase;
+        if (window.supabase) {
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+                auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+            });
+        }
+
+        // Auth check
+        const userId = localStorage.getItem('user_id');
+        if (!userId) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            });
+        }
+
+        // Fetch Staff Count
+        if (supabase) {
+            try {
+                const { count } = await supabase.from('users').select('*', { count: 'exact', head: true });
+                if (count) document.getElementById('total-staff-val').textContent = count;
+            } catch (e) { console.error(e); }
+        }
+    });
+</script>
+</body>
+</html>

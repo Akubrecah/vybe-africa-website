@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <base href="/">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Global Header & Footer Editor - Vybe Africa</title>
+    
+    <!-- TailWind CSS & Icons -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase SDK & CMS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/cms-client.js"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#9f402d",
+                        "primary-container": "#e2725b",
+                        "secondary": "#4d6453",
+                        "secondary-container": "#cde6d1",
+                        "tertiary": "#705d00",
+                        "tertiary-container": "#c9a900",
+                        "surface": "#fcf9f8",
+                        "background": "#fcf9f8",
+                        "on-surface": "#1c1b1b",
+                        "on-background": "#1c1b1b",
+                        "on-surface-variant": "#56423e",
+                        "outline-variant": "#ddc0ba",
+                        "inverse-surface": "#313030",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-container-lowest": "#ffffff"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased flex flex-col min-h-screen">
+
+<!-- Unified Header Navigation -->
+<div class="bg-primary text-on-primary py-2 text-xs font-label-sm w-full z-50 relative border-b border-white/10">
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop flex justify-end gap-6">
+        <a class="hover:text-primary-container transition-colors opacity-90 hover:opacity-100" href="login.html">Staff Login</a>
+        <a class="text-white font-bold hover:text-primary-container transition-colors" href="get-involved.html">Get Involved</a>
+    </div>
+</div>
+
+<header class="bg-surface/95 backdrop-blur-md text-primary sticky top-0 shadow-sm z-50 w-full transition-all duration-300">
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+        <div class="flex items-center justify-between h-16 gap-6">
+            <!-- Brand -->
+            <a href="homepage.html" class="flex items-center gap-2.5 shrink-0 text-primary hover:opacity-80 transition-opacity">
+                <img src="assets/images/logo.png" alt="VYBE Africa" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+                <span class="font-display text-lg font-extrabold tracking-tight leading-none">Vybe Africa</span>
+            </a>
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-1 flex-1 justify-center">
+                <a class="relative py-2 px-3 text-sm font-bold rounded text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="homepage.html">Ecosystem</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="west_pokot.html">County Chapter</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="impact_registry.html">Impact Registry</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="about.html">About Us</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="work.html">Our Work</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="gallery.html">Gallery</a>
+                <a class="relative py-2 px-3 text-sm font-medium rounded text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all whitespace-nowrap" href="contact.html">Contact</a>
+            </nav>
+            <!-- Right Actions -->
+            <div class="flex items-center gap-2 shrink-0">
+                <div class="hidden xl:flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest mr-1">
+                    <span class="text-primary border-b-2 border-primary cursor-pointer pb-0.5">EN</span>
+                    <span class="text-on-surface-variant cursor-pointer hover:text-primary transition-colors">FR</span>
+                    <span class="text-on-surface-variant cursor-pointer hover:text-primary transition-colors">SW</span>
+                </div>
+                <a href="impact_registry.html" class="hidden sm:flex items-center justify-center p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">public</span>
+                </a>
+                <a href="get-involved.html" class="ml-1 bg-primary text-on-primary px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">Donate Now</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow flex items-center justify-center bg-surface-container-low min-h-[350px]">
+    <div class="text-center p-8 bg-white rounded-3xl shadow-lg border border-outline-variant/30 max-w-md mx-auto my-12">
+        <span class="material-symbols-outlined text-5xl text-primary mb-4">layers</span>
+        <h2 class="text-xl font-bold text-on-surface font-headline-md">Global Elements Editor</h2>
+        <p class="text-xs text-on-surface-variant mt-2 leading-relaxed">
+            This workspace isolates the global header above and global footer below. Any styling, links, or text modifications made here will automatically synchronize and update live across all other pages.
+        </p>
+    </div>
+</main>
+
+<!-- Footer - Robust & Professional -->
+<footer class="bg-[#1a1a1a] text-surface-variant font-body-md text-body-md full-width">
+    <div class="w-full px-margin-mobile md:px-margin-desktop pt-20 pb-10 max-w-container-max mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8 mb-16">
+            <!-- Brand Col -->
+            <div class="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
+                <a class="font-display-lg text-headline-md text-white tracking-tight flex items-center gap-2" href="homepage.html">
+                    <span class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold text-xl leading-none">V</span>
+                    <span>VYBE Africa</span>
+                </a>
+                <p class="text-surface-variant/70 text-sm leading-relaxed max-w-xs">
+                    Elevating youth voices and empowering the next generation of changemakers in West Pokot through innovation, advocacy, and action.
+                </p>
+                <div class="flex gap-4 mt-2">
+                    <a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary text-white transition-colors" href="https://www.facebook.com/vybeafrica" target="_blank"><i class="fab fa-facebook-f text-xs"></i></a>
+                    <a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary text-white transition-colors" href="https://x.com/VybeAfrica254" target="_blank"><i class="fab fa-x-twitter text-xs"></i></a>
+                    <a class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary text-white transition-colors" href="https://www.instagram.com/vybeafrica254" target="_blank"><i class="fab fa-instagram text-xs"></i></a>
+                </div>
+            </div>
+            <!-- Links Col 1 -->
+            <div class="md:col-span-4 lg:col-span-2 flex flex-col gap-4">
+                <h4 class="font-bold text-white mb-2 uppercase tracking-wider text-xs">Our Work</h4>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="srhr.html">SRHR &amp; Health</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="climate.html">Climate Action</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="child-protection.html">Child Protection</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="inclusive-governance.html">Governance</a>
+            </div>
+            <!-- Links Col 2 -->
+            <div class="md:col-span-4 lg:col-span-2 flex flex-col gap-4">
+                <h4 class="font-bold text-white mb-2 uppercase tracking-wider text-xs">Organization</h4>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="about.html">About Us</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="work.html">Team</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="about.html">Careers</a>
+                <a class="text-surface-variant/70 hover:text-primary transition-colors text-sm" href="contact.html">Contact</a>
+            </div>
+            <!-- Newsletter -->
+            <div class="md:col-span-4 lg:col-span-4 flex flex-col gap-4">
+                <h4 class="font-bold text-white mb-2 uppercase tracking-wider text-xs">Stay Updated</h4>
+                <p class="text-surface-variant/70 text-sm mb-2">Subscribe to our newsletter for the latest field reports and impact stories.</p>
+                <form class="flex w-full mt-2" onsubmit="event.preventDefault();">
+                    <input class="w-full px-4 py-3 rounded-l-lg bg-white/5 border border-white/10 text-white focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none placeholder-surface-variant/50 text-sm" placeholder="Email address" type="email"/>
+                    <button class="bg-primary text-on-primary px-6 py-3 rounded-r-lg hover:bg-primary-container transition-colors font-bold text-sm" type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-xs text-surface-variant/50">
+                © 2026 VYBE Africa. All Rights Reserved. West Pokot County, Kenya.
+            </div>
+            <div class="flex gap-6 text-xs text-surface-variant/50">
+                <a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+                <a class="hover:text-white transition-colors" href="#">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

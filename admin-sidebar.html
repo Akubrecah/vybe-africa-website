@@ -1,0 +1,198 @@
+<!-- Admin Sidebar Component -->
+<!-- Include this in all admin pages: <div id="admin-sidebar-placeholder"></div> -->
+<!-- Then add: <script src="assets/js/admin-sidebar.js"></script> -->
+
+<aside id="admin-sidebar" class="sidebar fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 flex flex-col z-40 lg:translate-x-0 hidden md:block">
+    <div class="flex flex-col h-full py-4">
+        <!-- Logo -->
+        <div class="px-4 mb-6">
+            <a href="admin_dashboard.html" class="flex items-center gap-2 text-primary font-bold text-lg">
+                <span class="material-symbols-outlined text-2xl">admin_panel_settings</span>
+                <span>VYBE Admin</span>
+            </a>
+            <p class="text-xs text-gray-500 mt-1 ml-10">Staff Portal</p>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-3 space-y-1 overflow-y-auto">
+            <!-- Dashboard -->
+            <a href="admin_dashboard.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors" data-page="admin_dashboard">
+                <span class="material-symbols-outlined text-base">dashboard</span>
+                <span class="font-medium">Dashboard</span>
+            </a>
+
+            <!-- Content Management (Dropdown) -->
+            <div class="dropdown">
+                <button class="dropdown-toggle nav-link flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors w-full" aria-expanded="false" aria-haspopup="true" data-page="content">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-base">content_paste</span>
+                        <span class="font-medium">Content Management</span>
+                    </span>
+                    <span class="material-symbols-outlined dropdown-chevron text-[18px]">chevron_right</span>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="admin_pages.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="admin_pages">
+                        <span class="material-symbols-outlined text-[18px]">web</span>
+                        <span>Page Content</span>
+                    </a>
+                    <a href="admin_images.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="admin_images">
+                        <span class="material-symbols-outlined text-[18px]">image</span>
+                        <span>Images & Media</span>
+                    </a>
+                    <a href="admin_categories.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="admin_categories">
+                        <span class="material-symbols-outlined text-[18px]">category</span>
+                        <span>Categories</span>
+                    </a>
+                    <a href="admin_team.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="admin_team">
+                        <span class="material-symbols-outlined text-[18px]">groups</span>
+                        <span>Team Members</span>
+                    </a>
+                    <a href="admin_stats.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="admin_stats">
+                        <span class="material-symbols-outlined text-[18px]">analytics</span>
+                        <span>Impact Stats</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- User Management (Dropdown) -->
+            <div class="dropdown">
+                <button class="dropdown-toggle nav-link flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors w-full" aria-expanded="false" aria-haspopup="true" data-page="users">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-base">people</span>
+                        <span class="font-medium">User Management</span>
+                    </span>
+                    <span class="material-symbols-outlined dropdown-chevron text-[18px]">chevron_right</span>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="admin_users.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="admin_users">
+                        <span class="material-symbols-outlined text-[18px]">manage_accounts</span>
+                        <span>Admin Users</span>
+                    </a>
+                    <a href="staff_management.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="staff_management">
+                        <span class="material-symbols-outlined text-[18px]">badge</span>
+                        <span>Staff Directory</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Analytics & Reports (Dropdown) -->
+            <div class="dropdown">
+                <button class="dropdown-toggle nav-link flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors w-full" aria-expanded="false" aria-haspopup="true" data-page="reports">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-base">bar_chart</span>
+                        <span class="font-medium">Analytics & Reports</span>
+                    </span>
+                    <span class="material-symbols-outlined dropdown-chevron text-[18px]">chevron_right</span>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="impact_analytics.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="impact_analytics">
+                        <span class="material-symbols-outlined text-[18px]">insights</span>
+                        <span>Impact Analytics</span>
+                    </a>
+                    <a href="programs_dashboard.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="programs_dashboard">
+                        <span class="material-symbols-outlined text-[18px]">assignment</span>
+                        <span>Programs Dashboard</span>
+                    </a>
+                    <a href="finance_dashboard.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="finance_dashboard">
+                        <span class="material-symbols-outlined text-[18px]">payments</span>
+                        <span>Finance Dashboard</span>
+                    </a>
+                    <a href="hr_dashboard.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="hr_dashboard">
+                        <span class="material-symbols-outlined text-[18px]">badge</span>
+                        <span>HR Dashboard</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Communications (Dropdown) -->
+            <div class="dropdown">
+                <button class="dropdown-toggle nav-link flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors w-full" aria-expanded="false" aria-haspopup="true" data-page="comms">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-base">campaign</span>
+                        <span class="font-medium">Communications</span>
+                    </span>
+                    <span class="material-symbols-outlined dropdown-chevron text-[18px]">chevron_right</span>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="communications_dashboard.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="communications_dashboard">
+                        <span class="material-symbols-outlined text-[18px]">email</span>
+                        <span>Email Campaigns</span>
+                    </a>
+                    <a href="cms_dashboard.html#section-donations" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="donations">
+                        <span class="material-symbols-outlined text-[18px]">payments</span>
+                        <span>Donations & M-Pesa</span>
+                    </a>
+                    <a href="cms_dashboard.html" class="dropdown-item flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors" data-page="cms_dashboard">
+                        <span class="material-symbols-outlined text-[18px]">edit_document</span>
+                        <span>CMS Console</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Footer -->
+        <div class="p-4 border-t border-gray-200 mt-auto">
+            <a href="../gallery.html" target="_blank" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors text-sm mb-2">
+                <span class="material-symbols-outlined text-base">open_in_new</span>
+                <span>View Gallery</span>
+            </a>
+            <a href="../homepage.html" target="_blank" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors text-sm mb-2">
+                <span class="material-symbols-outlined text-base">home</span>
+                <span>View Website</span>
+            </a>
+            <button id="admin-logout-btn" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors text-sm">
+                <span class="material-symbols-outlined text-base">logout</span>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+</aside>
+
+<!-- Mobile Sidebar Overlay -->
+<div id="admin-mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
+
+<style>
+    /* Dropdown Styles */
+    .dropdown { position: relative; }
+    .dropdown-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .dropdown-chevron { transition: transform 0.2s ease; }
+    .dropdown.open .dropdown-chevron { transform: rotate(90deg); }
+    .dropdown-menu {
+        display: none;
+        flex-direction: column;
+        padding: 4px 0 4px 28px;
+        margin-top: 4px;
+        border-left: 2px solid #e5e2e1;
+        background: #f6f3f2;
+        border-radius: 0 0 8px 8px;
+    }
+    .dropdown.open .dropdown-menu { display: flex; }
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 4px 8px 8px;
+        color: #56423e;
+        border-radius: 6px;
+        transition: all 0.15s ease;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .dropdown-item:hover { background: #e5e2e1; color: #9f402d; }
+    .dropdown-item .material-symbols-outlined { font-variation-settings: 'FILL' 0; }
+
+    /* Active nav link */
+    .nav-link.active {
+        background: #e2725b1a;
+        color: #9f402d;
+        border-right: 3px solid #9f402d;
+    }
+
+    /* Mobile sidebar */
+    @media (max-width: 767px) {
+        .sidebar { position: fixed; z-index: 50; height: 100vh; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar.open { transform: translateX(0) !important; }
+        #admin-mobile-overlay.active { display: block !important; }
+        main { margin-left: 0 !important; }
+    }
+</style>

@@ -15,7 +15,7 @@ const router  = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const supabase = require('../config/supabase');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, { apiVersion: 'v1' });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Pillar display names
 const PILLAR_LABELS = {
@@ -68,8 +68,11 @@ router.post('/', async (req, res) => {
   try {
     // ── 1. Embed the user's question ────────────────────────────────────
     console.log('Step 1: Attempting to embed message:', message.trim().substring(0, 50));
-    const embeddingModel = genAI.getGenerativeModel({ model: 'text-embedding-004' }, { apiVersion: 'v1' });
-    const embeddingResult = await embeddingModel.embedContent(message.trim());
+    const embeddingModel = genAI.getGenerativeModel({ model: 'gemini-embedding-001' });
+    const embeddingResult = await embeddingModel.embedContent({
+      content: { parts: [{ text: message.trim() }] },
+      outputDimensionality: 768
+    });
     const queryEmbedding   = embeddingResult.embedding.values;
     console.log('Step 1 success: Embedding dimensions =', queryEmbedding?.length);
 
@@ -121,7 +124,7 @@ Answer the user's question directly, matching the language they write in (Englis
       console.log('Step 3: Loaded direct chat fallback prompt (knowledge base unavailable)');
     }
 
-    const chatModel = genAI.getGenerativeModel({ model: 'models/gemini-2.5-flash' });
+    const chatModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
     console.log('Step 3 success: System prompt built');
 
     console.log('Step 4: Calling Gemini API...');

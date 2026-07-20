@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Management - VYBE Africa Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+        .sidebar.open { transform: translateX(0); }
+        .modal { opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .modal.open { opacity: 1; visibility: visible; }
+        .modal-content { transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal.open .modal-content { transform: scale(1); }
+        .drop-zone { border: 2px dashed #ddd; transition: all 0.2s; }
+        .drop-zone.active { border-color: #9f402d; background: #fef7f6; }
+        .drop-zone.has-file { border-color: #4d6453; background: #f0f5f2; }
+        .image-thumb { transition: transform 0.2s; }
+        .image-thumb:hover { transform: scale(1.02); }
+        .category-badge { font-size: 0.7rem; padding: 0.15rem 0.5rem; }
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; z-index: 50; height: 100vh; }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex">
+
+    <!-- Admin Sidebar Placeholder -->
+    <div id="admin-sidebar-placeholder"></div>
+
+    <!-- Main Content -->
+    <main class="main-content flex-1 min-h-screen lg:ml-64">
+        <!-- Top Bar -->
+        <header class="sticky top-0 z-30 bg-white border-b border-gray-200">
+            <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center gap-4">
+                    <button id="sidebar-toggle" class="lg:hidden p-2 text-gray-500 hover:text-gray-700" aria-label="Open menu">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <h1 class="text-xl font-semibold text-gray-900">Image Management</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span id="user-name" class="text-sm text-gray-600 hidden sm:block"></span>
+                    <button id="mobile-menu-btn" class="lg:hidden p-2 text-gray-500" aria-label="User menu">
+                        <span class="material-symbols-outlined">account_circle</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="p-4 sm:p-6 lg:p-8">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Total Images</p>
+                            <p id="stat-total" class="text-3xl font-bold text-gray-900 mt-1">-</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary text-2xl">image</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Categories</p>
+                            <p id="stat-categories" class="text-3xl font-bold text-gray-900 mt-1">-</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-secondary text-2xl">category</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Featured</p>
+                            <p id="stat-featured" class="text-3xl font-bold text-gray-900 mt-1">-</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-amber-600 text-2xl">star</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Storage Used</p>
+                            <p id="stat-storage" class="text-3xl font-bold text-gray-900 mt-1">-</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-purple-600 text-2xl">cloud</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center flex-1">
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                        <input type="text" id="search-input" placeholder="Search images..." class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-64">
+                    </div>
+                    <select id="category-filter" class="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent bg-white">
+                        <option value="">All Categories</option>
+                    </select>
+                    <select id="status-filter" class="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent bg-white">
+                        <option value="active">Active Only</option>
+                        <option value="inactive">Inactive Only</option>
+                        <option value="all">All</option>
+                    </select>
+                    <select id="sort-by" class="px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent bg-white">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name">Name A-Z</option>
+                        <option value="size">File Size</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button id="btn-bulk-upload" class="px-4 py-2 bg-secondary text-white rounded-lg text-sm font-medium hover:bg-secondary/90 transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined">cloud_upload</span>
+                        Bulk Upload
+                    </button>
+                    <button id="btn-add-category" class="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined">add</span>
+                        Category
+                    </button>
+                </div>
+            </div>
+
+            <!-- Images Grid -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <!-- Table Header (Desktop) -->
+                <div class="hidden lg:grid grid-cols-[1fr_2fr_1fr_1fr_1fr_100px] gap-4 px-6 py-3 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <div>Preview</div>
+                    <div>Image Info</div>
+                    <div>Category</div>
+                    <div>Size</div>
+                    <div>Status</div>
+                    <div class="text-right">Actions</div>
+                </div>
+
+                <!-- Images List -->
+                <div id="images-container" class="divide-y divide-gray-100">
+                    <!-- Images rendered here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden py-16 px-6 text-center">
+                    <span class="material-symbols-outlined text-6xl text-gray-300 mb-4 block">photo_library</span>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">No images found</h3>
+                    <p class="text-gray-500 mb-4">Get started by uploading your first image</p>
+                    <button id="btn-first-upload" class="px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2 mx-auto">
+                        <span class="material-symbols-outlined">cloud_upload</span>
+                        Upload Image
+                    </button>
+                </div>
+
+                <!-- Pagination -->
+                <div id="pagination" class="px-6 py-4 border-t border-gray-100 flex items-center justify-between hidden">
+                    <p class="text-sm text-gray-500" id="pagination-info">Showing 0 of 0 images</p>
+                    <div class="flex gap-2">
+                        <button id="btn-prev" class="px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+                        <button id="btn-next" class="px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sidebar Overlay (Mobile) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
+
+    <!-- Upload Modal -->
+    <div id="upload-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+        <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between p-4 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900" id="upload-modal-title">Upload Images</h3>
+                <button id="close-upload-modal" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-4 overflow-y-auto max-h-[calc(90vh-60px)]">
+                <!-- Drop Zone -->
+                <div id="drop-zone" class="drop-zone rounded-xl p-8 text-center relative">
+                    <input type="file" id="file-input" multiple accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <span class="material-symbols-outlined text-5xl text-gray-300 mb-4 block">cloud_upload</span>
+                    <p class="text-gray-600 mb-1">Drag & drop images here, or click to browse</p>
+                    <p class="text-sm text-gray-400">Supports: JPG, PNG, GIF, WebP, SVG (Max 50MB each)</p>
+                </div>
+
+                <!-- Selected Files Preview -->
+                <div id="files-preview" class="hidden mt-4 space-y-3">
+                    <h4 class="text-sm font-medium text-gray-700">Selected Files (<span id="file-count">0</span>)</h4>
+                    <div id="file-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                </div>
+
+                <!-- Upload Options -->
+                <div class="mt-4 space-y-4 border-t border-gray-100 pt-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                        <select id="upload-category" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">Uncategorized</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Default Title Prefix (optional)</label>
+                        <input type="text" id="upload-title-prefix" placeholder="e.g., Workshop - " class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="upload-featured" class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                            <span class="text-sm text-gray-700">Mark as featured</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Progress -->
+                <div id="upload-progress" class="hidden mt-4 space-y-3">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span id="progress-text">Uploading...</span>
+                            <span id="progress-percent">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="progress-bar" class="bg-primary h-2 rounded-full transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div id="progress-details" class="text-sm text-gray-500"></div>
+                </div>
+
+                <!-- Results -->
+                <div id="upload-results" class="hidden mt-4 space-y-2">
+                    <h4 class="text-sm font-medium text-gray-700">Upload Results</h4>
+                    <div id="results-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 p-4 border-t border-gray-100">
+                <button id="btn-clear-files" class="px-4 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium hidden">Clear All</button>
+                <button id="btn-start-upload" class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50" disabled>Start Upload</button>
+                <button id="btn-close-after-upload" class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hidden">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div id="category-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+        <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-md">
+            <div class="flex items-center justify-between p-4 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900" id="category-modal-title">Add Category</h3>
+                <button id="close-category-modal" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <form id="category-form" class="p-4 space-y-4">
+                <input type="hidden" id="category-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <input type="text" id="category-name" required class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Slug (URL-friendly)</label>
+                    <input type="text" id="category-slug" required class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="category-description" rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+                    <input type="number" id="category-order" value="0" min="0" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="category-active" checked class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                        <span class="text-sm text-gray-700">Active</span>
+                    </label>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" id="btn-cancel-category" class="px-4 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Detail Modal -->
+    <div id="image-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+        <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex">
+            <div class="w-full md:w-1/2 bg-gray-100 relative overflow-hidden">
+                <img id="modal-image" src="" alt="" class="w-full h-full object-cover">
+                <button id="close-image-modal" class="absolute top-4 right-4 p-2 bg-white/90 rounded-full shadow-lg text-gray-600 hover:text-gray-900">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="w-full md:w-1/2 p-6 overflow-y-auto">
+                <h3 id="modal-image-title" class="text-xl font-semibold text-gray-900 mb-4"></h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Description</label>
+                        <p id="modal-image-description" class="text-gray-600 text-sm"></p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Category</label>
+                        <p id="modal-image-category" class="text-gray-600 text-sm"></p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">File Size</label>
+                            <p id="modal-image-size" class="text-gray-600 text-sm"></p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Dimensions</label>
+                            <p id="modal-image-dimensions" class="text-gray-600 text-sm"></p>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Alt Text</label>
+                        <p id="modal-image-alt" class="text-gray-600 text-sm"></p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Tags</label>
+                        <div id="modal-image-tags" class="flex flex-wrap gap-1"></div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">URL</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="modal-image-url" readonly class="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600">
+                            <button id="copy-url-btn" class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">Copy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-gray-100 flex gap-3">
+                    <button id="btn-edit-image" class="flex-1 px-4 py-2 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">Edit Details</button>
+                    <button id="btn-delete-image" class="flex-1 px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Image Modal -->
+    <div id="edit-image-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+        <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+                <h3 class="text-lg font-semibold text-gray-900">Edit Image Details</h3>
+                <button id="close-edit-modal" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <form id="edit-image-form" class="p-4 space-y-4">
+                <input type="hidden" id="edit-image-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    <input type="text" id="edit-title" required class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="edit-description" rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Alt Text</label>
+                    <input type="text" id="edit-alt" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select id="edit-category" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">Uncategorized</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tags (comma separated)</label>
+                    <input type="text" id="edit-tags" placeholder="youth, workshop, training" class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="edit-featured" class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                        <span class="text-sm text-gray-700">Featured</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer ml-4">
+                        <input type="checkbox" id="edit-active" checked class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                        <span class="text-sm text-gray-700">Active</span>
+                    </label>
+                </div>
+                <div class="pt-4 border-t border-gray-100 flex justify-end gap-3">
+                    <button type="button" id="btn-cancel-edit" class="px-4 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="delete-confirm-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+        <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-md">
+            <div class="p-6 text-center">
+                <span class="material-symbols-outlined text-5xl text-red-500 mb-4 block">warning</span>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Delete Image?</h3>
+                <p class="text-gray-600 mb-6">This will permanently delete the image from storage and cannot be undone.</p>
+                <div class="flex justify-center gap-3">
+                    <button id="btn-cancel-delete" class="px-6 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium">Cancel</button>
+                    <button id="btn-confirm-delete" class="px-6 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">Delete Permanently</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const API_BASE = '/api/images';
+        
+        // State
+        let images = [];
+        let categories = [];
+        let currentPage = 1;
+        const pageSize = 20;
+        let totalImages = 0;
+        let selectedFiles = [];
+        let imageToDelete = null;
+        let imageToEdit = null;
+
+        // DOM Elements
+        const elements = {
+            imagesContainer: document.getElementById('images-container'),
+            emptyState: document.getElementById('empty-state'),
+            pagination: document.getElementById('pagination'),
+            paginationInfo: document.getElementById('pagination-info'),
+            btnPrev: document.getElementById('btn-prev'),
+            btnNext: document.getElementById('btn-next'),
+            searchInput: document.getElementById('search-input'),
+            categoryFilter: document.getElementById('category-filter'),
+            statusFilter: document.getElementById('status-filter'),
+            sortBy: document.getElementById('sort-by'),
+            statTotal: document.getElementById('stat-total'),
+            statCategories: document.getElementById('stat-categories'),
+            statFeatured: document.getElementById('stat-featured'),
+            statStorage: document.getElementById('stat-storage'),
+            
+            // Modals
+            uploadModal: document.getElementById('upload-modal'),
+            categoryModal: document.getElementById('category-modal'),
+            imageModal: document.getElementById('image-modal'),
+            editImageModal: document.getElementById('edit-image-modal'),
+            deleteConfirmModal: document.getElementById('delete-confirm-modal'),
+            
+            // Upload
+            dropZone: document.getElementById('drop-zone'),
+            fileInput: document.getElementById('file-input'),
+            filesPreview: document.getElementById('files-preview'),
+            fileList: document.getElementById('file-list'),
+            fileCount: document.getElementById('file-count'),
+            uploadCategory: document.getElementById('upload-category'),
+            uploadTitlePrefix: document.getElementById('upload-title-prefix'),
+            uploadFeatured: document.getElementById('upload-featured'),
+            uploadProgress: document.getElementById('upload-progress'),
+            progressBar: document.getElementById('progress-bar'),
+            progressText: document.getElementById('progress-text'),
+            progressPercent: document.getElementById('progress-percent'),
+            progressDetails: document.getElementById('progress-details'),
+            uploadResults: document.getElementById('upload-results'),
+            resultsList: document.getElementById('results-list'),
+            btnStartUpload: document.getElementById('btn-start-upload'),
+            btnClearFiles: document.getElementById('btn-clear-files'),
+            btnCloseAfterUpload: document.getElementById('btn-close-after-upload'),
+            
+            // Buttons
+            btnBulkUpload: document.getElementById('btn-bulk-upload'),
+            btnAddCategory: document.getElementById('btn-add-category'),
+            btnFirstUpload: document.getElementById('btn-first-upload'),
+            btnCloseUploadModal: document.getElementById('close-upload-modal'),
+            btnCloseCategoryModal: document.getElementById('close-category-modal'),
+            btnCancelCategory: document.getElementById('btn-cancel-category'),
+            btnCloseImageModal: document.getElementById('close-image-modal'),
+            btnCloseEditModal: document.getElementById('close-edit-modal'),
+            btnCancelEdit: document.getElementById('btn-cancel-edit'),
+            btnEditImage: document.getElementById('btn-edit-image'),
+            btnDeleteImage: document.getElementById('btn-delete-image'),
+            btnCancelDelete: document.getElementById('btn-cancel-delete'),
+            btnConfirmDelete: document.getElementById('btn-confirm-delete'),
+            copyUrlBtn: document.getElementById('copy-url-btn'),
+            
+            // Forms
+            categoryForm: document.getElementById('category-form'),
+            editImageForm: document.getElementById('edit-image-form'),
+            
+            // Category form fields
+            categoryId: document.getElementById('category-id'),
+            categoryName: document.getElementById('category-name'),
+            categorySlug: document.getElementById('category-slug'),
+            categoryDescription: document.getElementById('category-description'),
+            categoryOrder: document.getElementById('category-order'),
+            categoryActive: document.getElementById('category-active'),
+            
+            // Edit image fields
+            editImageId: document.getElementById('edit-image-id'),
+            editTitle: document.getElementById('edit-title'),
+            editDescription: document.getElementById('edit-description'),
+            editAlt: document.getElementById('edit-alt'),
+            editCategory: document.getElementById('edit-category'),
+            editTags: document.getElementById('edit-tags'),
+            editFeatured: document.getElementById('edit-featured'),
+            editActive: document.getElementById('edit-active'),
+            
+            // Image modal fields
+            modalImage: document.getElementById('modal-image'),
+            modalImageTitle: document.getElementById('modal-image-title'),
+            modalImageDescription: document.getElementById('modal-image-description'),
+            modalImageCategory: document.getElementById('modal-image-category'),
+            modalImageSize: document.getElementById('modal-image-size'),
+            modalImageDimensions: document.getElementById('modal-image-dimensions'),
+            modalImageAlt: document.getElementById('modal-image-alt'),
+            modalImageTags: document.getElementById('modal-image-tags'),
+            modalImageUrl: document.getElementById('modal-image-url'),
+            
+            // Sidebar
+            sidebar: document.getElementById('sidebar'),
+            sidebarToggle: document.getElementById('sidebar-toggle'),
+            sidebarClose: document.getElementById('sidebar-close'),
+            sidebarOverlay: document.getElementById('sidebar-overlay'),
+            logoutBtn: document.getElementById('logout-btn'),
+            userName: document.getElementById('user-name')
+        };
+
+        // Auth check
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (res.ok) {
+                    const user = await res.json();
+                    elements.userName.textContent = user.name || user.email;
+                    return true;
+                }
+            } catch (e) {}
+            window.location.href = 'login.html?redirect=admin_images.html';
+            return false;
+        }
+
+        // Logout
+        elements.logoutBtn.addEventListener('click', async () => {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = 'login.html';
+        });
+
+        // Sidebar toggle
+        elements.sidebarToggle.addEventListener('click', () => {
+            elements.sidebar.classList.add('open');
+            elements.sidebarOverlay.classList.remove('hidden');
+        });
+        elements.sidebarClose.addEventListener('click', closeSidebar);
+        elements.sidebarOverlay.addEventListener('click', closeSidebar);
+        function closeSidebar() {
+            elements.sidebar.classList.remove('open');
+            elements.sidebarOverlay.classList.add('hidden');
+        }
+
+        // Modal helpers
+        function openModal(modal) {
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeModal(modal) {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // Close modals on overlay click
+        [elements.uploadModal, elements.categoryModal, elements.imageModal, elements.editImageModal, elements.deleteConfirmModal].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal);
+            });
+        });
+
+        // Initialize
+        async function init() {
+            const authed = await checkAuth();
+            if (!authed) return;
+            
+            await loadCategories();
+            await loadImages();
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            // Search & filters
+            let searchDebounce;
+            elements.searchInput.addEventListener('input', () => {
+                clearTimeout(searchDebounce);
+                searchDebounce = setTimeout(() => { currentPage = 1; loadImages(); }, 300);
+            });
+            elements.categoryFilter.addEventListener('change', () => { currentPage = 1; loadImages(); });
+            elements.statusFilter.addEventListener('change', () => { currentPage = 1; loadImages(); });
+            elements.sortBy.addEventListener('change', () => { currentPage = 1; loadImages(); });
+
+            // Pagination
+            elements.btnPrev.addEventListener('click', () => { if (currentPage > 1) { currentPage--; loadImages(); } });
+            elements.btnNext.addEventListener('click', () => { if (currentPage * pageSize < totalImages) { currentPage++; loadImages(); } });
+
+            // Upload modal
+            elements.btnBulkUpload.addEventListener('click', () => openUploadModal());
+            elements.btnFirstUpload.addEventListener('click', () => openUploadModal());
+            elements.btnCloseUploadModal.addEventListener('click', () => closeModal(elements.uploadModal));
+            
+            // Drop zone
+            elements.dropZone.addEventListener('click', () => elements.fileInput.click());
+            elements.dropZone.addEventListener('dragover', (e) => { e.preventDefault(); elements.dropZone.classList.add('active'); });
+            elements.dropZone.addEventListener('dragleave', () => elements.dropZone.classList.remove('active'));
+            elements.dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                elements.dropZone.classList.remove('active');
+                handleFiles(e.dataTransfer.files);
+            });
+            elements.fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+            
+            // Upload actions
+            elements.btnClearFiles.addEventListener('click', clearFiles);
+            elements.btnStartUpload.addEventListener('click', startUpload);
+            elements.btnCloseAfterUpload.addEventListener('click', () => { closeModal(elements.uploadModal); resetUploadModal(); });
+
+            // Category modal
+            elements.btnAddCategory.addEventListener('click', () => openCategoryModal());
+            elements.btnCloseCategoryModal.addEventListener('click', () => closeModal(elements.categoryModal));
+            elements.btnCancelCategory.addEventListener('click', () => closeModal(elements.categoryModal));
+            elements.categoryForm.addEventListener('submit', handleCategorySubmit);
+
+            // Image modal
+            elements.btnCloseImageModal.addEventListener('click', () => closeModal(elements.imageModal));
+            elements.copyUrlBtn.addEventListener('click', copyImageUrl);
+            elements.btnEditImage.addEventListener('click', () => { closeModal(elements.imageModal); openEditImageModal(imageToEdit); });
+            elements.btnDeleteImage.addEventListener('click', () => { closeModal(elements.imageModal); openDeleteConfirm(imageToEdit); });
+
+            // Edit image modal
+            elements.btnCloseEditModal.addEventListener('click', () => closeModal(elements.editImageModal));
+            elements.btnCancelEdit.addEventListener('click', () => closeModal(elements.editImageModal));
+            elements.editImageForm.addEventListener('submit', handleEditImageSubmit);
+
+            // Delete confirm
+            elements.btnCancelDelete.addEventListener('click', () => closeModal(elements.deleteConfirmModal));
+            elements.btnConfirmDelete.addEventListener('click', confirmDelete);
+        }
+
+        // Load categories
+        async function loadCategories() {
+            try {
+                const res = await fetch(`${API_BASE}/categories`);
+                categories = await res.json();
+                renderCategoryOptions();
+            } catch (err) {
+                console.error('Failed to load categories:', err);
+            }
+        }
+
+        function renderCategoryOptions() {
+            const options = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            elements.categoryFilter.innerHTML = '<option value="">All Categories</option>' + options;
+            elements.uploadCategory.innerHTML = '<option value="">Uncategorized</option>' + options;
+            elements.editCategory.innerHTML = '<option value="">Uncategorized</option>' + options;
+        }
+
+        // Load images
+        async function loadImages() {
+            try {
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    limit: pageSize,
+                    active: elements.statusFilter.value === 'all' ? '' : elements.statusFilter.value
+                });
+                
+                if (elements.searchInput.value) params.append('search', elements.searchInput.value);
+                if (elements.categoryFilter.value) params.append('category', elements.categoryFilter.value);
+                if (elements.sortBy.value) params.append('sort', elements.sortBy.value);
+
+                const res = await fetch(`${API_BASE}?${params}`);
+                const data = await res.json();
+                
+                images = data.data || [];
+                totalImages = data.count || images.length;
+                
+                renderImages();
+                updateStats();
+                updatePagination();
+            } catch (err) {
+                console.error('Failed to load images:', err);
+                showToast('Failed to load images', 'error');
+            }
+        }
+
+        function renderImages() {
+            if (images.length === 0) {
+                elements.imagesContainer.innerHTML = '';
+                elements.emptyState.classList.remove('hidden');
+                elements.pagination.classList.add('hidden');
+                return;
+            }
+
+            elements.emptyState.classList.add('hidden');
+            elements.pagination.classList.remove('hidden');
+
+            elements.imagesContainer.innerHTML = images.map(img => {
+                const category = img.category ? `<span class="category-badge bg-secondary/10 text-secondary px-2 py-0.5 rounded-full">${img.category.name}</span>` : '<span class="category-badge bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Uncategorized</span>';
+                const featured = img.is_featured ? '<span class="category-badge bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-xs align-middle">star</span> Featured</span>' : '';
+                const statusBadge = img.is_active ? '<span class="w-2 h-2 rounded-full bg-green-500"></span> Active' : '<span class="w-2 h-2 rounded-full bg-red-500"></span> Inactive';
+                
+                return `
+                    <div class="image-row lg:grid grid-cols-[1fr_2fr_1fr_1fr_1fr_100px] gap-4 px-6 py-4 items-center hover:bg-gray-50 transition-colors" data-id="${img.id}">
+                        <div class="relative w-20 h-20 lg:w-24 lg:h-24 flex-shrink-0">
+                            <img src="${img.image_url}" alt="${img.title || img.alt_text || 'Image'}" class="image-thumb w-full h-full object-cover rounded-lg border border-gray-200" loading="lazy">
+                            ${img.is_featured ? '<span class="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 text-white rounded-full flex items-center justify-center text-xs"><span class="material-symbols-outlined">star</span></span>' : ''}
+                        </div>
+                        <div class="min-w-0 lg:col-span-2">
+                            <h4 class="font-medium text-gray-900 truncate">${img.title || 'Untitled'}</h4>
+                            <p class="text-sm text-gray-500 truncate mt-0.5">${img.description || 'No description'}</p>
+                            <p class="text-xs text-gray-400 mt-1">${formatFileSize(img.file_size)} • ${img.mime_type} • ${formatDate(img.created_at)}</p>
+                        </div>
+                        <div class="hidden lg:block">${category} ${featured}</div>
+                        <div class="hidden lg:block text-sm text-gray-600">${formatFileSize(img.file_size)}</div>
+                        <div class="hidden lg:block flex items-center gap-2 text-sm text-gray-600">${statusBadge}</div>
+                        <div class="flex items-center justify-end gap-2 lg:justify-end">
+                            <button class="view-btn p-2 text-gray-500 hover:text-primary hover:bg-gray-100 rounded-lg transition-colors" title="View Details" aria-label="View">
+                                <span class="material-symbols-outlined">visibility</span>
+                            </button>
+                            <button class="edit-btn p-2 text-gray-500 hover:text-secondary hover:bg-gray-100 rounded-lg transition-colors" title="Edit" aria-label="Edit">
+                                <span class="material-symbols-outlined">edit</span>
+                            </button>
+                            <button class="delete-btn p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete" aria-label="Delete">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Add event listeners to buttons
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const row = e.target.closest('.image-row');
+                    openImageModal(row.dataset.id);
+                });
+            });
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const row = e.target.closest('.image-row');
+                    openEditImageModal(row.dataset.id);
+                });
+            });
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const row = e.target.closest('.image-row');
+                    openDeleteConfirm(row.dataset.id);
+                });
+            });
+        }
+
+        function updateStats() {
+            const total = images.length; // This is just current page, we'd need a separate count call for total
+            elements.statTotal.textContent = totalImages;
+            elements.statCategories.textContent = categories.length;
+            const featured = images.filter(i => i.is_featured).length;
+            elements.statFeatured.textContent = featured;
+            const storage = images.reduce((sum, img) => sum + (img.file_size || 0), 0);
+            elements.statStorage.textContent = formatFileSize(storage);
+        }
+
+        function updatePagination() {
+            elements.paginationInfo.textContent = `Showing ${(currentPage - 1) * pageSize + 1} to ${Math.min(currentPage * pageSize, totalImages)} of ${totalImages} images`;
+            elements.btnPrev.disabled = currentPage === 1;
+            elements.btnNext.disabled = currentPage * pageSize >= totalImages;
+        }
+
+        // Handle file selection
+        function handleFiles(files) {
+            const validFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+            if (validFiles.length === 0) {
+                showToast('Please select valid image files', 'error');
+                return;
+            }
+            
+            selectedFiles = [...selectedFiles, ...validFiles];
+            updateFilePreview();
+            elements.dropZone.classList.add('has-file');
+        }
+
+        function updateFilePreview() {
+            if (selectedFiles.length === 0) {
+                elements.filesPreview.classList.add('hidden');
+                elements.btnStartUpload.disabled = true;
+                elements.btnClearFiles.classList.add('hidden');
+                return;
+            }
+            
+            elements.filesPreview.classList.remove('hidden');
+            elements.btnStartUpload.disabled = false;
+            elements.btnClearFiles.classList.remove('hidden');
+            elements.fileCount.textContent = selectedFiles.length;
+            
+            elements.fileList.innerHTML = selectedFiles.map((file, index) => `
+                <div class="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+                    <div class="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        ${file.type.startsWith('image/') ? `<img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover">` : '<span class="material-symbols-outlined text-gray-400">image</span>'}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">${file.name}</p>
+                        <p class="text-xs text-gray-500">${formatFileSize(file.size)}</p>
+                    </div>
+                    <button type="button" data-index="${index}" class="remove-file-btn p-1 text-gray-400 hover:text-red-600 rounded">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            `).join('');
+            
+            document.querySelectorAll('.remove-file-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    selectedFiles.splice(index, 1);
+                    updateFilePreview();
+                });
+            });
+        }
+
+        function clearFiles() {
+            selectedFiles = [];
+            elements.fileInput.value = '';
+            elements.filesPreview.classList.add('hidden');
+            elements.dropZone.classList.remove('has-file');
+            elements.uploadProgress.classList.add('hidden');
+            elements.uploadResults.classList.add('hidden');
+            elements.btnStartUpload.disabled = true;
+            elements.btnClearFiles.classList.add('hidden');
+            elements.btnCloseAfterUpload.classList.add('hidden');
+            elements.btnStartUpload.textContent = 'Start Upload';
+        }
+
+        function resetUploadModal() {
+            clearFiles();
+            elements.uploadTitlePrefix.value = '';
+            elements.uploadCategory.value = '';
+            elements.uploadFeatured.checked = false;
+        }
+
+        // Upload to API
+        async function startUpload() {
+            if (selectedFiles.length === 0) return;
+            
+            elements.uploadProgress.classList.remove('hidden');
+            elements.uploadResults.classList.add('hidden');
+            elements.btnStartUpload.disabled = true;
+            elements.btnClearFiles.disabled = true;
+            
+            const formData = new FormData();
+            selectedFiles.forEach(file => formData.append('images', file));
+            formData.append('category_id', elements.uploadCategory.value || '');
+            formData.append('default_title', elements.uploadTitlePrefix.value);
+            formData.append('is_featured', elements.uploadFeatured.checked);
+            
+            try {
+                const res = await fetch(`${API_BASE}/bulk-upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`
+                    },
+                    body: formData
+                });
+                
+                const result = await res.json();
+                
+                elements.progressBar.style.width = '100%';
+                elements.progressPercent.textContent = '100%';
+                elements.progressText.textContent = 'Complete!';
+                elements.progressDetails.textContent = `Uploaded ${result.success?.length || 0} images, ${result.failed?.length || 0} failed`;
+                
+                renderUploadResults(result);
+                elements.uploadResults.classList.remove('hidden');
+                elements.btnCloseAfterUpload.classList.remove('hidden');
+                elements.btnStartUpload.classList.add('hidden');
+                
+                // Reload images
+                await loadImages();
+                showToast(`Uploaded ${result.success?.length || 0} images`, 'success');
+                
+            } catch (err) {
+                console.error('Upload error:', err);
+                showToast('Upload failed', 'error');
+                elements.progressText.textContent = 'Failed';
+                elements.progressDetails.textContent = err.message;
+            }
+        }
+
+        function renderUploadResults(result) {
+            elements.resultsList.innerHTML = '';
+            
+            if (result.success?.length) {
+                result.success.forEach(img => {
+                    const el = document.createElement('div');
+                    el.className = 'p-2 bg-green-50 border border-green-200 rounded-lg text-sm';
+                    el.innerHTML = `<span class="material-symbols-outlined text-green-600 inline-block align-middle mr-1">check_circle</span> ${img.title} - <span class="text-green-700">Success</span>`;
+                    elements.resultsList.appendChild(el);
+                });
+            }
+            if (result.failed?.length) {
+                result.failed.forEach(f => {
+                    const el = document.createElement('div');
+                    el.className = 'p-2 bg-red-50 border border-red-200 rounded-lg text-sm';
+                    el.innerHTML = `<span class="material-symbols-outlined text-red-600 inline-block align-middle mr-1">error</span> ${f.file} - <span class="text-red-700">${f.error}</span>`;
+                    elements.resultsList.appendChild(el);
+                });
+            }
+        }
+
+        // Category CRUD
+        function openCategoryModal(category = null) {
+            elements.categoryForm.reset();
+            elements.categoryId.value = '';
+            elements.categoryModalTitle.textContent = 'Add Category';
+            
+            if (category) {
+                elements.categoryId.value = category.id;
+                elements.categoryName.value = category.name;
+                elements.categorySlug.value = category.slug;
+                elements.categoryDescription.value = category.description || '';
+                elements.categoryOrder.value = category.display_order || 0;
+                elements.categoryActive.checked = category.is_active;
+                elements.categoryModalTitle.textContent = 'Edit Category';
+            }
+            
+            openModal(elements.categoryModal);
+        }
+
+        async function handleCategorySubmit(e) {
+            e.preventDefault();
+            
+            const id = elements.categoryId.value;
+            const data = {
+                name: elements.categoryName.value,
+                slug: elements.categorySlug.value,
+                description: elements.categoryDescription.value,
+                display_order: parseInt(elements.categoryOrder.value),
+                is_active: elements.categoryActive.checked
+            };
+            
+            try {
+                const url = id ? `${API_BASE}/categories/${id}` : `${API_BASE}/categories`;
+                const method = id ? 'PUT' : 'POST';
+                
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!res.ok) throw new Error('Failed to save category');
+                
+                closeModal(elements.categoryModal);
+                await loadCategories();
+                await loadImages();
+                showToast(id ? 'Category updated' : 'Category created', 'success');
+            } catch (err) {
+                console.error('Category save error:', err);
+                showToast('Failed to save category', 'error');
+            }
+        }
+
+        // Image detail modal
+        let imageToEdit = null;
+        
+        async function openImageModal(id) {
+            const img = images.find(i => i.id === id);
+            if (!img) return;
+            
+            imageToEdit = img;
+            
+            elements.modalImage.src = img.image_url;
+            elements.modalImageTitle.textContent = img.title || 'Untitled';
+            elements.modalImageDescription.textContent = img.description || 'No description';
+            elements.modalImageCategory.textContent = img.category?.name || 'Uncategorized';
+            elements.modalImageSize.textContent = formatFileSize(img.file_size);
+            elements.modalImageDimensions.textContent = img.width && img.height ? `${img.width} × ${img.height} px` : 'Unknown';
+            elements.modalImageAlt.textContent = img.alt_text || 'No alt text';
+            elements.modalImageUrl.value = img.image_url;
+            
+            elements.modalImageTags.innerHTML = '';
+            if (img.tags?.length) {
+                img.tags.forEach(tag => {
+                    const span = document.createElement('span');
+                    span.className = 'px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full';
+                    span.textContent = tag;
+                    elements.modalImageTags.appendChild(span);
+                });
+            } else {
+                elements.modalImageTags.innerHTML = '<span class="text-gray-400 text-sm">No tags</span>';
+            }
+            
+            openModal(elements.imageModal);
+        }
+
+        function copyImageUrl() {
+            navigator.clipboard.writeText(elements.modalImageUrl.value);
+            showToast('URL copied to clipboard', 'success');
+        }
+
+        // Edit image modal
+        function openEditImageModal(id) {
+            const img = images.find(i => i.id === id);
+            if (!img) return;
+            
+            imageToEdit = img;
+            
+            elements.editImageId.value = img.id;
+            elements.editTitle.value = img.title || '';
+            elements.editDescription.value = img.description || '';
+            elements.editAlt.value = img.alt_text || '';
+            elements.editCategory.value = img.category_id || '';
+            elements.editTags.value = img.tags?.join(', ') || '';
+            elements.editFeatured.checked = img.is_featured;
+            elements.editActive.checked = img.is_active;
+            
+            openModal(elements.editImageModal);
+        }
+
+        async function handleEditImageSubmit(e) {
+            e.preventDefault();
+            
+            const id = elements.editImageId.value;
+            const data = {
+                title: elements.editTitle.value,
+                description: elements.editDescription.value,
+                alt_text: elements.editAlt.value,
+                category_id: elements.editCategory.value || null,
+                tags: elements.editTags.value.split(',').map(t => t.trim()).filter(Boolean),
+                is_featured: elements.editFeatured.checked,
+                is_active: elements.editActive.checked
+            };
+            
+            try {
+                const res = await fetch(`${API_BASE}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!res.ok) throw new Error('Failed to update image');
+                
+                closeModal(elements.editImageModal);
+                await loadImages();
+                showToast('Image updated', 'success');
+            } catch (err) {
+                console.error('Edit error:', err);
+                showToast('Failed to update image', 'error');
+            }
+        }
+
+        // Delete image
+        function openDeleteConfirm(id) {
+            imageToDelete = id;
+            openModal(elements.deleteConfirmModal);
+        }
+
+        async function confirmDelete() {
+            if (!imageToDelete) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/${imageToDelete}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('auth_token')}` }
+                });
+                
+                if (!res.ok) throw new Error('Failed to delete');
+                
+                closeModal(elements.deleteConfirmModal);
+                await loadImages();
+                showToast('Image deleted', 'success');
+                imageToDelete = null;
+            } catch (err) {
+                console.error('Delete error:', err);
+                showToast('Failed to delete image', 'error');
+            }
+        }
+
+        // Utility functions
+        function formatFileSize(bytes) {
+            if (!bytes) return '0 B';
+            const units = ['B', 'KB', 'MB', 'GB'];
+            let i = 0;
+            while (bytes >= 1024 && i < units.length - 1) {
+                bytes /= 1024;
+                i++;
+            }
+            return `${bytes.toFixed(1)} ${units[i]}`;
+        }
+
+        function formatDate(dateStr) {
+            return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium animate-slide-in ${
+                type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600'
+            }`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Initialize
+        init();
+    </script>
+    <style>
+        @keyframes slide-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-in { animation: slide-in 0.3s ease-out; }
+    </style>
+<script src="assets/js/admin-sidebar.js"></script>
+</body>
+</html>

@@ -18,8 +18,8 @@ const https     = require('https');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const supabase  = require('../config/supabase');
 
-// text-embedding-004 requires API version v1 (not v1beta which is the SDK default)
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, { apiVersion: 'v1' });
+// text-embedding-005 is the current stable embedding model on Gemini API
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // ── Data Sources ──────────────────────────────────────────────────────────────
 const SOURCES = [
@@ -127,10 +127,13 @@ function chunkText(text, chunkSize = 400, overlap = 50) {
   return chunks.filter(c => c.split(/\s+/).length > 20); // drop tiny chunks
 }
 
-/** Embed text with Gemini text-embedding-004 (requires API v1) */
+/** Embed text with Gemini and output 768 dimensions to match DB */
 async function embed(text) {
-  const model  = genAI.getGenerativeModel({ model: 'text-embedding-004' }, { apiVersion: 'v1' });
-  const result = await model.embedContent(text);
+  const model  = genAI.getGenerativeModel({ model: 'gemini-embedding-001' });
+  const result = await model.embedContent({
+    content: { parts: [{ text }] },
+    outputDimensionality: 768
+  });
   return result.embedding.values;
 }
 
@@ -199,10 +202,11 @@ router.get('/documents', async (req, res) => {
 
     const docsMap = {};
     (data || []).forEach(row => {
-      const key = row.source_name || row.title || 'Unknown Source';
+      // Group by title if present to consolidate multi-page PDFs, otherwise fallback to source_name
+      const key = row.title || row.source_name || 'Unknown Source';
       if (!docsMap[key]) {
         docsMap[key] = {
-          source_name: row.source_name || 'Unknown Source',
+          source_name: key,
           title: row.title || 'Untitled',
           pillar: row.pillar || 'General',
           source_url: row.source_url || '#',
@@ -229,12 +233,38 @@ router.delete('/documents', async (req, res) => {
   }
 
   try {
-    const { error } = await supabase
+    // 1. Fetch one matching chunk to get the source_url for bucket cleanup
+    const { data: chunksSample } = await supabase
+      .from('bonga_documents')
+      .select('source_url')
+      .or(`title.eq."${source_name}",source_name.eq."${source_name}"`)
+      .limit(1);
+
+    if (chunksSample && chunksSample.length > 0) {
+      const sourceUrl = chunksSample[0].source_url;
+      if (sourceUrl && sourceUrl !== '#' && sourceUrl.includes('/storage/v1/object/public/bonga-documents/')) {
+        const parts = sourceUrl.split('/storage/v1/object/public/bonga-documents/');
+        if (parts.length > 1) {
+          const storagePath = decodeURIComponent(parts[1]);
+          console.log(`Deleting file from Supabase storage: ${storagePath}`);
+          await supabase.storage.from('bonga-documents').remove([storagePath]);
+        }
+      }
+    }
+
+    // 2. Delete database chunks by title or source_name
+    const { error: errorTitle } = await supabase
+      .from('bonga_documents')
+      .delete()
+      .eq('title', source_name);
+
+    const { error: errorSourceName } = await supabase
       .from('bonga_documents')
       .delete()
       .eq('source_name', source_name);
 
-    if (error) throw error;
+    if (errorTitle) throw errorTitle;
+    if (errorSourceName) throw errorSourceName;
 
     res.json({ success: true, message: `Successfully deleted document: ${source_name}` });
   } catch (err) {

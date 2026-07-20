@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <base href="/">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vybe Africa Staff Portal - Edit Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Auth Guard & Role Router -->
+<script src="assets/js/auth-guard.js"></script>
+
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#3e0500",
+                        "secondary-container": "#cde6d1",
+                        "inverse-surface": "#313030",
+                        "on-error": "#ffffff",
+                        "primary-container": "#e2725b",
+                        "surface-bright": "#fcf9f8",
+                        "outline-variant": "#ddc0ba",
+                        "secondary": "#4d6453",
+                        "surface-tint": "#9f402d",
+                        "inverse-on-surface": "#f3f0ef",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "on-primary-container": "#5a0d02",
+                        "on-secondary-fixed": "#0b2013",
+                        "on-error-container": "#93000a",
+                        "surface": "#fcf9f8",
+                        "surface-dim": "#dcd9d9",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#516857",
+                        "on-primary-fixed-variant": "#802918",
+                        "background": "#fcf9f8",
+                        "secondary-fixed-dim": "#b4cdb8",
+                        "on-background": "#1c1b1b",
+                        "secondary-fixed": "#d0e9d4",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "inverse-primary": "#ffb4a5",
+                        "on-secondary-fixed-variant": "#364c3c",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-container": "#4c3f00",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#eae7e7",
+                        "primary": "#9f402d",
+                        "outline": "#89726d",
+                        "on-surface-variant": "#56423e",
+                        "tertiary": "#705d00",
+                        "tertiary-container": "#c9a900",
+                        "primary-fixed": "#ffdad3",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "tertiary-fixed": "#ffe16d",
+                        "surface-container-low": "#f6f3f2",
+                        "on-tertiary-fixed": "#221b00",
+                        "primary-fixed-dim": "#ffb4a5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem",
+                        "card": "16px"
+                    },
+                    "spacing": {
+                        "stack-lg": "80px",
+                        "container-max": "1280px",
+                        "margin-mobile": "20px",
+                        "base": "8px",
+                        "stack-sm": "16px",
+                        "gutter": "24px",
+                        "margin-desktop": "64px",
+                        "stack-md": "32px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #fcf9f8;
+        }
+        .form-input-focus:focus {
+            border-color: #4d6453;
+            box-shadow: 0 0 0 2px rgba(77, 100, 83, 0.1);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-inverse-surface shadow-sm flex flex-col py-base z-50 hidden md:flex">
+<div class="px-6 mb-8 mt-4">
+<a href="homepage.html" class="flex items-center gap-2.5">
+<img src="assets/images/logo.png" alt="VYBE Africa" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">Vybe Africa</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Staff Portal</p>
+</div>
+</a>
+</div>
+<nav class="flex-1 space-y-1 px-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors" href="staff.html">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm">Dashboard</span>
+</a>
+<!-- ACTIVE TAB: Profile -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-primary font-bold border-r-4 border-primary bg-primary-container/10" href="edit_profile.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-sm">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors" href="programs_dashboard.html">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-sm">Programs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors" href="admin_dashboard.html">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm">Executive Portal</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors" href="homepage.html">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm">Ecosystem Site</span>
+</a>
+</nav>
+<div class="mt-auto px-4 pb-base space-y-4">
+<a href="donate.html" class="w-full bg-primary text-on-primary py-3 rounded-full font-label-sm active:scale-95 transition-transform text-center block font-bold">
+    Donate
+</a>
+<button id="logout-btn" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors w-full text-left">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-sm">Logout</span>
+</button>
+</div>
+</aside>
+
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 flex justify-between items-center px-margin-mobile md:px-gutter h-20">
+<div class="flex items-center gap-gutter">
+<span class="font-headline-md text-headline-md font-extrabold text-primary">Vybe Africa Staff</span>
+</div>
+<div class="flex items-center gap-stack-md">
+<div class="hidden md:flex items-center gap-4 text-on-surface-variant font-label-sm">
+<button class="hover:text-primary transition-all text-primary font-bold border-b-2 border-primary pb-1">EN</button>
+<button class="hover:text-primary transition-all">FR</button>
+<button class="hover:text-primary transition-all">SW</button>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" aria-label="Notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" aria-label="Help">help</button>
+<div class="h-8 w-[1px] bg-outline-variant/30 mx-2 hidden md:block"></div>
+<button onclick="document.getElementById('profile-form').requestSubmit();" class="bg-primary hover:bg-primary-container text-on-primary px-stack-sm py-2 rounded-full font-label-sm transition-all active:scale-95 shadow-sm">
+    Save Changes
+</button>
+</div>
+</div>
+</header>
+
+<!-- Page Canvas -->
+<div class="mt-20 px-margin-mobile md:px-margin-desktop py-stack-lg max-w-[1000px] mx-auto w-full">
+<!-- Section 1: Header Profile -->
+<section class="bg-surface-container-lowest rounded-card p-gutter shadow-sm mb-gutter flex flex-col md:flex-row items-center gap-8 relative overflow-hidden border border-outline-variant/20">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+<div class="relative group">
+<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface shadow-md">
+<img id="avatar-preview" class="w-full h-full object-cover" src="assets/images/IMG-20251211-WA0053.jpg" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDDe_VUmaLSRM-mCM1MK4cWoPP1seZZg9hYddK2YNVG41qTU28ZbDb9KP-FTX7Bzsllai5UT60o6m3KP0xbYi5qO9GZvHxQI8PplMdnu_MhRc3lAol5GGRoo-T3lektBYx4sftapPu-r65-bE67FN5HzzI2Xd5ep94pvP8FwhrZDwCZuGV-i1e6JamquJdUP9MBVvW8MXyKtApzw-ZxMnDlCVQAXHc95Ridz0oB07Sh6YpHPRO8m6x8M6nz-JYmUfnQuwBQ8kAXm1A'"/>
+</div>
+<button onclick="document.getElementById('photo-input').click()" class="absolute bottom-0 right-0 bg-secondary text-on-secondary p-2 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center justify-center" aria-label="Upload photo">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+</button>
+<input type="file" id="photo-input" class="hidden" accept="image/*" onchange="previewPhoto(event)">
+</div>
+<div class="flex-1 text-center md:text-left">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-1" id="display-name">Sharon Chepkite</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-4" id="display-title">Executive Director</p>
+<button onclick="document.getElementById('photo-input').click()" class="border-2 border-secondary text-secondary font-label-sm px-stack-sm py-2 rounded-full hover:bg-secondary hover:text-on-secondary transition-all">
+    Upload New Photo
+</button>
+</div>
+</section>
+
+<form id="profile-form" class="space-y-gutter">
+<!-- Section 2: Personal Information -->
+<section class="bg-surface-container-lowest rounded-card p-gutter shadow-sm border border-outline-variant/20">
+<div class="flex items-center gap-2 mb-stack-md text-secondary">
+<span class="material-symbols-outlined">badge</span>
+<h3 class="font-headline-md text-headline-md">Personal Information</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-on-surface-variant px-1">Full Name</label>
+<input id="input-fullname" class="bg-surface border border-outline-variant/50 rounded-lg p-3 font-body-md text-on-surface form-input-focus transition-all" type="text" value="Sharon Chepkite" required/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-on-surface-variant px-1">Job Title</label>
+<input id="input-designation" class="bg-surface border border-outline-variant/50 rounded-lg p-3 font-body-md text-on-surface form-input-focus transition-all" type="text" value="Executive Director" required/>
+</div>
+<div class="md:col-span-2 flex flex-col gap-2">
+<label class="font-label-sm text-on-surface-variant px-1">Personal Quote / Bio</label>
+<textarea id="input-quote" class="bg-surface border border-outline-variant/50 rounded-lg p-3 font-body-md italic text-on-surface form-input-focus transition-all" rows="3">Empowering local communities through sustainable architecture and collaborative growth.</textarea>
+</div>
+</div>
+</section>
+
+<!-- Section 3: Contact Details -->
+<section class="bg-surface-container-lowest rounded-card p-gutter shadow-sm border border-outline-variant/20">
+<div class="flex items-center gap-2 mb-stack-md text-secondary">
+<span class="material-symbols-outlined">contact_mail</span>
+<h3 class="font-headline-md text-headline-md">Contact Details</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-on-surface-variant px-1">Work Email</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">mail</span>
+<input id="input-email" class="w-full bg-surface border border-outline-variant/50 rounded-lg pl-10 p-3 font-body-md text-on-surface form-input-focus transition-all" type="email" value="sharon.c@vybeafrica.org" required/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-on-surface-variant px-1">Phone Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">phone</span>
+<input id="input-phone" class="w-full bg-surface border border-outline-variant/50 rounded-lg pl-10 p-3 font-body-md text-on-surface form-input-focus transition-all" type="tel" value="+254 700 000 000"/>
+</div>
+</div>
+<div class="md:col-span-2 flex flex-col gap-2">
+<label class="font-label-sm text-on-surface-variant px-1">Office Location</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">location_on</span>
+<select id="input-location" class="w-full bg-surface border border-outline-variant/50 rounded-lg pl-10 p-3 font-body-md text-on-surface form-input-focus transition-all appearance-none">
+<option value="Nairobi HQ, Kenya">Nairobi HQ, Kenya</option>
+<option value="West Pokot Chapter, Kenya">West Pokot Chapter, Kenya</option>
+<option value="Lagos Regional Office, Nigeria">Lagos Regional Office, Nigeria</option>
+<option value="Accra Hub, Ghana">Accra Hub, Ghana</option>
+<option value="Remote">Remote (Eastern Time)</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Section 4: Social Presence -->
+<section class="bg-surface-container-lowest rounded-card p-gutter shadow-sm border border-outline-variant/20">
+<div class="flex items-center gap-2 mb-stack-md text-secondary">
+<span class="material-symbols-outlined">public</span>
+<h3 class="font-headline-md text-headline-md">Social Presence</h3>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-on-surface-variant px-1">LinkedIn Profile</label>
+<div class="flex items-center gap-2">
+<div class="bg-surface-container-high h-12 w-12 flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-secondary">link</span>
+</div>
+<input id="input-linkedin" class="flex-1 bg-surface border border-outline-variant/50 rounded-lg p-3 font-body-md text-on-surface form-input-focus transition-all" placeholder="linkedin.com/in/username" type="url"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-on-surface-variant px-1">X (Twitter) Profile</label>
+<div class="flex items-center gap-2">
+<div class="bg-surface-container-high h-12 w-12 flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-secondary">alternate_email</span>
+</div>
+<input id="input-twitter" class="flex-1 bg-surface border border-outline-variant/50 rounded-lg p-3 font-body-md text-on-surface form-input-focus transition-all" placeholder="x.com/username" type="url"/>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Section 5: Account Settings -->
+<section class="bg-surface-container-lowest rounded-card p-gutter shadow-sm border border-outline-variant/20">
+<div class="flex items-center gap-2 mb-stack-md text-secondary">
+<span class="material-symbols-outlined">settings_suggest</span>
+<h3 class="font-headline-md text-headline-md">Account Settings</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-lg">
+<div>
+<h4 class="font-label-sm text-on-surface font-bold mb-4 uppercase tracking-wider">Change Password</h4>
+<button class="flex items-center gap-2 text-primary font-label-sm hover:underline" type="button" onclick="alert('Password reset link has been dispatched to your work email.');">
+<span class="material-symbols-outlined">lock_reset</span>
+Send password reset link to email
+</button>
+</div>
+<div>
+<h4 class="font-label-sm text-on-surface font-bold mb-4 uppercase tracking-wider">Notification Preferences</h4>
+<div class="space-y-3">
+<label class="flex items-center justify-between cursor-pointer group">
+<span class="font-body-md text-on-surface-variant">Email Notifications</span>
+<div class="relative inline-flex items-center">
+<input checked class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-dim rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-secondary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+</div>
+</label>
+<label class="flex items-center justify-between cursor-pointer group">
+<span class="font-body-md text-on-surface-variant">System Alerts</span>
+<div class="relative inline-flex items-center">
+<input checked class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-dim rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-secondary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+</div>
+</label>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Bottom Save Button -->
+<div class="flex justify-end pt-gutter">
+<button id="save-btn" class="bg-primary hover:bg-primary-container text-on-primary font-headline-md text-headline-md px-12 py-4 rounded-full shadow-lg active:scale-95 transition-all" type="submit">
+Save Changes
+</button>
+</div>
+</form>
+</div>
+
+<!-- Footer -->
+<footer class="w-full py-stack-sm mt-auto bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant/20 flex flex-col md:flex-row gap-4 justify-between items-center px-margin-desktop">
+<div class="font-label-sm text-label-sm font-bold text-on-surface">© 2026 Vybe Africa NGO. All rights reserved.</div>
+<div class="flex gap-stack-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-opacity duration-200" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-opacity duration-200" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-opacity duration-200" href="contact.html">Contact Support</a>
+</div>
+</footer>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Supabase setup
+        const supabaseUrl = 'https://uwfkqitmopqcbvwhkcgg.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZmtxaXRtb3BxY2J2d2hrY2dnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMTM2OTksImV4cCI6MjA5ODg4OTY5OX0.clHwO4AOcCB1yFbxGybydSUAlfR3uCaccnqt_mew3H8';
+        let supabase;
+        if (window.supabase) {
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+                auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+            });
+        }
+
+        // Auth Check
+        const userId = localStorage.getItem('user_id');
+        const localName = localStorage.getItem('name');
+        const localEmail = localStorage.getItem('email');
+        const localDesig = localStorage.getItem('designation');
+
+        if (!userId) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            });
+        }
+
+        // Set initial local values
+        if (localName) {
+            document.getElementById('display-name').textContent = localName;
+            document.getElementById('input-fullname').value = localName;
+        }
+        if (localEmail) document.getElementById('input-email').value = localEmail;
+        if (localDesig) {
+            document.getElementById('display-title').textContent = localDesig;
+            document.getElementById('input-designation').value = localDesig;
+        }
+
+        // Load profile from Supabase
+        if (supabase && userId) {
+            const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+            if (isUuid) {
+                try {
+                    const { data: profile } = await supabase.from('users').select('*').eq('id', userId).single();
+                if (profile) {
+                    if (profile.name) {
+                        document.getElementById('display-name').textContent = profile.name;
+                        document.getElementById('input-fullname').value = profile.name;
+                    }
+                    if (profile.designation) {
+                        document.getElementById('display-title').textContent = profile.designation;
+                        document.getElementById('input-designation').value = profile.designation;
+                    }
+                    if (profile.email) document.getElementById('input-email').value = profile.email;
+                    if (profile.phone) document.getElementById('input-phone').value = profile.phone;
+                    if (profile.bio) {
+                        document.getElementById('input-quote').value = profile.bio;
+                        localStorage.setItem('bio', profile.bio);
+                    }
+                    if (profile.avatar_url) {
+                        document.getElementById('avatar-preview').src = profile.avatar_url;
+                        localStorage.setItem('avatar_url', profile.avatar_url);
+                        // Trigger dynamic avatar updates on header elements
+                        const headerAvatars = document.querySelectorAll('header img, nav img, aside img, .w-10.h-10 img, .w-12.h-12 img');
+                        headerAvatars.forEach(img => {
+                            if (!img.src.includes('logo.png')) {
+                                img.src = profile.avatar_url;
+                            }
+                        });
+                    }
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        // Preview photo function
+        window.previewPhoto = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('avatar-preview').src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // Handle Profile Form Submission
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "Saving...";
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+
+            const updatedName = document.getElementById('input-fullname').value;
+            const updatedDesig = document.getElementById('input-designation').value;
+            const updatedEmail = document.getElementById('input-email').value;
+            const updatedPhone = document.getElementById('input-phone').value;
+            const updatedQuote = document.getElementById('input-quote').value;
+            const updatedAvatar = document.getElementById('avatar-preview').src;
+
+            // Update localStorage
+            localStorage.setItem('name', updatedName);
+            localStorage.setItem('email', updatedEmail);
+            localStorage.setItem('designation', updatedDesig);
+            localStorage.setItem('avatar_url', updatedAvatar);
+            localStorage.setItem('bio', updatedQuote);
+
+            document.getElementById('display-name').textContent = updatedName;
+            document.getElementById('display-title').textContent = updatedDesig;
+
+            // Save to Supabase
+            const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+            if (supabase && userId && isUuid) {
+                try {
+                    await supabase.from('users').update({
+                        name: updatedName,
+                        designation: updatedDesig,
+                        email: updatedEmail,
+                        phone: updatedPhone,
+                        avatar_url: updatedAvatar,
+                        bio: updatedQuote
+                    }).eq('id', userId);
+                } catch (err) {
+                    console.error('Supabase update error:', err);
+                }
+            }
+
+            setTimeout(() => {
+                btn.innerText = "Profile Saved!";
+                btn.classList.remove('bg-primary');
+                btn.classList.add('bg-secondary');
+
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('bg-secondary', 'opacity-70', 'cursor-not-allowed');
+                    btn.classList.add('bg-primary');
+                }, 2000);
+            }, 800);
+        });
+
+        // Language toggle micro-interaction
+        const langBtns = document.querySelectorAll('header button.hover\\:text-primary');
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                langBtns.forEach(b => b.classList.remove('text-primary', 'font-bold', 'border-b-2', 'border-primary', 'pb-1'));
+                btn.classList.add('text-primary', 'font-bold', 'border-b-2', 'border-primary', 'pb-1');
+            });
+        });
+    });
+</script>
+</body>
+</html>

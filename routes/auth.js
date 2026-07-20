@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const supabase = require('../config/supabase');
-// const User = require('../models/User'); // Mongoose Model Removed
+const auth = require('../middleware/auth');
 
 // @route   POST api/auth/register
 // @desc    Register a user (Use for seeding initially)
@@ -57,6 +57,27 @@ router.post('/login', async (req, res) => {
 
     } catch (err) {
         console.error('LOGIN ERROR:', err);
+        res.status(500).send('Server error');
+    }
+});
+
+// @route   GET api/auth/me
+// @desc    Get current user
+// @access  Private
+router.get('/me', auth, async (req, res) => {
+    try {
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('id, name, email, role, designation, phone, bio')
+            .eq('id', req.user.id)
+            .single();
+
+        if (error || !user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+        res.json(user);
+    } catch (err) {
+        console.error('GET ME ERROR:', err);
         res.status(500).send('Server error');
     }
 });
