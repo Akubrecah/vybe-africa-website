@@ -1,4 +1,3 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 const supabase = require('../../config/supabase');
 const { getNvidiaEmbedding } = require('../../utils/nvidiaEmbeddings');
 
@@ -6,9 +5,13 @@ const { getNvidiaEmbedding } = require('../../utils/nvidiaEmbeddings');
 const config = { maxDuration: 60 };
 
 const NVIDIA_CHAT_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
-// Only use the most reliable fast NVIDIA model (skip slow/unavailable ones)
-const NVIDIA_MODEL = 'meta/llama-3.3-70b-instruct';
-const NVIDIA_TIMEOUT_MS = 12000; // 12s hard timeout for NVIDIA
+
+// Ordered by speed: fast small models first, large as last resort
+const NVIDIA_MODELS = [
+  { model: 'mistralai/mistral-7b-instruct-v0.3', timeout: 15000 },
+  { model: 'meta/llama-3.1-8b-instruct',         timeout: 15000 },
+  { model: 'meta/llama-3.3-70b-instruct',         timeout: 45000 },
+];
 
 const PILLAR_LABELS = {
   srhr:             'SRHR & Maternal Health',
@@ -17,6 +20,7 @@ const PILLAR_LABELS = {
   governance:       'Inclusive Governance',
 };
 
+// ── Prompts ───────────────────────────────────────────────────────────────────
 function buildSystemPrompt(contextChunks) {
   const context = contextChunks
     .map((c, i) => `[Source ${i + 1}] (${c.source_name}, ${PILLAR_LABELS[c.pillar] || c.pillar})\n${c.content}`)
@@ -24,126 +28,95 @@ function buildSystemPrompt(contextChunks) {
 
   return `You are "Bonga na Vybe" — an AI assistant for Vybe Africa, a youth-led organisation in West Pokot, Kenya.
 
-STRICT RULES:
-1. Answer using the provided context below as much as possible.
-2. If the user asks for emergency helplines, support numbers, or contacts, you MUST share these:
-   - Aunty Jane (SRHR & Health): 0800721530 (Toll-Free) or WhatsApp 0727101919
+RULES:
+1. Answer using the provided context below.
+2. For emergency helplines always share:
+   - Aunty Jane (SRHR): 0800721530 (Toll-Free) or WhatsApp 0727101919
    - GBV Helpline: 1195 (Toll-Free, 24/7)
    - Child Helpline: 116 (Toll-Free, 24/7)
-3. Keep answers concise, warm, engaging, and youth-friendly.
-4. Always cite the source(s) you used, referencing the [Source N] labels in your answer text.
-5. Respond in the same language the user writes in (English or Swahili).
+3. Keep answers concise, warm, and youth-friendly.
+4. Cite sources using [Source N] notation.
+5. Reply in the same language as the user (English or Swahili).
 
 CONTEXT:
-${context}
-
-Answer the user's question based on the context above.`;
+${context}`;
 }
 
 function buildGeneralPrompt() {
-  return `You are "Bonga na Vybe" — a warm, supportive, and friendly AI assistant for Vybe Africa, a youth-led organisation in West Pokot, Kenya.
+  return `You are "Bonga na Vybe" — a warm, friendly AI assistant for Vybe Africa, a youth-led organisation in West Pokot, Kenya.
 
-Keep your answers engaging, youth-friendly, and concise.
-If the user greets you or asks who you are, greet them warmly (e.g. "Jambo!", "Habari!", "Hello!") and introduce yourself as Bonga na Vybe.
-Let the user know you are here to assist with questions on Vybe Africa's four pillars:
+Greet the user warmly (Jambo! / Habari! / Hello!) and introduce yourself.
+You help with Vybe Africa's four pillars:
 - 💊 SRHR & Maternal Health
 - 🌱 Climate Action & Eco
 - 🛡 Child Protection
 - 🏛 Inclusive Governance
 
-Emergency Helplines (share if relevant):
-- Aunty Jane (SRHR & Health): 0800721530 (Toll-Free) or WhatsApp 0727101919
-- GBV Helpline: 1195 (Toll-Free, 24/7)
-- Child Helpline: 116 (Toll-Free, 24/7)
+Emergency Helplines:
+- Aunty Jane (SRHR): 0800721530 (Toll-Free) or WhatsApp 0727101919
+- GBV Helpline: 1195 (24/7)
+- Child Helpline: 116 (24/7)
 
-Respond warmly in the same language the user writes in (English or Swahili).`;
+Respond in the same language as the user (English or Swahili). Keep answers concise.`;
 }
 
-// ── Gemini (PRIMARY — fast, ~2-3s) ───────────────────────────────────────────
-async function callGemini(systemPrompt, userMessage) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return null;
-
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash'];
-
-  for (const modelName of MODELS) {
-    try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent([
-        { text: systemPrompt },
-        { text: `User: ${userMessage}` },
-      ]);
-      const text = result?.response?.text?.();
-      if (text) {
-        console.log(`[chat] Gemini (${modelName}) ✓`);
-        return text;
-      }
-    } catch (err) {
-      const msg = err?.message || String(err);
-      console.warn(`[chat] Gemini (${modelName}) ✗:`, msg.slice(0, 120));
-      // Stop retrying on quota error
-      if (msg.includes('429') || msg.includes('quota')) break;
-    }
-  }
-
-  return null;
-}
-
-// ── NVIDIA (FALLBACK — slower, with hard timeout) ─────────────────────────────
+// ── NVIDIA Chat (tries fast models first) ─────────────────────────────────────
 async function callNvidia(systemPrompt, userMessage) {
   const apiKey = process.env.NVIDIA_API_KEY;
   if (!apiKey) return null;
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), NVIDIA_TIMEOUT_MS);
+  for (const { model, timeout } of NVIDIA_MODELS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
 
-  try {
-    const response = await fetch(NVIDIA_CHAT_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify({
-        model: NVIDIA_MODEL,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user',   content: userMessage },
-        ],
-        temperature: 0.6,
-        top_p: 0.9,
-        max_tokens: 512,
-        stream: false,
-      }),
-      signal: controller.signal,
-    });
+    try {
+      const response = await fetch(NVIDIA_CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'Accept':        'application/json',
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user',   content: userMessage },
+          ],
+          temperature: 0.6,
+          top_p:       0.9,
+          max_tokens:  600,
+          stream:      false,
+        }),
+        signal: controller.signal,
+      });
 
-    clearTimeout(timer);
+      clearTimeout(timer);
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.warn(`[chat] NVIDIA HTTP ${response.status}:`, errText.slice(0, 150));
-      return null;
-    }
+      if (!response.ok) {
+        const errText = await response.text();
+        console.warn(`[NVIDIA] ${model} HTTP ${response.status}:`, errText.slice(0, 120));
+        continue; // try next model
+      }
 
-    const data = await response.json();
-    const text = data?.choices?.[0]?.message?.content;
-    if (text) {
-      console.log(`[chat] NVIDIA (${NVIDIA_MODEL}) ✓`);
-      return text;
-    }
-  } catch (err) {
-    clearTimeout(timer);
-    if (err.name === 'AbortError') {
-      console.warn(`[chat] NVIDIA timed out after ${NVIDIA_TIMEOUT_MS}ms`);
-    } else {
-      console.warn('[chat] NVIDIA error:', err.message?.slice(0, 120));
+      const data = await response.json();
+      const text = data?.choices?.[0]?.message?.content;
+      if (text) {
+        console.log(`[NVIDIA] ${model} ✓`);
+        return text;
+      }
+    } catch (err) {
+      clearTimeout(timer);
+      if (err.name === 'AbortError') {
+        console.warn(`[NVIDIA] ${model} timed out after ${timeout}ms, trying next...`);
+      } else {
+        console.warn(`[NVIDIA] ${model} error:`, err.message?.slice(0, 120));
+      }
+      // continue to next model
     }
   }
 
-  return null;
+  return null; // all models failed
 }
 
 // ── Main API handler ──────────────────────────────────────────────────────────
@@ -152,7 +125,6 @@ async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   if (req.method !== 'POST') {
@@ -166,12 +138,9 @@ async function handler(req, res) {
     return res.status(400).json({ error: 'Message is required.' });
   }
 
-  const hasGemini = Boolean(process.env.GEMINI_API_KEY);
-  const hasNvidia = Boolean(process.env.NVIDIA_API_KEY);
-
-  if (!hasGemini && !hasNvidia) {
+  if (!process.env.NVIDIA_API_KEY) {
     return res.status(503).json({
-      error: 'Chat service is not configured. Add GEMINI_API_KEY to your Vercel Environment Variables.',
+      error: 'Chat service not configured. Add NVIDIA_API_KEY to your Vercel Environment Variables.',
     });
   }
 
@@ -181,40 +150,30 @@ async function handler(req, res) {
   // ── 1. Embed & vector search ────────────────────────────────────────────────
   let chunks = [];
   try {
-    const queryEmbedding = await getNvidiaEmbedding(trimmedMsg, 'query');
+    const embedding = await getNvidiaEmbedding(trimmedMsg, 'query');
     const { data, error: dbError } = await supabase.rpc('match_bonga_documents', {
-      query_embedding: queryEmbedding,
+      query_embedding:  embedding,
       match_threshold:  0.35,
-      match_count:      6,
+      match_count:      5,
       filter_pillar:    pillar || null,
     });
     if (!dbError && data?.length > 0) {
       chunks = data;
     } else if (dbError) {
-      console.warn('[chat] Supabase RPC error:', dbError?.message);
+      console.warn('[embed] Supabase error:', dbError?.message);
     }
-  } catch (dbErr) {
-    console.warn('[chat] Embedding error:', dbErr.message);
+  } catch (err) {
+    console.warn('[embed] Error:', err.message);
   }
 
   // ── 2. Build prompt ─────────────────────────────────────────────────────────
-  const hasContext = chunks.length > 0;
+  const hasContext  = chunks.length > 0;
   const systemPrompt = (hasContext && !isGreeting)
     ? buildSystemPrompt(chunks)
     : buildGeneralPrompt();
 
-  // ── 3. Call AI (Gemini first → NVIDIA fallback) ─────────────────────────────
-  let responseText = null;
-
-  // Try Gemini first (fast: ~2-3s)
-  if (hasGemini) {
-    responseText = await callGemini(systemPrompt, trimmedMsg);
-  }
-
-  // Fallback to NVIDIA if Gemini unavailable or failed
-  if (!responseText && hasNvidia) {
-    responseText = await callNvidia(systemPrompt, trimmedMsg);
-  }
+  // ── 3. Call NVIDIA ──────────────────────────────────────────────────────────
+  const responseText = await callNvidia(systemPrompt, trimmedMsg);
 
   if (!responseText) {
     return res.status(503).json({
