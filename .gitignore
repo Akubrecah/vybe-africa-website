@@ -34,6 +34,7 @@ list_*.js
 *.pptx
 *.xlsx
 *.pdf
+*.mp4
 
 # Temporary files
 ~$*
