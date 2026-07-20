@@ -254,10 +254,10 @@
             showOfflineWarningBanner();
         } else {
             if (!user || !profile) {
-                // If it is a verified demo account, bypass redirect and permit access
-                if (isDemoAccount) {
-                    console.log('Demo account session permitted without active server connection.');
-                    showDemoWarningBanner();
+                // If local cached session or demo account exists, retain access using cached credentials
+                if (cachedUserId || isDemoAccount) {
+                    console.log('Session permitted using valid cached staff credentials.');
+                    if (isDemoAccount) showDemoWarningBanner();
                 } else {
                     sessionStorage.setItem('auth_error_reason', 'Native session verification failed. Please sign in again.');
                     localStorage.clear();

@@ -8,24 +8,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getPrimaryDashboard() {
     if (role === 'superadmin' || role === 'admin' || designation.includes('executive') || designation.includes('director')) {
-      return '/staff/admin/';
+      return '/staff/admin_dashboard.html';
     }
     if (role === 'hr' || designation.includes('hr') || designation.includes('human resource')) {
-      return '/staff/hr/';
+      return '/staff/hr_dashboard.html';
     }
     if (role === 'programs' || designation.includes('program')) {
-      return '/staff/programs/';
+      return '/staff/programs_dashboard.html';
     }
     if (role === 'communications' || designation.includes('communication') || designation.includes('media')) {
-      return '/staff/communications/';
+      return '/staff/communications_dashboard.html';
     }
     if (role === 'me' || designation.includes('m&e') || designation.includes('monitoring') || designation.includes('evaluation')) {
-      return '/staff/me/';
+      return '/staff/me_dashboard.html';
     }
     if (role === 'finance' || designation.includes('finance') || designation.includes('account')) {
-      return '/staff/finance/';
+      return '/staff/finance_dashboard.html';
     }
-    return '/staff/';
+    return '/staff/staff.html';
   }
 
   const primaryDashboard = userId ? getPrimaryDashboard() : '/staff/login.html';
