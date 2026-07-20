@@ -6,7 +6,7 @@
   "scripts": {
     "start": "next start",
     "dev": "next dev",
-    "build": "next build",
+    "build": "NODE_ENV=production next build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
