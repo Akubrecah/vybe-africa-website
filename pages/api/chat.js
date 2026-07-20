@@ -3,11 +3,6 @@ const supabase = require('../../config/supabase');
 const { getNvidiaEmbedding } = require('../../utils/nvidiaEmbeddings');
 const { streamNvidiaChat } = require('../../utils/nvidiaChat');
 
-// Set Vercel serverless execution timeout to 60s
-export const config = {
-  maxDuration: 60,
-};
-
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy_key');
 
 const PILLAR_LABELS = {
@@ -59,7 +54,7 @@ Emergency Helplines (share if relevant):
 Respond warmly in the same language the user writes in (English or Swahili).`;
 }
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   // Allow CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -194,4 +189,10 @@ module.exports = async function handler(req, res) {
     res.write(`data: ${JSON.stringify({ error: err.message || 'Something went wrong.' })}\n\n`);
     res.end();
   }
+}
+
+handler.config = {
+  maxDuration: 60,
 };
+
+module.exports = handler;
