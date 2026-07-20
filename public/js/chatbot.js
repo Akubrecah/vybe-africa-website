@@ -567,6 +567,7 @@
     launcher.addEventListener('click', () => {
       isOpen = !isOpen;
       panel.classList.toggle('bvb-open', isOpen);
+      launcher.style.display = isOpen ? 'none' : 'flex';
       launcher.querySelector('.bvb-badge')?.remove();
       const label = launcher.querySelector('.bvb-launcher-label');
       if (label) {
@@ -578,6 +579,7 @@
     document.getElementById('bvb-close').addEventListener('click', () => {
       isOpen = false;
       panel.classList.remove('bvb-open');
+      launcher.style.display = 'flex';
       const label = launcher.querySelector('.bvb-launcher-label');
       if (label) {
         label.style.opacity = '1';

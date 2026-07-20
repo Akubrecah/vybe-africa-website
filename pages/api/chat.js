@@ -3,6 +3,11 @@ const supabase = require('../../config/supabase');
 const { getNvidiaEmbedding } = require('../../utils/nvidiaEmbeddings');
 const { streamNvidiaChat } = require('../../utils/nvidiaChat');
 
+// Set Vercel serverless execution timeout to 60s
+export const config = {
+  maxDuration: 60,
+};
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy_key');
 
 const PILLAR_LABELS = {
@@ -55,12 +60,21 @@ Respond warmly in the same language the user writes in (English or Swahili).`;
 }
 
 module.exports = async function handler(req, res) {
+  // Allow CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
+    res.setHeader('Allow', ['POST', 'OPTIONS']);
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 
-  const { message, pillar = null } = req.body;
+  const { message, pillar = null } = req.body || {};
 
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
     return res.status(400).json({ error: 'Message is required.' });
@@ -68,14 +82,15 @@ module.exports = async function handler(req, res) {
 
   if (!process.env.NVIDIA_API_KEY && !process.env.GEMINI_API_KEY) {
     return res.status(503).json({
-      error: 'API key not configured. Add NVIDIA_API_KEY or GEMINI_API_KEY to your .env file.',
+      error: 'API key not configured. Add NVIDIA_API_KEY or GEMINI_API_KEY to your Vercel Environment Variables.',
     });
   }
 
   // Set headers for Server-Sent Events (SSE) streaming
-  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
   res.setHeader('Cache-Control', 'no-cache, no-transform');
   res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
 
   const trimmedMsg = message.trim();
   const isGreetingOrGeneral = /^(hello|hi|hey|jambo|habari|greetings|good\s*(morning|afternoon|evening)|thank\s*you|thanks|who\s*are\s*you|what\s*can\s*you\s*do|mambo)/i.test(trimmedMsg);
@@ -84,7 +99,7 @@ module.exports = async function handler(req, res) {
     let chunks = [];
     let dbSuccess = false;
 
-    // ── 1. Embed and query vector DB with NVIDIA API ───────────────────
+    // ── 1. Embed and query vector DB (NVIDIA API with Gemini Fallback) ──
     try {
       const queryEmbedding = await getNvidiaEmbedding(trimmedMsg, 'query');
 
