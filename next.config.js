@@ -14,57 +14,57 @@ const nextConfig = {
         // ── Subdomain Rewrites for Staff Portal (e.g., staff.vybeafrica.org, staff.localhost, staff-*.vercel.app) ──
         {
           source: '/',
-          has: [{ type: 'host', value: 'staff.(.*)' }],
+          has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
           destination: '/staff/login.html',
         },
         {
           source: '/login',
-          has: [{ type: 'host', value: 'staff.(.*)' }],
+          has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
           destination: '/staff/login.html',
         },
         {
           source: '/admin',
-          has: [{ type: 'host', value: 'staff.(.*)' }],
+          has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
           destination: '/staff/admin_dashboard.html',
         },
         {
           source: '/cms',
-          has: [{ type: 'host', value: 'staff.(.*)' }],
+          has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
           destination: '/staff/cms_dashboard.html',
         },
         {
           source: '/hr',
-          has: [{ type: 'host', value: 'staff.(.*)' }],
+          has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
           destination: '/staff/hr_dashboard.html',
         },
         {
           source: '/finance',
-          has: [{ type: 'host', value: 'staff.(.*)' }],
+          has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
           destination: '/staff/finance_dashboard.html',
         },
         {
           source: '/programs',
-          has: [{ type: 'host', value: 'staff.(.*)' }],
+          has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
           destination: '/staff/programs_dashboard.html',
         },
         {
           source: '/communications',
-          has: [{ type: 'host', value: 'staff.(.*)' }],
+          has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
           destination: '/staff/communications_dashboard.html',
         },
         {
           source: '/management',
-          has: [{ type: 'host', value: 'staff.(.*)' }],
+          has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
           destination: '/staff/staff_management.html',
         },
         {
           source: '/me',
-          has: [{ type: 'host', value: 'staff.(.*)' }],
+          has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
           destination: '/staff/me_dashboard.html',
         },
         {
           source: '/analytics',
-          has: [{ type: 'host', value: 'staff.(.*)' }],
+          has: [{ type: 'host', value: '(staff\\..*|.*-staff\\..*)' }],
           destination: '/staff/impact_analytics.html',
         },
       ],
