@@ -1,8 +1,9 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const supabase = require('../../config/supabase');
 const { getNvidiaEmbedding } = require('../../utils/nvidiaEmbeddings');
+const { streamNvidiaChat } = require('../../utils/nvidiaChat');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy_key');
 
 const PILLAR_LABELS = {
   srhr:             'SRHR & Maternal Health',
@@ -38,7 +39,7 @@ function buildGeneralPrompt() {
   return `You are "Bonga na Vybe" — a warm, supportive, and friendly AI assistant for Vybe Africa, a youth-led organisation in West Pokot, Kenya.
 
 Keep your answers engaging, youth-friendly, and concise.
-If the user greets you or asks who you are, greet them warmly (e.g. "Jambo!", "Habari!", "Hello!") and introduce yourself.
+If the user greets you or asks who you are, greet them warmly (e.g. "Jambo!", "Habari!", "Hello!") and introduce yourself as Bonga na Vybe.
 Let the user know you are here to assist with questions on Vybe Africa's four pillars:
 - 💊 SRHR & Maternal Health
 - 🌱 Climate Action & Eco
@@ -65,9 +66,9 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Message is required.' });
   }
 
-  if (!process.env.GEMINI_API_KEY) {
+  if (!process.env.NVIDIA_API_KEY && !process.env.GEMINI_API_KEY) {
     return res.status(503).json({
-      error: 'Gemini API key not configured. Add GEMINI_API_KEY to your .env file.',
+      error: 'API key not configured. Add NVIDIA_API_KEY or GEMINI_API_KEY to your .env file.',
     });
   }
 
@@ -83,7 +84,7 @@ module.exports = async function handler(req, res) {
     let chunks = [];
     let dbSuccess = false;
 
-    // ── 1. Embed and query vector DB if not a pure greeting ────────────
+    // ── 1. Embed and query vector DB with NVIDIA API ───────────────────
     try {
       const queryEmbedding = await getNvidiaEmbedding(trimmedMsg, 'query');
 
@@ -91,7 +92,7 @@ module.exports = async function handler(req, res) {
         'match_bonga_documents',
         {
           query_embedding: queryEmbedding,
-          match_threshold: 0.35, // Lower threshold for higher match likelihood
+          match_threshold: 0.35,
           match_count:     6,
           filter_pillar:   pillar || null,
         }
@@ -112,39 +113,50 @@ module.exports = async function handler(req, res) {
       ? buildSystemPrompt(chunks)
       : buildGeneralPrompt();
 
-    // ── 3. Fallback Model Loop for Gemini API (prevents 429 rate limit crashes) ──
-    const MODELS_TO_TRY = ['gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
-    let resultStream = null;
-    let modelError = null;
+    // ── 3. Try Streaming with NVIDIA API First ──────────────────────────
+    let nvidiaSuccess = false;
+    if (process.env.NVIDIA_API_KEY) {
+      console.log('Attempting chat completion via NVIDIA API...');
+      nvidiaSuccess = await streamNvidiaChat(systemPrompt, trimmedMsg, (chunkText) => {
+        res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
+      });
+    }
 
-    for (const modelName of MODELS_TO_TRY) {
-      try {
-        const chatModel = genAI.getGenerativeModel({ model: modelName });
-        resultStream = await chatModel.generateContentStream([
-          { text: systemPrompt },
-          { text: `User question: ${trimmedMsg}` },
-        ]);
-        if (resultStream) break;
-      } catch (err) {
-        console.warn(`Gemini model ${modelName} error:`, err?.message || err);
-        modelError = err;
+    // ── 4. Fallback to Gemini API if NVIDIA is not configured or failed ─
+    if (!nvidiaSuccess) {
+      console.log('NVIDIA API unavailable or failed, falling back to Gemini API...');
+      const MODELS_TO_TRY = ['gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+      let resultStream = null;
+      let modelError = null;
+
+      for (const modelName of MODELS_TO_TRY) {
+        try {
+          const chatModel = genAI.getGenerativeModel({ model: modelName });
+          resultStream = await chatModel.generateContentStream([
+            { text: systemPrompt },
+            { text: `User question: ${trimmedMsg}` },
+          ]);
+          if (resultStream) break;
+        } catch (err) {
+          console.warn(`Gemini model ${modelName} error:`, err?.message || err);
+          modelError = err;
+        }
       }
-    }
 
-    if (!resultStream) {
-      const quotaMsg = (modelError?.message?.includes('429') || modelError?.message?.includes('quota'))
-        ? "Bonga na Vybe is currently experiencing high demand. Please try again in a few seconds."
-        : (modelError?.message || "Something went wrong generating a response.");
-      res.write(`data: ${JSON.stringify({ text: quotaMsg })}\n\n`);
-      res.write(`data: ${JSON.stringify({ sources: [] })}\n\n`);
-      res.end();
-      return;
-    }
+      if (!resultStream) {
+        const quotaMsg = (modelError?.message?.includes('429') || modelError?.message?.includes('quota'))
+          ? "Bonga na Vybe is currently experiencing high demand. Please try again in a few seconds."
+          : (modelError?.message || "Something went wrong generating a response.");
+        res.write(`data: ${JSON.stringify({ text: quotaMsg })}\n\n`);
+        res.write(`data: ${JSON.stringify({ sources: [] })}\n\n`);
+        res.end();
+        return;
+      }
 
-    // ── 4. Stream response chunks ───────────────────────────────────────
-    for await (const chunk of resultStream.stream) {
-      const chunkText = chunk.text();
-      res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
+      for await (const chunk of resultStream.stream) {
+        const chunkText = chunk.text();
+        res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
+      }
     }
 
     // ── 5. Format sources if RAG was used ──────────────────────────────

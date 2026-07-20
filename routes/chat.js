@@ -3,10 +3,10 @@
  * POST /api/chat
  *
  * RAG pipeline:
- *  1. Embed user message with NVIDIA embeddings
+ *  1. Embed user message with NVIDIA embeddings (nvidia/llama-nemotron-embed-1b-v2)
  *  2. Retrieve top-k matching chunks from Supabase pgvector
- *  3. Build system prompt with retrieved context (or general prompt for greetings/fallbacks)
- *  4. Generate answer with Gemini (with model fallbacks to prevent 429 quota errors)
+ *  3. Build system prompt as "Bonga na Vybe"
+ *  4. Generate answer with NVIDIA Chat API (meta/llama-3.3-70b-instruct) with Gemini fallback
  *  5. Return { answer, sources[] }
  */
 
@@ -15,8 +15,9 @@ const router  = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const supabase = require('../config/supabase');
 const { getNvidiaEmbedding } = require('../utils/nvidiaEmbeddings');
+const { generateNvidiaChat } = require('../utils/nvidiaChat');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy_key');
 
 const PILLAR_LABELS = {
   srhr:             'SRHR & Maternal Health',
@@ -52,7 +53,7 @@ function buildGeneralPrompt() {
   return `You are "Bonga na Vybe" — a warm, supportive, and friendly AI assistant for Vybe Africa, a youth-led organisation in West Pokot, Kenya.
 
 Keep your answers engaging, youth-friendly, and concise.
-If the user greets you or asks who you are, greet them warmly (e.g. "Jambo!", "Habari!", "Hello!") and introduce yourself.
+If the user greets you or asks who you are, greet them warmly (e.g. "Jambo!", "Habari!", "Hello!") and introduce yourself as Bonga na Vybe.
 Let the user know you are here to assist with questions on Vybe Africa's four pillars:
 - 💊 SRHR & Maternal Health
 - 🌱 Climate Action & Eco
@@ -75,9 +76,9 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Message is required.' });
   }
 
-  if (!process.env.GEMINI_API_KEY) {
+  if (!process.env.NVIDIA_API_KEY && !process.env.GEMINI_API_KEY) {
     return res.status(503).json({
-      error: 'Gemini API key not configured. Add GEMINI_API_KEY to your .env file.',
+      error: 'API key not configured. Add NVIDIA_API_KEY or GEMINI_API_KEY to your .env file.',
     });
   }
 
@@ -88,7 +89,7 @@ router.post('/', async (req, res) => {
     let chunks = [];
     let dbSuccess = false;
 
-    // ── 1. Embed and query vector DB ────────────────────────────────────
+    // ── 1. Embed and query vector DB with NVIDIA API ───────────────────
     try {
       const queryEmbedding = await getNvidiaEmbedding(trimmedMsg, 'query');
 
@@ -117,35 +118,45 @@ router.post('/', async (req, res) => {
       ? buildSystemPrompt(chunks)
       : buildGeneralPrompt();
 
-    // ── 3. Fallback Model Loop for Gemini API (prevents 429 rate limit crashes) ──
-    const MODELS_TO_TRY = ['gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
-    let result = null;
-    let modelError = null;
+    // ── 3. Generate Answer with NVIDIA Chat API ────────────────────────
+    let answer = null;
+    if (process.env.NVIDIA_API_KEY) {
+      console.log('Generating response via NVIDIA API...');
+      answer = await generateNvidiaChat(systemPrompt, trimmedMsg);
+    }
 
-    for (const modelName of MODELS_TO_TRY) {
-      try {
-        const chatModel = genAI.getGenerativeModel({ model: modelName });
-        result = await chatModel.generateContent([
-          { text: systemPrompt },
-          { text: `User question: ${trimmedMsg}` },
-        ]);
-        if (result) break;
-      } catch (err) {
-        console.warn(`Gemini model ${modelName} error:`, err?.message || err);
-        modelError = err;
+    // ── 4. Fallback to Gemini API if NVIDIA is unavailable or failed ───
+    if (!answer) {
+      console.log('NVIDIA API unavailable or failed, falling back to Gemini API...');
+      const MODELS_TO_TRY = ['gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+      let modelError = null;
+
+      for (const modelName of MODELS_TO_TRY) {
+        try {
+          const chatModel = genAI.getGenerativeModel({ model: modelName });
+          const result = await chatModel.generateContent([
+            { text: systemPrompt },
+            { text: `User question: ${trimmedMsg}` },
+          ]);
+          if (result) {
+            answer = result.response.text();
+            break;
+          }
+        } catch (err) {
+          console.warn(`Gemini model ${modelName} error:`, err?.message || err);
+          modelError = err;
+        }
+      }
+
+      if (!answer) {
+        const quotaMsg = (modelError?.message?.includes('429') || modelError?.message?.includes('quota'))
+          ? "Bonga na Vybe is currently experiencing high demand. Please try again in a few seconds."
+          : (modelError?.message || "Something went wrong generating a response.");
+        return res.status(429).json({ error: quotaMsg, sources: [] });
       }
     }
 
-    if (!result) {
-      const quotaMsg = (modelError?.message?.includes('429') || modelError?.message?.includes('quota'))
-        ? "Bonga na Vybe is currently experiencing high demand. Please try again in a few seconds."
-        : (modelError?.message || "Something went wrong generating a response.");
-      return res.status(429).json({ error: quotaMsg, sources: [] });
-    }
-
-    const answer = result.response.text();
-
-    // ── 4. Format sources ───────────────────────────────────────────────
+    // ── 5. Format sources ───────────────────────────────────────────────
     const sources = (hasKnowledgeBase && !isGreetingOrGeneral)
       ? chunks
           .filter((c, i, arr) => arr.findIndex(x => x.source_url === c.source_url) === i)
