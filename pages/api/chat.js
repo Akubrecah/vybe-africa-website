@@ -20,7 +20,6 @@ const PILLAR_LABELS = {
   governance:       'Inclusive Governance',
 };
 
-// ── Prompts ───────────────────────────────────────────────────────────────────
 function buildSystemPrompt(contextChunks) {
   const context = contextChunks
     .map((c, i) => `[Source ${i + 1}] (${c.source_name}, ${PILLAR_LABELS[c.pillar] || c.pillar})\n${c.content}`)
