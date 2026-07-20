@@ -29,6 +29,10 @@ const nextConfig = {
       { source: '/staff/me/', destination: '/staff/me_dashboard.html' },
       { source: '/staff/finance', destination: '/staff/finance_dashboard.html' },
       { source: '/staff/finance/', destination: '/staff/finance_dashboard.html' },
+      { source: '/staff/cms', destination: '/staff/cms_dashboard.html' },
+      { source: '/staff/cms/', destination: '/staff/cms_dashboard.html' },
+      { source: '/staff/management', destination: '/staff/staff_management.html' },
+      { source: '/staff/management/', destination: '/staff/staff_management.html' },
     ];
   },
   async redirects() {
