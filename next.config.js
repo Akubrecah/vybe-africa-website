@@ -9,36 +9,95 @@ const nextConfig = {
     return `build-${Date.now()}`;
   },
   async rewrites() {
-    return [
-      // Map base root path to homepage
-      { source: '/', destination: '/homepage.html' },
-      { source: '/index.html', destination: '/homepage.html' },
-      
-      // Clean staff URLs to their static html paths
-      { source: '/staff', destination: '/staff/staff.html' },
-      { source: '/staff/', destination: '/staff/staff.html' },
-      { source: '/staff/admin', destination: '/staff/admin_dashboard.html' },
-      { source: '/staff/admin/', destination: '/staff/admin_dashboard.html' },
-      { source: '/staff/hr', destination: '/staff/hr_dashboard.html' },
-      { source: '/staff/hr/', destination: '/staff/hr_dashboard.html' },
-      { source: '/staff/programs', destination: '/staff/programs_dashboard.html' },
-      { source: '/staff/programs/', destination: '/staff/programs_dashboard.html' },
-      { source: '/staff/communications', destination: '/staff/communications_dashboard.html' },
-      { source: '/staff/communications/', destination: '/staff/communications_dashboard.html' },
-      { source: '/staff/me', destination: '/staff/me_dashboard.html' },
-      { source: '/staff/me/', destination: '/staff/me_dashboard.html' },
-      { source: '/staff/finance', destination: '/staff/finance_dashboard.html' },
-      { source: '/staff/finance/', destination: '/staff/finance_dashboard.html' },
-      { source: '/staff/cms', destination: '/staff/cms_dashboard.html' },
-      { source: '/staff/cms/', destination: '/staff/cms_dashboard.html' },
-      { source: '/staff/management', destination: '/staff/staff_management.html' },
-      { source: '/staff/management/', destination: '/staff/staff_management.html' },
-    ];
+    return {
+      beforeFiles: [
+        // ── Subdomain Rewrites for Staff Portal (e.g., staff.vybeafrica.org, staff.localhost, staff-*.vercel.app) ──
+        {
+          source: '/',
+          has: [{ type: 'host', value: 'staff.(.*)' }],
+          destination: '/staff/login.html',
+        },
+        {
+          source: '/login',
+          has: [{ type: 'host', value: 'staff.(.*)' }],
+          destination: '/staff/login.html',
+        },
+        {
+          source: '/admin',
+          has: [{ type: 'host', value: 'staff.(.*)' }],
+          destination: '/staff/admin_dashboard.html',
+        },
+        {
+          source: '/cms',
+          has: [{ type: 'host', value: 'staff.(.*)' }],
+          destination: '/staff/cms_dashboard.html',
+        },
+        {
+          source: '/hr',
+          has: [{ type: 'host', value: 'staff.(.*)' }],
+          destination: '/staff/hr_dashboard.html',
+        },
+        {
+          source: '/finance',
+          has: [{ type: 'host', value: 'staff.(.*)' }],
+          destination: '/staff/finance_dashboard.html',
+        },
+        {
+          source: '/programs',
+          has: [{ type: 'host', value: 'staff.(.*)' }],
+          destination: '/staff/programs_dashboard.html',
+        },
+        {
+          source: '/communications',
+          has: [{ type: 'host', value: 'staff.(.*)' }],
+          destination: '/staff/communications_dashboard.html',
+        },
+        {
+          source: '/management',
+          has: [{ type: 'host', value: 'staff.(.*)' }],
+          destination: '/staff/staff_management.html',
+        },
+        {
+          source: '/me',
+          has: [{ type: 'host', value: 'staff.(.*)' }],
+          destination: '/staff/me_dashboard.html',
+        },
+        {
+          source: '/analytics',
+          has: [{ type: 'host', value: 'staff.(.*)' }],
+          destination: '/staff/impact_analytics.html',
+        },
+      ],
+      afterFiles: [
+        // ── Main Website Path Mappings ──
+        { source: '/', destination: '/homepage.html' },
+        { source: '/index.html', destination: '/homepage.html' },
+        
+        // Clean staff URLs on main domain
+        { source: '/staff', destination: '/staff/staff.html' },
+        { source: '/staff/', destination: '/staff/staff.html' },
+        { source: '/staff/admin', destination: '/staff/admin_dashboard.html' },
+        { source: '/staff/admin/', destination: '/staff/admin_dashboard.html' },
+        { source: '/staff/hr', destination: '/staff/hr_dashboard.html' },
+        { source: '/staff/hr/', destination: '/staff/hr_dashboard.html' },
+        { source: '/staff/programs', destination: '/staff/programs_dashboard.html' },
+        { source: '/staff/programs/', destination: '/staff/programs_dashboard.html' },
+        { source: '/staff/communications', destination: '/staff/communications_dashboard.html' },
+        { source: '/staff/communications/', destination: '/staff/communications_dashboard.html' },
+        { source: '/staff/me', destination: '/staff/me_dashboard.html' },
+        { source: '/staff/me/', destination: '/staff/me_dashboard.html' },
+        { source: '/staff/finance', destination: '/staff/finance_dashboard.html' },
+        { source: '/staff/finance/', destination: '/staff/finance_dashboard.html' },
+        { source: '/staff/cms', destination: '/staff/cms_dashboard.html' },
+        { source: '/staff/cms/', destination: '/staff/cms_dashboard.html' },
+        { source: '/staff/management', destination: '/staff/staff_management.html' },
+        { source: '/staff/management/', destination: '/staff/staff_management.html' },
+      ],
+    };
   },
   async redirects() {
     return [
-      // Legacy redirects from server.js
-      { source: '/login', destination: '/staff/login.html', permanent: true },
+      { source: '/login', destination: '/staff/login.html', permanent: false },
       { source: '/homepage', destination: '/homepage.html', permanent: true },
       { source: '/login.html', destination: '/staff/login.html', permanent: true },
       { source: '/forgot-password.html', destination: '/staff/forgot-password.html', permanent: true },
