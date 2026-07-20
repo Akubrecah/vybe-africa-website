@@ -10,7 +10,7 @@
   'use strict';
 
   // ── Config ────────────────────────────────────────────────────────────────
-  const API_URL = '/api/chat';
+  const API_URL = (typeof window !== 'undefined' && window.BOT_API_URL) ? window.BOT_API_URL : '/api/chat';
 
   const PILLARS = [
     { id: null,              label: '🌍 All Topics',       color: '#9f402d' },
