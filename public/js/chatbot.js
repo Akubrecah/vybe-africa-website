@@ -10,8 +10,9 @@
   'use strict';
 
   // ── Config ────────────────────────────────────────────────────────────────
-  const PRIMARY_API_URL = (typeof window !== 'undefined' && window.BOT_API_URL) ? window.BOT_API_URL : '/api/chat';
-  const FALLBACK_API_URL = (typeof window !== 'undefined' && window.RENDER_BOT_URL) ? window.RENDER_BOT_URL : null;
+  const RENDER_BOT_ENDPOINT = 'https://vybe-africa-bot.onrender.com/api/chat';
+  const PRIMARY_API_URL = (typeof window !== 'undefined' && window.BOT_API_URL) ? window.BOT_API_URL : RENDER_BOT_ENDPOINT;
+  const FALLBACK_API_URL = '/api/chat';
 
   const PILLARS = [
     { id: null,              label: '🌍 All Topics',       color: '#9f402d' },
