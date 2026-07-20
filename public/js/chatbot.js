@@ -10,7 +10,8 @@
   'use strict';
 
   // ── Config ────────────────────────────────────────────────────────────────
-  const API_URL = (typeof window !== 'undefined' && window.BOT_API_URL) ? window.BOT_API_URL : '/api/chat';
+  const PRIMARY_API_URL = (typeof window !== 'undefined' && window.BOT_API_URL) ? window.BOT_API_URL : '/api/chat';
+  const FALLBACK_API_URL = (typeof window !== 'undefined' && window.RENDER_BOT_URL) ? window.RENDER_BOT_URL : null;
 
   const PILLARS = [
     { id: null,              label: '🌍 All Topics',       color: '#9f402d' },
@@ -468,12 +469,28 @@
       const controller = new AbortController();
       const timeoutId  = setTimeout(() => controller.abort(), 55000); // 55s client timeout
 
-      const res = await fetch(API_URL, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ message: text, pillar: activePillar }),
-        signal:  controller.signal,
-      });
+      let targetUrl = PRIMARY_API_URL;
+      let res;
+      try {
+        res = await fetch(targetUrl, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ message: text, pillar: activePillar }),
+          signal:  controller.signal,
+        });
+      } catch (firstErr) {
+        if (FALLBACK_API_URL && targetUrl !== FALLBACK_API_URL) {
+          targetUrl = FALLBACK_API_URL;
+          res = await fetch(targetUrl, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ message: text, pillar: activePillar }),
+            signal:  controller.signal,
+          });
+        } else {
+          throw firstErr;
+        }
+      }
 
       clearTimeout(timeoutId);
       hideTyping();
