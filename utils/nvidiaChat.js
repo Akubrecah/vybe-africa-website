@@ -16,7 +16,6 @@ const NVIDIA_MODELS = [
   'meta/llama-3.3-70b-instruct',
   'nvidia/llama-3.1-nemotron-70b-instruct',
   'meta/llama-3.1-70b-instruct',
-  'mistralai/mistral-7b-instruct-v0.3',
 ];
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));

@@ -8,9 +8,8 @@ const NVIDIA_CHAT_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
 
 // Ordered by speed: fast small models first, large as last resort
 const NVIDIA_MODELS = [
-  { model: 'mistralai/mistral-7b-instruct-v0.3', timeout: 15000 },
-  { model: 'meta/llama-3.1-8b-instruct',         timeout: 15000 },
-  { model: 'meta/llama-3.3-70b-instruct',         timeout: 45000 },
+  { model: 'meta/llama-3.1-8b-instruct', timeout: 15000 },
+  { model: 'meta/llama-3.3-70b-instruct', timeout: 30000 },
 ];
 
 const PILLAR_LABELS = {
