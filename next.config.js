@@ -5,6 +5,7 @@ const nextConfig = {
     return [
       // Map base root path to homepage
       { source: '/', destination: '/homepage.html' },
+      { source: '/index.html', destination: '/homepage.html' },
       
       // Clean staff URLs to their static html paths
       { source: '/staff', destination: '/staff/staff.html' },
