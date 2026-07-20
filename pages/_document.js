@@ -1,13 +1,16 @@
-import { Html, Head, Main, NextScript } from 'next/document';
+const React = require('react');
+const { Html, Head, Main, NextScript } = require('next/document');
 
-export default function Document() {
-  return (
-    <Html lang="en">
-      <Head />
-      <body>
-        <Main />
-        <NextScript />
-      </body>
-    </Html>
+module.exports = function Document() {
+  return React.createElement(
+    Html,
+    { lang: 'en' },
+    React.createElement(Head, null),
+    React.createElement(
+      'body',
+      null,
+      React.createElement(Main, null),
+      React.createElement(NextScript, null)
+    )
   );
-}
+};

@@ -1,5 +1,5 @@
-import React from 'react';
+const React = require('react');
 
-export default function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />;
-}
+module.exports = function MyApp({ Component, pageProps }) {
+  return React.createElement(Component, pageProps);
+};
