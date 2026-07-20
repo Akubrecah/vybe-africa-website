@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  generateBuildId: async () => {
+    return `build-${Date.now()}`;
+  },
   async rewrites() {
     return [
       // Map base root path to homepage
